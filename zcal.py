@@ -2,8 +2,16 @@ from flask import Flask, render_template, request, redirect, url_for
 import calendar
 from datetime import date
 from math import floor
+from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'dev'
+
+# Secret generation:
+# import secrets
+# secrets.token_hex(16)
+# exit
 
 meetings = [
     {
@@ -18,12 +26,19 @@ meetings = [
 
 @app.route('/')
 def main():
-    return redirect(url_for('login'))
+    return "wtf" # redirect(url_for('login'))
+
+
+# @app.route('/register')
+# def register():
+#     form = RegistrationForm()
+#     return "wtf"
 
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    return render_template('login.html', form=form)
 
 
 @app.route('/calendar', methods=['GET', 'POST'])
