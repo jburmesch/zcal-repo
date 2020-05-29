@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container login">
+        <form method="POST", action="">
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {{ form.email(class="form-control")}}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {{ form.password(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.confirm_password.label(class="form-control-label") }}
+                    {{ form.confirm_password(class="form-control") }}
+                </div>
+                {{ form.submit(class="btn btn-dark")}}
+            </fieldset>
+            <hr>
+            <small id="notRegistered" class="form-text text-muted">Already registered? <a href='/login'>Log in here.</a></small>
+        </form>
+    </div>
+{% endblock %}
