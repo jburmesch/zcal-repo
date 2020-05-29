@@ -26,19 +26,19 @@ meetings = [
 
 @app.route('/')
 def main():
-    return "wtf" # redirect(url_for('login'))
+    return redirect(url_for('login'))
 
 
-# @app.route('/register')
-# def register():
-#     form = RegistrationForm()
-#     return "wtf"
+@app.route('/register')
+def register():
+    form = RegistrationForm()
+    return render_template('register.html', form=form, title='Register')
 
 
 @app.route('/login')
 def login():
     form = LoginForm()
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, title='Login')
 
 
 @app.route('/calendar', methods=['GET', 'POST'])
@@ -76,7 +76,7 @@ def cal():
     
     c = calendar.Calendar()
     caldays =  c.itermonthdays2(year, month)
-    return render_template('calendar.html', caldays=caldays, yr=year, mon=calendar.month_name[month], mod=o_mod)
+    return render_template('calendar.html', caldays=caldays, yr=year, mon=calendar.month_name[month], mod=o_mod, title='Calendar')
 
 
 if __name__ == '__main__':
