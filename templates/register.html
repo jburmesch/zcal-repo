@@ -6,6 +6,14 @@
             <fieldset>
                 <legend class="border-bottom mb-4">Create Account:</legend>
                 <div class="form-group">
+                    {{ form.first.label(class="form-control-label") }}
+                    {{ form.first(class="form-control")}}
+                </div>
+                <div class="form-group">
+                    {{ form.last.label(class="form-control-label") }}
+                    {{ form.last(class="form-control")}}
+                </div>
+                <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {{ form.email(class="form-control")}}
                 </div>
