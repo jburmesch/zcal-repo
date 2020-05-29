@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import calendar
 from datetime import date
 from math import floor
@@ -29,13 +29,16 @@ def main():
     return redirect(url_for('login'))
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account Created for {form.first.data} {form.last.data}.', 'success')
+        return redirect(url_for('login'))
     return render_template('register.html', form=form, title='Register')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     return render_template('login.html', form=form, title='Login')
