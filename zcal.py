@@ -4,8 +4,9 @@ from datetime import date
 from math import floor
 from forms import RegistrationForm, LoginForm
 
+# create app
 app = Flask(__name__)
-
+# set config variables -> switch to env variables in future
 app.config['SECRET_KEY'] = 'dev'
 
 # Secret generation:
@@ -13,44 +14,43 @@ app.config['SECRET_KEY'] = 'dev'
 # secrets.token_hex(16)
 # exit
 
-meetings = [
-    {
-        'title': 'Counseling with Takako',
-        'year': 2020,
-        'month': 5,
-        'day':15,
-        'time': '15:00'
-
-    }
-]
-
+# make a home page someday?
 @app.route('/')
 def main():
     return redirect(url_for('login'))
 
-
+# REGISTER ROUTE
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    # see if form was submitted
     if request.method == 'POST':
+        # check for valid data
         if form.validate_on_submit():
+            # display success message
             flash(f'Account Created for {form.first.data} {form.last.data}.', 'success')
             return redirect(url_for('login'))
+    # display register page
     return render_template('register.html', form=form, title='Register')
 
 
+# LOGIN ROUTE
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    # see if form was submitted
     if request.method == 'POST':
+        # validate form and check user info
         if form.email.data == 'admin@blog.com' and form.password.data == 'password':
             flash("You did it! You're logged in!", 'success')
             return redirect(url_for('cal'))
         else:
             flash('Invalid email/password combination.', 'danger')
+    # display login page
     return render_template('login.html', form=form, title='Login')
 
 
+# CALENDAR ROUTE
 @app.route('/calendar', methods=['GET', 'POST'])
 def cal():
     mod = request.args.get("mod")
