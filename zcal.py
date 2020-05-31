@@ -1,18 +1,41 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import calendar
-from datetime import date
+from datetime import date, datetime
 from math import floor
 from forms import RegistrationForm, LoginForm
+from flask_sqlalchemy import SQLAlchemy
 
 # create app
 app = Flask(__name__)
 # set config variables -> switch to env variables in future
 app.config['SECRET_KEY'] = 'dev'
-
 # Secret generation:
 # import secrets
 # secrets.token_hex(16)
 # exit
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zcal.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first = db.Column(db.String(120), unique=True, nullable=False)
+    last = db.Column(db.String(120), unique=True, nullable=False)
+    utype = db.Column(db.String(10), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.first}', '{self.last}', '{self.email}')"
+
+class Meeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    meeting_id = db.Column(db.BigInteger, nullable=False, unique=True)
+    start_time = db.Column(db.DateTime, nullable=False)
+    
+
 
 # make a home page someday?
 @app.route('/')
@@ -33,6 +56,10 @@ def register():
     # display register page
     return render_template('register.html', form=form, title='Register')
 
+
+@app.route('/redirect', methods=['GET', 'POST'])
+def get_token():
+    return redirect(url_for('main'))
 
 # LOGIN ROUTE
 @app.route('/login', methods=['GET', 'POST'])
