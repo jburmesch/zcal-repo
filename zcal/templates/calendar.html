@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block body %}
+    <table class="table table-bordered table-dark calmonth">
+        <div class="caltitle">
+            <h1>{{ mon }} {{ yr }}</h1>
+        </div>
+        <form action="/calendar" method ="get" id="navform">
+            <div class="form group calnav">
+                <input type="hidden" name="mod" value="{{ mod }}" id="mod_in">
+                <button type="button" class="btn btn-dark" onclick="minus()">Prev.</button>
+                <button type="button" class="btn btn-dark" onclick="plus()">Next</button>
+            </div>
+        </form>
+        <tr class="calhead">
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+        </tr>
+        {% for d in caldays %}
+            {% if d[1] == 0 %}
+            <tr class="calrow">
+                {% if d[0] == 0 %}
+                    <td class = "calday"></td>
+                {% else %}
+                    <td class = "calday">{{ d[0] }}</td>
+                {% endif %}
+            {% elif d[1] == 6 %}
+                {% if d[0] == 0 %}
+                    <td class = "calday"></td>
+                {% else %}
+                    <td class = "calday">{{ d[0] }}</td>
+                {% endif %}
+            </tr>
+            {% else %}
+                {% if d[0] == 0 %}
+                    <td class = "calday"></td>
+                {% else %}
+                    <td class = "calday">{{ d[0] }}</td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}
+{% block scripts %}
+<script>
+    function minus()
+    {
+        m = document.querySelector('#mod_in').value;
+        m = parseInt(m);
+        m--;
+        document.querySelector('#mod_in').value = m;
+        document.querySelector('#navform').submit();
+    }
+    function plus()
+    {
+        m = document.querySelector('#mod_in').value;
+        m = parseInt(m);
+        m++;
+        document.querySelector('#mod_in').value = m;
+        document.querySelector('#navform').submit();
+    }
+</script>
+{% endblock %}
