@@ -17,6 +17,12 @@ app.config['SECRET_KEY'] = 'dev'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zcal.db'
 db = SQLAlchemy(app)
 
+association_table = db.Table('association', db.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('meeting_id', db.Integer, db.ForeignKey('meeting.id'))
+)
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first = db.Column(db.String(120), unique=True, nullable=False)
@@ -24,9 +30,11 @@ class User(db.Model):
     utype = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    meetings = db.relationship('Meeting', secondary=association_table, back_populates='students')
 
     def __repr__(self):
         return f"User('{self.first}', '{self.last}', '{self.email}')"
+
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +42,12 @@ class Meeting(db.Model):
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     meeting_id = db.Column(db.BigInteger, nullable=False, unique=True)
     start_time = db.Column(db.DateTime, nullable=False)
-    
+    teacher = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    students = db.relationship('User', secondary=association_table, back_populates="meetings")
 
+    def __repr__(self):
+        return f"Meeting('{self.title}','{self.start_time.date}','{self.start_time.time})"
+    
 
 # make a home page someday?
 @app.route('/')
