@@ -62,6 +62,7 @@ def register():
     if request.method == 'POST':
         # check for valid data
         if form.validate_on_submit():
+            
             # display success message
             flash(f'Account Created for {form.first.data} {form.last.data}.', 'success')
             return redirect(url_for('login'))
