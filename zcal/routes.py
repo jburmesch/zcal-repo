@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from zcal import app
+from zcal import app, db, bcrypt
 from zcal.forms import RegistrationForm, LoginForm
 from zcal.models import User, Meeting
+from flask_login import login_user, current_user
 from datetime import date
 from math import floor
 import calendar
@@ -19,9 +20,12 @@ def register():
     if request.method == 'POST':
         # check for valid data
         if form.validate_on_submit():
-            
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(first=form.first.data, last=form.last.data, utype = "Student", email=form.email.data, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
             # display success message
-            flash(f'Account Created for {form.first.data} {form.last.data}.', 'success')
+            flash(f'Account Created. Please check your email for account validation.', 'success')
             return redirect(url_for('login'))
     # display register page
     return render_template('register.html', form=form, title='Register')
@@ -36,11 +40,11 @@ def get_token():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    # see if form was submitted
-    if request.method == 'POST':
+    if form.validate_on_submit():
         # validate form and check user info
-        if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-            flash("You did it! You're logged in!", 'success')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
             return redirect(url_for('cal'))
         else:
             flash('Invalid email/password combination.', 'danger')
