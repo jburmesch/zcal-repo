@@ -18,4 +18,4 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 
-from zcal import routes
+from zcal.routes import auth, cal
