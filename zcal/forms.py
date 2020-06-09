@@ -24,3 +24,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Log In')
+
+
+# class ScheduleForm(FlaskForm):
+#     month = StringField('Month', validators=[DataRequired()], id='schMonth',id=)

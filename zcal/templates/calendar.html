@@ -26,27 +26,75 @@
                 {% if d[0] == 0 %}
                     <td class = "calday"></td>
                 {% else %}
-                    <td class = "calday">{{ d[0] }}</td>
+                    <td class = "calday">
+                        <div class="d-flex flex-row justify-content-between">
+                            <div class="p-0 ">
+                                {{ d[0] }}
+                            </div>
+                            <div class="p-0">
+                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                            </div>
+                        </div>
+                    </td>
                 {% endif %}
             {% elif d[1] == 6 %}
                 {% if d[0] == 0 %}
                     <td class = "calday"></td>
                 {% else %}
-                    <td class = "calday">{{ d[0] }}</td>
+                    <td class = "calday">
+                        <div class="d-flex flex-row justify-content-between">
+                            <div class="p-0 ">
+                                {{ d[0] }}
+                            </div>
+                            <div class="p-0">
+                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                            </div>
+                        </div>
+                    </td>
                 {% endif %}
             </tr>
             {% else %}
                 {% if d[0] == 0 %}
                     <td class = "calday"></td>
                 {% else %}
-                    <td class = "calday">{{ d[0] }}</td>
+                <td class = "calday">
+                    <div class="d-flex flex-row justify-content-between">
+                        <div class="p-0 ">
+                            {{ d[0] }}
+                        </div>
+                        <div class="p-0">
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                        </div>
+                    </div>
+                </td>
                 {% endif %}
             {% endif %}
         {% endfor %}
     </table>
+    <div class="modal fade" id="scheduler" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Schedule Meeting</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
 {% endblock %}
 {% block scripts %}
 <script>
+    
+    
     function minus()
     {
         m = document.querySelector('#mod_in').value;
@@ -55,6 +103,8 @@
         document.querySelector('#mod_in').value = m;
         document.querySelector('#navform').submit();
     }
+    
+    
     function plus()
     {
         m = document.querySelector('#mod_in').value;
@@ -62,6 +112,13 @@
         m++;
         document.querySelector('#mod_in').value = m;
         document.querySelector('#navform').submit();
+    }
+
+
+    function show_scheduler(year, month, day)
+    {
+        // alert("It worked. " + month + " " + day + " " + year)
+        $("#scheduler").modal()
     }
 </script>
 {% endblock %}

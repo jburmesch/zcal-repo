@@ -55,3 +55,11 @@ main .form-control
     max-width: 20em;
     margin-top: 5em;
 }
+
+.sub-btn
+{
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
