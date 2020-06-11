@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from zcal import app, db, bcrypt
 from zcal.models import User, Meeting
 from flask_login import current_user
+from zcal.forms import ScheduleForm
 from datetime import date
 from math import floor
 import calendar
@@ -12,12 +13,21 @@ def main():
     return redirect(url_for('login'))
 
 
+@app.route('/schedule', methods=['POST'])
+def schedule():
+    if form.validate_on_submit():
+        flash('okay!', 'success')
+    return redirect(url_for('cal'))
+
+
 # CALENDAR ROUTE
 @app.route('/calendar', methods=['GET', 'POST'])
 def cal():
     mod = request.args.get("mod")
     year=date.today().year 
     month=date.today().month
+    form=ScheduleForm()
+
     # improve this someday.
     if not mod:
         mod = 0
@@ -48,5 +58,5 @@ def cal():
     
     c = calendar.Calendar()
     caldays =  c.itermonthdays2(year, month)
-    return render_template('calendar.html', caldays=caldays, yr=year, mon=calendar.month_name[month], mod=o_mod, title='Calendar')
+    return render_template('calendar.html', form=form, caldays=caldays, yr=year, mon_num=month, mon=calendar.month_name[month], mod=o_mod, title='Calendar')
 

@@ -32,7 +32,7 @@
                                 {{ d[0] }}
                             </div>
                             <div class="p-0">
-                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                             </div>
                         </div>
                     </td>
@@ -47,7 +47,7 @@
                                 {{ d[0] }}
                             </div>
                             <div class="p-0">
-                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                             </div>
                         </div>
                     </td>
@@ -63,7 +63,7 @@
                             {{ d[0] }}
                         </div>
                         <div class="p-0">
-                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler('{{yr}}', '{{mon}}', {{d[0]}})">+</button>
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                         </div>
                     </div>
                 </td>
@@ -73,23 +73,50 @@
     </table>
     <div class="modal fade" id="scheduler" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">Schedule Meeting</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Schedule Meeting</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="/schedule">
+                    <fieldset>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="date_in" class="form-control-label">Meeting Date:</label>
+                                <input type="date" class="form-control" id="date_in" name="meeting_date">
+                            </div>
+                            <div class="form-group">
+                                <label for="teacher_in" class="form-control-label">Select Teacher:</label>
+                                <input list="teachers" name="teacher_list" id="teacher_in">
+                                <datalist id="teachers">
+                                    <option value="Justin">
+                                </datalist>
+                            </div>
+                            <div class="form-group">
+                                <label for="time_in" class="form-control-label">Select Meeting Time:</label>
+                                <input list="times" name="meeting_times" id="time_in">
+                                <datalist id="times">
+                                    <option value="8:00">
+                                    <option value="8:30">
+                                    <option value="9:00">
+                                    <option value="9:30">
+                                    <option value="10:00">
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                {{ form.reserve(class="btn btn-dark")}}
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </fieldset>              
+                </form>
             </div>
-            <div class="modal-body">
-              ...
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 {% endblock %}
 {% block scripts %}
 <script>
@@ -118,7 +145,18 @@
     function show_scheduler(year, month, day)
     {
         // alert("It worked. " + month + " " + day + " " + year)
-        $("#scheduler").modal()
+        $('#scheduler').modal()
+        if (month < 10)
+        {
+            month = "0" + month;
+        }
+        if (day < 10)
+        {
+            day = "0" + day;
+        }
+        dateInput = document.getElementById('date_in');
+        date = year + '-' + month + '-' + day;
+        dateInput.value = date;
     }
 </script>
 {% endblock %}

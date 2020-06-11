@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from zcal.models import User
 
@@ -26,5 +26,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 
-# class ScheduleForm(FlaskForm):
-#     month = StringField('Month', validators=[DataRequired()], id='schMonth',id=)
+class ScheduleForm(FlaskForm):
+    date = DateField('Date', validators=[DataRequired()])
+    time = TimeField('Time', validators=[DataRequired()])
+    reserve = SubmitField('Make Reservation')
