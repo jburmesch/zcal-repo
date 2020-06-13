@@ -11,7 +11,7 @@ def main():
         db.create_all()
 
         users = create_users()
-        teacher = create_teacher()py
+        teacher = create_teacher()
         schedule = create_schedule()
         zoom = create_zoom()
         meeting = create_meeting()
