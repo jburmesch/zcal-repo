@@ -4,13 +4,14 @@ import datetime
 
 
 def main():
-    answer = input("RUNNING THIS WILL **DROP** ALL DB TABLES! Are you sure?")
+    answer = input("RUNNING THIS WILL **DROP** ANY EXISTING DB TABLES! "
+                   + "Are you sure?")
     if answer == 'y':
         db.drop_all()
         db.create_all()
 
         users = create_users()
-        teacher = create_teacher()
+        teacher = create_teacher()py
         schedule = create_schedule()
         zoom = create_zoom()
         meeting = create_meeting()
