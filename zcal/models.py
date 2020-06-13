@@ -33,7 +33,6 @@ class Meeting(db.Model):
                              default=datetime.utcnow)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'),
                            nullable=False)
-    # schedule = db.relationship('Schedule', lazy=True, uselist=False)
 
     def __repr__(self):
         return f"<Meeting> Date: {self.schedule.date_time.date()}, "\

@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from zcal import app, db, bcrypt
-from zcal.models import User, Meeting
-from flask_login import current_user
+from flask import render_template, request, redirect, url_for
+from zcal import app
+from flask_login import login_required
 from zcal.forms import ScheduleForm
 from datetime import date
 from math import floor
 import calendar
+
 
 # make a home page someday?
 @app.route('/')
@@ -14,19 +14,22 @@ def main():
 
 
 @app.route('/schedule', methods=['POST'])
+@login_required
 def schedule():
-    if form.validate_on_submit():
-        flash('okay!', 'success')
-    return redirect(url_for('cal'))
+    return "Not done yet."
+    # if form.validate_on_submit():
+    #     flash('okay!', 'success')
+    # return redirect(url_for('cal'))
 
 
 # CALENDAR ROUTE
 @app.route('/calendar', methods=['GET', 'POST'])
+@login_required
 def cal():
     mod = request.args.get("mod")
-    year=date.today().year 
-    month=date.today().month
-    form=ScheduleForm()
+    year = date.today().year
+    month = date.today().month
+    form = ScheduleForm()
 
     # improve this someday.
     if not mod:
@@ -53,10 +56,19 @@ def cal():
                 month = month + mod - 12
             else:
                 month = month + mod
-        else: 
+        else:
             month = month + mod
-    
-    c = calendar.Calendar()
-    caldays =  c.itermonthdays2(year, month)
-    return render_template('calendar.html', form=form, caldays=caldays, yr=year, mon_num=month, mon=calendar.month_name[month], mod=o_mod, title='Calendar')
 
+    c = calendar.Calendar()
+    caldays = c.itermonthdays2(year, month)
+
+    return render_template(
+        'calendar.html',
+        form=form,
+        caldays=caldays,
+        yr=year,
+        mon_num=month,
+        mon=calendar.month_name[month],
+        mod=o_mod,
+        title='Calendar'
+    )
