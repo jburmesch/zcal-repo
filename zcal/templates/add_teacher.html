@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container login">
+        <form method="POST", action="">
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <legend class="border-bottom mb-4">Add Teacher:</legend>
+                <div class="form-group">
+                    {{ form.first.label(class="form-control-label") }}
+
+                    {% if form.first.errors %}
+                        {{ form.first(class="form-control is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.first.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.first(class="form-control")}}
+                    {% endif %}                    
+                </div>
+                <div class="form-group">
+                    {{ form.last.label(class="form-control-label") }}
+
+                    {% if form.last.errors %}
+                        {{ form.last(class="form-control is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.last.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.last(class="form-control")}}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control")}}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.zoom.label(class="form-control-label") }}
+                    {% if form.zoom.errors %}
+                        {{ form.zoom(class="form-control is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.zoom.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.zoom(class="form-control")}}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                {{ form.submit(class="btn btn-dark")}}
+                </div>
+            </fieldset>
+        </form>
+    </div>
+{% endblock %}

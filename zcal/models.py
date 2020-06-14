@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
         return f'{self.first} {self.last}'
 
     def __repr__(self):
-        return f"<User> {self.first} {self.last}| {self.utype}| {self.email}"
+        return f"<User> {self.full_name()} | {self.utype} | {self.email}"
 
 
 class Meeting(db.Model):
@@ -35,20 +35,43 @@ class Meeting(db.Model):
                            nullable=False)
 
     def __repr__(self):
-        return f"<Meeting> Date: {self.schedule.date_time.date()}, "\
-            + f"Time: {self.schedule.date_time.time()}, "\
-            + f"Teacher: {self.schedule.teacher.user.full_name()}, "\
-            + f"Student: {self.user.full_name()})"
+        return f"<Meeting> Date: {self.schedule.date_time.date()} | "\
+            + f"Time: {self.schedule.date_time.time()} | "\
+            + f"Teacher: {self.schedule.teacher.user.full_name()} | "\
+            + f"Student: {self.user.full_name()}"
 
 
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    zoom_id = db.Column(db.Integer, db.ForeignKey('zoom.id'), nullable=True)
-    time_slots = db.relationship('Schedule', backref='teacher', lazy=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
+    )
+
+    zoom_id = db.Column(
+        db.Integer,
+        db.ForeignKey('zoom.id'),
+        nullable=True
+    )
+
+    time_slots = db.relationship(
+        'Schedule',
+        backref='teacher',
+        lazy=True
+    )
+
+    zoom = db.relationship(
+        'Zoom',
+        backref=db.backref('teacher', uselist=False),
+        lazy=True
+    )
 
     def __repr__(self):
-        return f"<Teacher> Name: {self.user.full_name()}"
+        return f"<Teacher> Name: {self.user.full_name()} | "\
+            + f"Email: {self.user.email} | "\
+            + f"Zoom: {self.zoom.account}"
 
 
 class Schedule(db.Model):
@@ -66,7 +89,7 @@ class Schedule(db.Model):
             return f"<Schedule> Teacher: {self.teacher.user.full_name()}, "\
                 + f"Date: {self.date_time.date()}, "\
                 + f"Time: {self.date_time.time()}, "\
-                + f"Student: {self.meeting.user.full_name()})"
+                + f"Student: {self.meeting.user.full_name()}"
         else:
             return f"<Schedule> Teacher: {self.teacher.user.full_name()}, "\
                 + f"Date: {self.date_time.date()}, "\

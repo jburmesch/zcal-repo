@@ -23,7 +23,6 @@ def main():
 
         db.session.add(teacher)
         db.session.commit()
-        print(Teacher.query.all())
 
         db.session.add(meeting)
         db.session.commit()
@@ -36,6 +35,8 @@ def main():
         db.session.add(zoom)
         db.session.commit()
         print(Zoom.query.all())
+        
+        print(Teacher.query.all())
 
         db.drop_all()
         db.create_all()
@@ -56,7 +57,7 @@ def create_users():
 
 
 def create_teacher():
-    teacher = Teacher(user_id=2)
+    teacher = Teacher(user_id=2, zoom_id=1)
     return teacher
 
 

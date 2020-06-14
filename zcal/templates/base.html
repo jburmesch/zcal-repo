@@ -19,11 +19,13 @@
                 {% if current_user.is_authenticated %}
                     <ul class="navbar-nav mr-auto mt-2">
                         {% if current_user.utype == 'Admin' %}
-                            <li class="nav-item"><a class="nav-link" href="#">User Management</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_teacher') }}">Add Teacher</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('teachers') }}">Manage Teachers</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('students') }}">Manage Students</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="#">Placeholder 3</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Placeholder 4</a></li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="#">Placeholder 2</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Placeholder 3</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Placeholder 4</a></li>
                     </ul>
                     <ul class="navbar-nav ml-auto mt-2">
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
