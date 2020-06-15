@@ -1,10 +1,12 @@
-from flask import render_template, redirect, url_for
-from zcal import app
+from flask import render_template, redirect, url_for, request, flash
+from zcal import app, db, bcrypt
 from zcal.forms import TeacherForm
 from flask_login import login_required, current_user
+from zcal.models import User, Teacher, Zoom
+import secrets
 
 
-@app.route('/add-teacher')
+@app.route('/add-teacher', methods=['GET', 'POST'])
 @login_required
 def add_teacher():
     if current_user.utype == "Admin":
@@ -13,8 +15,9 @@ def add_teacher():
         if request.method == 'POST':
             # check for valid data
             if form.validate_on_submit():
+                password = secrets.token_urlsafe(6)
                 hashed_password = bcrypt.generate_password_hash(
-                    form.password.data
+                    password
                 ).decode('utf-8')
                 user = User(
                     first=form.first.data,
@@ -23,12 +26,21 @@ def add_teacher():
                     email=form.email.data,
                     password=hashed_password
                 )
+                zoom = Zoom(
+                    account=form.zoom.data
+                )
                 db.session.add(user)
+                db.session.add(zoom)
+                db.session.commit()
+                teacher = Teacher(
+                    user_id=user.id,
+                    zoom_id=zoom.id,
+                )
+                db.session.add(teacher)
                 db.session.commit()
                 # display success message
-                flash('Account Created. Teacher will be sent an '
-                    + 'email for password creation.', 'success')
-                return redirect(url_for('cal'))
+                flash(f'Account Created. TEMP PASS: { password }', 'success')
+                return redirect(url_for('add_teacher'))
         return render_template(
             'add_teacher.html',
             title='Add Teacher',
