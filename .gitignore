@@ -1,0 +1,8 @@
+.vscode/
+gitignore.txt
+z-env/
+zcal/__pycache__/
+zcal/routes/__pycache__/
+zcal/routes/temppass.txt
+zcal/zcal.db
+*.pyc
