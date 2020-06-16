@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, \
                     BooleanField, TimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, \
                                EqualTo, ValidationError
-from zcal.models import User
+from zcal.models import User, Course
 
 
 class TeacherForm(FlaskForm):
@@ -30,6 +30,32 @@ class TeacherForm(FlaskForm):
         if user:
             raise ValidationError(
                 'This email address has already been registered.'
+            )
+
+
+class CourseForm(FlaskForm):
+    name = StringField(
+        'Course Name',
+        validators=[DataRequired(), Length(max=120)]
+    )
+    code = StringField(
+        'Course Code',
+        validators=[DataRequired(), Length(max=120)]
+    )
+    submit = SubmitField('Register')
+
+    def validate_name(self, name):
+        course = Course.query.filter_by(name=name.data).first()
+        if course:
+            raise ValidationError(
+                'A course with this name already exists.'
+            )
+
+    def validate_code(self, code):
+        course = Course.query.filter_by(code=code.data).first()
+        if course:
+            raise ValidationError(
+                'A course with this code already exists.'
             )
 
 

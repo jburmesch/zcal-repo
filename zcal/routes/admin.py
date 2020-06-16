@@ -1,8 +1,8 @@
 from flask import render_template, redirect, url_for, request, flash
 from zcal import app, db, bcrypt
-from zcal.forms import TeacherForm
+from zcal.forms import TeacherForm, CourseForm
 from flask_login import login_required, current_user
-from zcal.models import User, Teacher, Zoom
+from zcal.models import User, Teacher, Zoom, Course
 import secrets
 
 
@@ -54,7 +54,46 @@ def add_teacher():
 @login_required
 def teachers():
     if current_user.utype == "Admin":
-        return render_template('teachers.html', title='Manage Teachers')
+        teachers = Teacher.query.all()
+        return render_template('teachers.html', title='Manage Teachers',
+                               teachers=teachers)
+    else:
+        return redirect(url_for('cal'))
+
+
+@app.route('/add-course', methods=['GET', 'POST'])
+@login_required
+def add_course():
+    if current_user.utype == "Admin":
+        form = CourseForm()
+        # check for valid data
+        if form.validate_on_submit():
+            # add course to db
+            course = Course(
+                name=form.name.data,
+                code=form.code.data,
+            )
+            db.session.add(course)
+            db.session.commit()
+            # display success message
+            flash('Course Created.', 'success')
+            return redirect(url_for('add_course'))
+        return render_template(
+            'add_course.html',
+            title='Add Course',
+            form=form
+        )
+    else:
+        return redirect(url_for('cal'))
+
+
+@app.route('/course-management')
+@login_required
+def courses():
+    if current_user.utype == "Admin":
+        courses = Course.query.all()
+        return render_template('courses.html', title='Manage Courses',
+                               courses=courses)
     else:
         return redirect(url_for('cal'))
 
@@ -63,6 +102,8 @@ def teachers():
 @login_required
 def students():
     if current_user.utype == "Admin":
-        return render_template('students.html', title='Manage Students')
+        students = User.query.filter_by(utype='Student').all()
+        return render_template('students.html', title='Manage Teachers',
+                               students=students)
     else:
         return redirect(url_for('cal'))

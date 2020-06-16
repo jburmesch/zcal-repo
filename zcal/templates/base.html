@@ -21,10 +21,12 @@
                         {% if current_user.utype == 'Admin' %}
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('add_teacher') }}">Add Teacher</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('teachers') }}">Manage Teachers</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_course') }}">Add Course</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('courses') }}">Manage Courses</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('students') }}">Manage Students</a></li>
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="#">Placeholder 3</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Placeholder 4</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Account</a></li>
                         {% endif %}
                     </ul>
                     <ul class="navbar-nav ml-auto mt-2">

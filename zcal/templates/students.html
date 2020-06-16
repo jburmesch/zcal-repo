@@ -3,6 +3,25 @@
     <div class="container">
         <h1>Manage Students</h1>
         <hr>
-        Stuff
+    	<table class="table">
+            <tr>
+            	<th>User ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Classification</th>
+                <th>Email</th>
+                <th>Management Options</th>
+            </tr>
+            {% for student in students %}
+        		<tr>
+            		<td>{{student.id}}</th>
+            		<td>{{student.first}}</th>
+            		<td>{{student.last}}</th>
+            		<td>{{student.utype}}</th>
+            		<td>{{student.email}}</th>
+            		<td>Coming Soon</th>
+        		</tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}
