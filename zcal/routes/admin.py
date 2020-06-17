@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, flash
 from zcal import app, db, bcrypt
 from zcal.forms import TeacherForm, CourseForm
 from flask_login import login_required, current_user
-from zcal.models import User, Teacher, Zoom, Course
+from zcal.models import User, Teacher, Course, Student
 import secrets
 
 
@@ -26,15 +26,10 @@ def add_teacher():
                     email=form.email.data,
                     password=hashed_password
                 )
-                zoom = Zoom(
-                    account=form.zoom.data
-                )
                 db.session.add(user)
-                db.session.add(zoom)
                 db.session.commit()
                 teacher = Teacher(
                     user_id=user.id,
-                    zoom_id=zoom.id,
                 )
                 db.session.add(teacher)
                 db.session.commit()
@@ -102,7 +97,7 @@ def courses():
 @login_required
 def students():
     if current_user.utype == "Admin":
-        students = User.query.filter_by(utype='Student').all()
+        students = Student.query.all()
         return render_template('students.html', title='Manage Teachers',
                                students=students)
     else:

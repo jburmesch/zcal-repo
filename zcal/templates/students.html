@@ -5,21 +5,21 @@
         <hr>
     	<table class="table">
             <tr>
-            	<th>User ID</th>
+            	<th>Student ID</th>
                 <th>First Name</th>
                 <th>Last Name</th>
-                <th>Classification</th>
                 <th>Email</th>
+                <th>Course</th>
                 <th>Management Options</th>
             </tr>
             {% for student in students %}
         		<tr>
-            		<td>{{student.id}}</th>
-            		<td>{{student.first}}</th>
-            		<td>{{student.last}}</th>
-            		<td>{{student.utype}}</th>
-            		<td>{{student.email}}</th>
-            		<td>Coming Soon</th>
+            		<td>{{student.id}}</td>
+            		<td>{{student.user.first}}</td>
+            		<td>{{student.user.last}}</td>
+                    <td>{{student.user.email}}</td>
+                    <td>{{student.course.name}}</td>
+            		<td>Coming Soon</td>
         		</tr>
             {% endfor %}
         </table>

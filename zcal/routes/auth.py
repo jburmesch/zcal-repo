@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash
 from zcal import app, db, bcrypt
-from zcal.models import User
+from zcal.models import User, Course, Student
 from zcal.forms import LoginForm, RegistrationForm
 from flask_login import login_user, current_user, logout_user
 
@@ -27,6 +27,20 @@ def register():
             )
             db.session.add(user)
             db.session.commit()
+            # First user to log in after db is initialized will be admin!
+            if user.id == 1 and form.code.data == \
+                    Course.query.filter_by(id=1).first().code:
+                user.utype = 'Admin'
+                db.session.commit()
+            else:
+                student = Student(
+                    user_id=user.id,
+                    course_id=Course.query.filter_by(
+                        code=form.code.data
+                    ).first().id
+                )
+                db.session.add(student)
+                db.session.commit()
             # display success message
             flash('Account Created. Please check your '
                   + 'email for account validation.', 'success')

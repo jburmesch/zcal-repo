@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h1>Manage Courses</h1>
+        <hr>
+    	<table class="table">
+            <tr>
+            	<th>Course ID</th>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Registered Users</th>
+                <th>Management Options</th>
+            </tr>
+            {% for course in courses %}
+        		<tr>
+            		<td>{{course.id}}</td>
+                    <td>{{course.name}}</td>
+                    <td>{{course.code}}</td>
+                    <td>{{course.students|length}}</td>
+                    {% if course.id == 1 %}
+                        <td></td>
+                    {% else %}
+                    <td>Coming Soon</td>
+                    {% endif %}
+        		</tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

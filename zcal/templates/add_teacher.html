@@ -47,19 +47,6 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.zoom.label(class="form-control-label") }}
-                    {% if form.zoom.errors %}
-                        {{ form.zoom(class="form-control is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.zoom.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.zoom(class="form-control")}}
-                    {% endif %}
-                </div>
-                <div class="form-group">
                 {{ form.submit(class="btn btn-dark")}}
                 </div>
             </fieldset>

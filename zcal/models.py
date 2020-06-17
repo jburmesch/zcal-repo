@@ -44,7 +44,6 @@ class Student(db.Model):
         nullable=False
     )
     meetings = db.relationship('Meeting', backref='student', lazy=True)
-    course = db.relationship('Course', backref='students', lazy=True)
 
     def __repr__(self):
         return f"<Student> Name: {self.user.full_name()} | "\
@@ -87,6 +86,7 @@ class Course(db.Model):
                              default=datetime.utcnow)
     name = db.Column(db.String(120), nullable=False)
     code = db.Column(db.String(10), nullable=False)
+    students = db.relationship('Student', backref='course', lazy=True)
 
     def __repr__(self):
         return f"<Course> Name: {self.name} | "\

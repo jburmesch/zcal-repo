@@ -19,6 +19,7 @@ def main():
         meetings = create_meetings()
 
         db.session.add(course)
+
         db.session.commit()
         print(Course.query.all())
 
@@ -54,16 +55,26 @@ def main():
         print(Zoom.query.all())
         print(Teacher.query.all())
 
-        # db.drop_all()
-        # db.create_all()
+        db.drop_all()
+        db.create_all()
+        course = create_course()
+
+        db.session.add(course)
+        db.session.commit()
+
+        print('\n')
+        print('Database has been reinitialized.'
+              + 'The next user to register will be admin!')
+        print(Course.query.all())
+
     else:
         print('Whew. Crisis averted.')
 
 
 def create_course():
     course = Course(
-        name='Test Co. Test Course',
-        code='TCTC'
+        name='ADMIN',
+        code='ADMIN'
     )
     return course
 
