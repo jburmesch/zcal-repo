@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for
 from zcal import app
-from flask_login import login_required
+from flask_login import login_required, current_user
 from zcal.forms import ScheduleForm
 from datetime import date
 from math import floor
@@ -10,6 +10,8 @@ import calendar
 # make a home page someday?
 @app.route('/')
 def main():
+    if current_user.utype == 'Admin':
+        return redirect(url_for('teachers'))
     return redirect(url_for('login'))
 
 
