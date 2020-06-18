@@ -56,6 +56,15 @@ def teachers():
         return redirect(url_for('cal'))
 
 
+@app.route('/schedule-management')
+@login_required
+def base_schedule():
+    if current_user.utype == "Admin":
+        return 'To be continued...'
+    else:
+        return redirect(url_for('cal'))
+
+
 @app.route('/add-course', methods=['GET', 'POST'])
 @login_required
 def add_course():

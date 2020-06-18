@@ -10,9 +10,13 @@ import calendar
 # make a home page someday?
 @app.route('/')
 def main():
-    if current_user.utype == 'Admin':
-        return redirect(url_for('teachers'))
-    return redirect(url_for('login'))
+    if current_user.is_authenticated:
+        if current_user.utype == 'Admin':
+            return redirect(url_for('teachers'))
+        else:
+            return redirect(url_for('cal'))
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/schedule', methods=['POST'])
