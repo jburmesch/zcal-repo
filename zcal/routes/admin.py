@@ -56,9 +56,9 @@ def teachers():
         return redirect(url_for('cal'))
 
 
-@app.route('/schedule-management')
+@app.route('/default-schedule')
 @login_required
-def base_schedule():
+def default_schedule():
     if current_user.utype == "Admin":
         return 'To be continued...'
     else:

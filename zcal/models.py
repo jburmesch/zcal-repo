@@ -23,6 +23,9 @@ class User(db.Model, UserMixin):
     student = db.relationship('Student',
                               backref=db.backref('user', uselist=False),
                               lazy=True)
+    timeslots = db.relationship('Timeslot',
+                                backref='user',
+                                lazy=True)
 
     def full_name(self):
         return f'{self.first} {self.last}'
@@ -128,6 +131,18 @@ class Schedule(db.Model):
                 + f"Date: {self.date_time.date()}, "\
                 + f"Time: {self.date_time.time()}, "\
                 + "Student: None"
+
+
+class Timeslot(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    start = db.Column(db.DateTime, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Timeslot> Time: {self.start} |"\
+             + f"Duration: {self.duration} |"\
+             + f"Created By: {self.user.full_name()} |"
 
 
 class Zoom(db.Model):
