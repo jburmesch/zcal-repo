@@ -1,15 +1,19 @@
-from flask import render_template, request, redirect, url_for, flash
-from zcal import app, db, bcrypt
+from flask import (render_template, request, redirect, url_for,
+                   flash, Blueprint)
+from zcal import db, bcrypt
 from zcal.models import User, Course, Student
 from zcal.forms import LoginForm, RegistrationForm
 from flask_login import login_user, current_user, logout_user
 
 
+auth = Blueprint('auth', __name__, url_prefix='/auth')
+
+
 # REGISTER
-@app.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
     form = RegistrationForm()
     # see if form was submitted
     if request.method == 'POST':
@@ -44,16 +48,16 @@ def register():
             # display success message
             flash('Account Created. Please check your '
                   + 'email for account validation.', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
     # display register page
     return render_template('register.html', form=form, title='Register')
 
 
 # LOGIN
-@app.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
     form = LoginForm()
     if form.validate_on_submit():
         # validate form and check user info
@@ -75,7 +79,7 @@ def login():
 
 
 # LOGOUT
-@app.route('/logout')
+@auth.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('main'))
+    return redirect(url_for('cal.main'))

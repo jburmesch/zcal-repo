@@ -140,8 +140,8 @@ class Timeslot(db.Model):
     duration = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Timeslot> Time: {self.start} |"\
-             + f"Duration: {self.duration} |"\
+        return f"<Timeslot> Time: {self.start.time()} |"\
+             + f"Duration: {self.duration} minutes |"\
              + f"Created By: {self.user.full_name()} |"
 
 

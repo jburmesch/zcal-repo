@@ -1,5 +1,4 @@
-from flask import render_template, request, redirect, url_for
-from zcal import app
+from flask import render_template, request, redirect, url_for, Blueprint
 from flask_login import login_required, current_user
 from zcal.forms import ScheduleForm
 from datetime import date
@@ -7,19 +6,22 @@ from math import floor
 import calendar
 
 
+calbp = Blueprint('cal', __name__)
+
+
 # make a home page someday?
-@app.route('/')
+@calbp.route('/')
 def main():
     if current_user.is_authenticated:
         if current_user.utype == 'Admin':
-            return redirect(url_for('teachers'))
+            return redirect(url_for('admin.teachers'))
         else:
-            return redirect(url_for('cal'))
+            return redirect(url_for('cal.cal'))
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
 
-@app.route('/schedule', methods=['POST'])
+@calbp.route('/schedule', methods=['POST'])
 @login_required
 def schedule():
     return "Not done yet."
@@ -29,7 +31,7 @@ def schedule():
 
 
 # CALENDAR ROUTE
-@app.route('/calendar', methods=['GET', 'POST'])
+@calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def cal():
     mod = request.args.get("mod")

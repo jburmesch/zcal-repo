@@ -11,7 +11,7 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-md navbar-light bg-light border">
-            <a class="navbar-brand" href="{{ url_for('main') }}"><span>Zoom Calendar</span></a>
+            <a class="navbar-brand" href="{{ url_for('cal.main') }}"><span>Zoom Calendar</span></a>
             <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -19,23 +19,23 @@
                 {% if current_user.is_authenticated %}
                     <ul class="navbar-nav mr-auto mt-2">
                         {% if current_user.utype == 'Admin' %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_teacher') }}">Add Teacher</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('teachers') }}">Manage Teachers</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_course') }}">Add Course</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('courses') }}">Manage Courses</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('students') }}">Manage Students</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.add_teacher') }}">Add Teacher</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.teachers') }}">Manage Teachers</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.add_course') }}">Add Course</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.courses') }}">Manage Courses</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.students') }}">Manage Students</a></li>
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="#">Placeholder 3</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Account</a></li>
                         {% endif %}
                     </ul>
                     <ul class="navbar-nav ml-auto mt-2">
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Log Out</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a></li>
                     </ul>
                 {% else %}
                     <ul class="navbar-nav ml-auto mt-2">
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Log In</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
                     </ul>
                 {% endif %}
             </div>

@@ -1,6 +1,11 @@
-from zcal import db
-from zcal.models import User, Teacher, Meeting, Schedule, Zoom, Course, Student
+from zcal import create_app, db
+from zcal.models import (
+    Course, User, Teacher, Student, Schedule, Zoom, Meeting, Timeslot
+)
 import datetime
+
+app = create_app()
+app.app_context().push()
 
 
 def main():
@@ -99,13 +104,25 @@ def create_users():
     return users
 
 
+def create_timeslots():
+    timeslots = [
+        Timeslot(created_by=1, time=datetime(0, 0, 0, 8, 00),
+                 duration=60),
+        Timeslot(created_by=1, time=datetime(0, 0, 0, 9, 00),
+                 duration=60),
+        Timeslot(created_by=1, time=datetime(0, 0, 0, 10, 00),
+                 duration=60)
+    ]
+    return timeslots
+
+
 def create_students():
-    student = [
+    students = [
         Student(user_id=3, course_id=1),
         Student(user_id=4, course_id=1),
         Student(user_id=5, course_id=1)
     ]
-    return student
+    return students
 
 
 def create_teachers():

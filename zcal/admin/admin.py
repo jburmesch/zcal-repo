@@ -1,12 +1,15 @@
-from flask import render_template, redirect, url_for, request, flash
-from zcal import app, db, bcrypt
+from flask import (render_template, redirect, url_for, request,
+                   flash, Blueprint)
+from zcal import db, bcrypt
 from zcal.forms import TeacherForm, CourseForm
 from flask_login import login_required, current_user
 from zcal.models import User, Teacher, Course, Student
 import secrets
 
+admin = Blueprint('admin', __name__, url_prefix='/admin')
 
-@app.route('/add-teacher', methods=['GET', 'POST'])
+
+@admin.route('/add-teacher', methods=['GET', 'POST'])
 @login_required
 def add_teacher():
     if current_user.utype == "Admin":
@@ -45,7 +48,7 @@ def add_teacher():
         return redirect(url_for('cal'))
 
 
-@app.route('/teacher-management')
+@admin.route('/teacher-management')
 @login_required
 def teachers():
     if current_user.utype == "Admin":
@@ -53,19 +56,19 @@ def teachers():
         return render_template('teachers.html', title='Manage Teachers',
                                teachers=teachers)
     else:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
 
 
-@app.route('/default-schedule')
+@admin.route('/default-schedule')
 @login_required
 def default_schedule():
     if current_user.utype == "Admin":
         return 'To be continued...'
     else:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
 
 
-@app.route('/add-course', methods=['GET', 'POST'])
+@admin.route('/add-course', methods=['GET', 'POST'])
 @login_required
 def add_course():
     if current_user.utype == "Admin":
@@ -81,17 +84,17 @@ def add_course():
             db.session.commit()
             # display success message
             flash('Course Created.', 'success')
-            return redirect(url_for('add_course'))
+            return redirect(url_for('cal.add_course'))
         return render_template(
             'add_course.html',
             title='Add Course',
             form=form
         )
     else:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
 
 
-@app.route('/course-management')
+@admin.route('/course-management')
 @login_required
 def courses():
     if current_user.utype == "Admin":
@@ -99,10 +102,10 @@ def courses():
         return render_template('courses.html', title='Manage Courses',
                                courses=courses)
     else:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
 
 
-@app.route('/student-management')
+@admin.route('/student-management')
 @login_required
 def students():
     if current_user.utype == "Admin":
@@ -110,4 +113,4 @@ def students():
         return render_template('students.html', title='Manage Teachers',
                                students=students)
     else:
-        return redirect(url_for('cal'))
+        return redirect(url_for('cal.cal'))
