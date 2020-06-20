@@ -136,13 +136,13 @@ class Schedule(db.Model):
 class Timeslot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    start = db.Column(db.DateTime, nullable=False)
+    start = db.Column(db.Time, nullable=False)
     duration = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Timeslot> Time: {self.start.time()} |"\
+        return f"<Timeslot> Time: {self.start} |"\
              + f"Duration: {self.duration} minutes |"\
-             + f"Created By: {self.user.full_name()} |"
+             + f"Created By: {self.user.full_name()}"
 
 
 class Zoom(db.Model):

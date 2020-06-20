@@ -2,7 +2,7 @@ from flask import (render_template, request, redirect, url_for,
                    flash, Blueprint)
 from zcal import db, bcrypt
 from zcal.models import User, Course, Student
-from zcal.forms import LoginForm, RegistrationForm
+from zcal.auth.auth_forms import LoginForm, RegistrationForm
 from flask_login import login_user, current_user, logout_user
 
 

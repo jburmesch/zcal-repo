@@ -1,9 +1,9 @@
 from flask import (render_template, redirect, url_for, request,
                    flash, Blueprint)
 from zcal import db, bcrypt
-from zcal.forms import TeacherForm, CourseForm
+from zcal.admin.admin_forms import TeacherForm, CourseForm, TimeslotForm
 from flask_login import login_required, current_user
-from zcal.models import User, Teacher, Course, Student
+from zcal.models import User, Teacher, Course, Student, Timeslot
 import secrets
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -38,7 +38,7 @@ def add_teacher():
                 db.session.commit()
                 # display success message
                 flash(f'Account Created. TEMP PASS: { password }', 'success')
-                return redirect(url_for('add_teacher'))
+                return redirect(url_for('admin.add_teacher'))
         return render_template(
             'add_teacher.html',
             title='Add Teacher',
@@ -114,3 +114,30 @@ def students():
                                students=students)
     else:
         return redirect(url_for('cal.cal'))
+
+
+@admin.route('/timeslots', methods=['GET', 'POST'])
+@login_required
+def timeslots():
+    if current_user.utype == 'Admin':
+        form = TimeslotForm()
+        slots = Timeslot.query.all()
+        if form.validate_on_submit():
+            slot = Timeslot(
+                created_by=current_user.id,
+                start=form.start.data,
+                duration=form.duration.data
+            )
+            db.session.add(slot)
+            db.session.commit()
+            flash('Timeslot Added!')
+            return redirect(url_for('admin.timeslots'))
+        else:
+            return render_template(
+                'timeslots.html',
+                title='Manage Timeslots',
+                slots=slots,
+                form=form
+            )
+    else:
+        return redirect('cal.cal')

@@ -22,6 +22,7 @@ def main():
         schedules = create_schedules()
         zooms = create_zooms()
         meetings = create_meetings()
+        timeslots = create_timeslots()
 
         db.session.add(course)
 
@@ -50,6 +51,10 @@ def main():
             db.session.add(schedule)
         db.session.commit()
 
+        for slot in timeslots:
+            db.session.add(slot)
+        db.session.commit
+
         print(Meeting.query.all())
         print(Schedule.query.all())
 
@@ -59,6 +64,7 @@ def main():
 
         print(Zoom.query.all())
         print(Teacher.query.all())
+        print(Timeslot.query.all())
 
         db.drop_all()
         db.create_all()
@@ -102,18 +108,6 @@ def create_users():
              password='TestPass')
     ]
     return users
-
-
-def create_timeslots():
-    timeslots = [
-        Timeslot(created_by=1, time=datetime(0, 0, 0, 8, 00),
-                 duration=60),
-        Timeslot(created_by=1, time=datetime(0, 0, 0, 9, 00),
-                 duration=60),
-        Timeslot(created_by=1, time=datetime(0, 0, 0, 10, 00),
-                 duration=60)
-    ]
-    return timeslots
 
 
 def create_students():
@@ -170,6 +164,16 @@ def create_meetings():
         Meeting(student_id=3)
     ]
     return meetings
+
+
+def create_timeslots():
+    timeslots = [
+        Timeslot(created_by=1, start=datetime.time(14, 0), duration=60),
+        Timeslot(created_by=1, start=datetime.time(15, 0), duration=60),
+        Timeslot(created_by=1, start=datetime.time(16, 0), duration=60),
+        Timeslot(created_by=1, start=datetime.time(17, 0), duration=60)
+    ]
+    return timeslots
 
 
 main()

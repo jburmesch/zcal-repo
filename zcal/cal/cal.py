@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, Blueprint
 from flask_login import login_required, current_user
-from zcal.forms import ScheduleForm
+from zcal.cal.cal_forms import ScheduleForm
 from datetime import date
 from math import floor
 import calendar
