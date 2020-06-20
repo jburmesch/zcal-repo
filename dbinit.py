@@ -168,10 +168,30 @@ def create_meetings():
 
 def create_timeslots():
     timeslots = [
-        Timeslot(created_by=1, start=datetime.time(14, 0), duration=60),
-        Timeslot(created_by=1, start=datetime.time(15, 0), duration=60),
-        Timeslot(created_by=1, start=datetime.time(16, 0), duration=60),
-        Timeslot(created_by=1, start=datetime.time(17, 0), duration=60)
+        Timeslot(
+            created_by=1,
+            start=datetime.time(14, 0),
+            duration=60,
+            end=datetime.time(15, 0)
+        ),
+        Timeslot(
+            created_by=1,
+            start=datetime.time(15, 0),
+            duration=60,
+            end=datetime.time(16, 0)
+        ),
+        Timeslot(
+            created_by=1,
+            start=datetime.time(16, 0),
+            duration=60,
+            end=datetime.time(17, 0)
+        ),
+        Timeslot(
+            created_by=1,
+            start=datetime.time(17, 0),
+            duration=60,
+            end=datetime.time(18, 0)
+        ),
     ]
     return timeslots
 

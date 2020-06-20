@@ -137,11 +137,13 @@ class Timeslot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     start = db.Column(db.Time, nullable=False)
+    end = db.Column(db.Time, nullable=False)
     duration = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Timeslot> Time: {self.start} |"\
+        return f"<Timeslot> Start Time: {self.start} |"\
              + f"Duration: {self.duration} minutes |"\
+             + f"End Time: {self.end} |"\
              + f"Created By: {self.user.full_name()}"
 
 

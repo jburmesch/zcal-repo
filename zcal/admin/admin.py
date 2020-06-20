@@ -1,9 +1,12 @@
 from flask import (render_template, redirect, url_for, request,
                    flash, Blueprint)
 from zcal import db, bcrypt
-from zcal.admin.admin_forms import TeacherForm, CourseForm, TimeslotForm
+from zcal.admin.admin_forms import (
+    TeacherForm, CourseForm, TimeslotForm, RemoveTimeslot
+)
 from flask_login import login_required, current_user
 from zcal.models import User, Teacher, Course, Student, Timeslot
+from datetime import datetime, timedelta
 import secrets
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -120,24 +123,39 @@ def students():
 @login_required
 def timeslots():
     if current_user.utype == 'Admin':
-        form = TimeslotForm()
-        slots = Timeslot.query.all()
-        if form.validate_on_submit():
+        add_form = TimeslotForm()
+        rem_form = RemoveTimeslot()
+        slots = Timeslot.query.order_by(Timeslot.start).all()
+        if add_form.add.data and add_form.validate():
+            end = (datetime(
+                1, 1, 1, add_form.start.data.hour, add_form.start.data.minute
+            ) + timedelta(minutes=add_form.duration.data)).time()
             slot = Timeslot(
                 created_by=current_user.id,
-                start=form.start.data,
-                duration=form.duration.data
+                start=add_form.start.data,
+                duration=add_form.duration.data,
+                end=end
             )
             db.session.add(slot)
             db.session.commit()
             flash('Timeslot Added!')
             return redirect(url_for('admin.timeslots'))
+        elif rem_form.remove.data and rem_form.validate():
+            slot = Timeslot.query.filter_by(id=rem_form.ts_id.data).first()
+            if slot:
+                db.session.delete(slot)
+                db.session.commit()
+                flash('Timeslot Removed!')
+                return redirect(url_for('admin.timeslots'))
+            else:
+                flash('Failed to remove timeslot!', 'warning')
         else:
             return render_template(
                 'timeslots.html',
                 title='Manage Timeslots',
                 slots=slots,
-                form=form
+                add_form=add_form,
+                rem_form=rem_form
             )
     else:
         return redirect('cal.cal')

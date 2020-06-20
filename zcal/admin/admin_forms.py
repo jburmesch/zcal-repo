@@ -4,6 +4,7 @@ from wtforms.fields.html5 import TimeField, IntegerField
 from wtforms.validators import (
     InputRequired, Length, Email, ValidationError, NumberRange
 )
+from wtforms.widgets import HiddenInput
 from zcal.models import User, Course
 
 
@@ -69,4 +70,17 @@ class TimeslotForm(FlaskForm):
             )
         ]
     )
-    submit = SubmitField('Add')
+    add = SubmitField('Add')
+
+
+class RemoveTimeslot(FlaskForm):
+    ts_id = IntegerField(widget=HiddenInput())
+    remove = SubmitField('Remove')
+
+    # def validate_id(self, ts_id):
+    #     tsid = ts_id.data
+    #     if not tsid.isnumeric() or int(tsid) < 1:
+    #         raise ValidationError(
+    #             'Failed to remove timeslot.'
+    #             + 'Please refresh your browser and try again'
+    #         )
