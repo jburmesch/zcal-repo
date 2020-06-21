@@ -71,7 +71,7 @@ def login():
             if next_page:
                 return redirect(next_page)
             else:
-                return redirect(url_for('main'))
+                return redirect(url_for('cal.main'))
         else:
             flash('Invalid email/password combination.', 'danger')
     # display login page

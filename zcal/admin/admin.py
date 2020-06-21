@@ -2,7 +2,7 @@ from flask import (render_template, redirect, url_for, request,
                    flash, Blueprint)
 from zcal import db, bcrypt
 from zcal.admin.admin_forms import (
-    TeacherForm, CourseForm, TimeslotForm, RemoveTimeslot
+    TeacherForm, CourseForm, TimeslotForm, RemoveForm
 )
 from flask_login import login_required, current_user
 from zcal.models import User, Teacher, Course, Student, Timeslot
@@ -124,7 +124,7 @@ def students():
 def timeslots():
     if current_user.utype == 'Admin':
         add_form = TimeslotForm()
-        rem_form = RemoveTimeslot()
+        rem_form = RemoveForm()
         slots = Timeslot.query.order_by(Timeslot.start).all()
         if add_form.add.data and add_form.validate():
             end = (datetime(
@@ -141,7 +141,7 @@ def timeslots():
             flash('Timeslot Added!')
             return redirect(url_for('admin.timeslots'))
         elif rem_form.remove.data and rem_form.validate():
-            slot = Timeslot.query.filter_by(id=rem_form.ts_id.data).first()
+            slot = Timeslot.query.filter_by(id=rem_form.item_id.data).first()
             if slot:
                 db.session.delete(slot)
                 db.session.commit()

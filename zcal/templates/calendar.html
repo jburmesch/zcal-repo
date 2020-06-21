@@ -31,9 +31,13 @@
                             <div class="p-0 ">
                                 {{ d[0] }}
                             </div>
+                            {% if current_user.utype == 'Student' %}
                             <div class="p-0">
                                 <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                             </div>
+                            {% elif current_user.utype == 'Teacher' %}
+
+                            {% endif %}
                         </div>
                     </td>
                 {% endif %}
@@ -46,9 +50,13 @@
                             <div class="p-0 ">
                                 {{ d[0] }}
                             </div>
+                            {% if current_user.utype == 'Student' %}
                             <div class="p-0">
                                 <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                             </div>
+                            {% elif current_user.utype == 'Teacher' %}
+
+                            {% endif %}
                         </div>
                     </td>
                 {% endif %}
@@ -62,9 +70,13 @@
                         <div class="p-0 ">
                             {{ d[0] }}
                         </div>
+                        {% if current_user.utype == 'Student' %}
                         <div class="p-0">
                             <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                         </div>
+                        {% elif current_user.utype == 'Teacher' %}
+
+                        {% endif %}
                     </div>
                 </td>
                 {% endif %}
