@@ -6,7 +6,7 @@
         </div>
         <form action="/calendar" method ="get" id="navform">
             <div class="form group calnav">
-                <input type="hidden" name="mod" value="{{ mod }}" id="mod_in">
+                <input type="hidden" name="mod" value="{{ mod if mod else 0 }}" id="mod_in">
                 <button type="button" class="btn btn-dark" onclick="minus()">Prev.</button>
                 <button type="button" class="btn btn-dark" onclick="plus()">Next</button>
             </div>
@@ -40,7 +40,7 @@
                             {% endif %}
                         </div>
                     </td>
-                {% endif %}
+                {% endif %} 
             {% elif d[1] == 6 %}
                 {% if d[0] == 0 %}
                     <td class = "calday"></td>

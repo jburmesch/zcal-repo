@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, url_for, Blueprint
+from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import ScheduleForm
+from zcal.models import Student, Teacher
 from datetime import date
 from math import floor
 import calendar
@@ -30,21 +31,103 @@ def schedule():
     # return redirect(url_for('cal'))
 
 
-# CALENDAR ROUTE
 @calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
-def cal():
+def cal(u_id=1):
     mod = request.args.get("mod")
-    year = date.today().year
-    month = date.today().month
+    if not (mod and is_digit(mod)):
+        mod = 0
+    if current_user.utype == 'Student':
+        return redirect(url_for('cal.stu_cal', u_id=current_user.id, mod=mod))
+    elif current_user.utype == 'Teacher':
+        return redirect(url_for('cal.t_cal', u_id=current_user.id, mod=mod))
+    else:
+        if Student.query.filter_by(user_id=u_id).first():
+            return redirect(url_for('cal.stu_cal', u_id=u_id, mod=mod))
+        elif Teacher.query.filter_by(user_id=u_id).first():
+            return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
+        else:
+            flash('That user either does not exist or is admin only.',
+                  "warning")
+            return redirect(
+                url_for('cal.t_cal', u_id=current_user.id, mod=mod)
+            )
+
+
+# CALENDAR ROUTE
+@calbp.route('/calendar/user-<int:u_id>', methods=['GET', 'POST'])
+@login_required
+def stu_cal(u_id):
+    mod = request.args.get("mod")
     form = ScheduleForm()
 
-    # improve this someday.
+    year, month = process_mod(
+        date.today().year,
+        date.today().month,
+        mod
+    )
+
+    c = calendar.Calendar()
+    caldays = c.itermonthdays2(year, month)
+
+    return render_template(
+        'calendar.html',
+        form=form,
+        caldays=caldays,
+        yr=year,
+        mon_num=month,
+        mon=calendar.month_name[month],
+        mod=mod,
+        title='Calendar'
+    )
+
+
+# CALENDAR ROUTE
+@calbp.route('/calendar/user-<int:u_id>', methods=['GET', 'POST'])
+@login_required
+def t_cal(u_id):
+    mod = request.args.get("mod")
+    form = ScheduleForm()
+
+    year, month = process_mod(
+        date.today().year,
+        date.today().month,
+        mod
+    )
+
+    c = calendar.Calendar()
+    caldays = c.itermonthdays2(year, month)
+
+    return render_template(
+        'calendar.html',
+        form=form,
+        caldays=caldays,
+        yr=year,
+        mon_num=month,
+        mon=calendar.month_name[month],
+        mod=mod,
+        title='Calendar'
+    )
+
+
+def is_digit(n):
+    try:
+        int(n)
+        return True
+    except ValueError:
+        return False
+    except TypeError:
+        return False
+
+
+# improve this someday.
+def process_mod(year, month, mod):
+    # Mod is a modifier that simply represents the number of months
+    # between the curent month and the month that should be displayed
     if not mod:
         mod = 0
     else:
         mod = int(mod)
-    o_mod = mod
     if (mod < 0):
         mod = abs(mod)
         if mod >= month:
@@ -66,17 +149,4 @@ def cal():
                 month = month + mod
         else:
             month = month + mod
-
-    c = calendar.Calendar()
-    caldays = c.itermonthdays2(year, month)
-
-    return render_template(
-        'calendar.html',
-        form=form,
-        caldays=caldays,
-        yr=year,
-        mon_num=month,
-        mon=calendar.month_name[month],
-        mod=o_mod,
-        title='Calendar'
-    )
+    return (year, month)

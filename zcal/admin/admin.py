@@ -87,7 +87,7 @@ def add_course():
             db.session.commit()
             # display success message
             flash('Course Created.', 'success')
-            return redirect(url_for('cal.add_course'))
+            return redirect(url_for('admin.add_course'))
         return render_template(
             'add_course.html',
             title='Add Course',
