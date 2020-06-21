@@ -76,6 +76,7 @@ def stu_cal(u_id):
         mon_num=month,
         mon=calendar.month_name[month],
         mod=mod,
+        u_id=u_id,
         title='Calendar'
     )
 
@@ -104,6 +105,7 @@ def t_cal(u_id):
         mon_num=month,
         mon=calendar.month_name[month],
         mod=mod,
+        u_id=u_id,
         title='Calendar'
     )
 

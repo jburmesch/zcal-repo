@@ -7,6 +7,7 @@
         <form action="/calendar" method ="get" id="navform">
             <div class="form group calnav">
                 <input type="hidden" name="mod" value="{{ mod if mod else 0 }}" id="mod_in">
+                <input type="hidden" name="u_id" value={{ u_id }} id="uid_in">
                 <button type="button" class="btn btn-dark" onclick="minus()">Prev.</button>
                 <button type="button" class="btn btn-dark" onclick="plus()">Next</button>
             </div>
