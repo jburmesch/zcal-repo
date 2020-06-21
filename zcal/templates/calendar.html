@@ -24,63 +24,12 @@
         {% for d in caldays %}
             {% if d[1] == 0 %}
             <tr class="calrow">
-                {% if d[0] == 0 %}
-                    <td class = "calday"></td>
-                {% else %}
-                    <td class = "calday">
-                        <div class="d-flex flex-row justify-content-between">
-                            <div class="p-0 ">
-                                {{ d[0] }}
-                            </div>
-                            {% if current_user.utype == 'Student' %}
-                            <div class="p-0">
-                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
-                            </div>
-                            {% elif current_user.utype == 'Teacher' %}
-
-                            {% endif %}
-                        </div>
-                    </td>
-                {% endif %} 
+                {{ calendar_day(d, yr, mon_num) }}
             {% elif d[1] == 6 %}
-                {% if d[0] == 0 %}
-                    <td class = "calday"></td>
-                {% else %}
-                    <td class = "calday">
-                        <div class="d-flex flex-row justify-content-between">
-                            <div class="p-0 ">
-                                {{ d[0] }}
-                            </div>
-                            {% if current_user.utype == 'Student' %}
-                            <div class="p-0">
-                                <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
-                            </div>
-                            {% elif current_user.utype == 'Teacher' %}
-
-                            {% endif %}
-                        </div>
-                    </td>
-                {% endif %}
+                {{ calendar_day(d, yr, mon_num) }}
             </tr>
             {% else %}
-                {% if d[0] == 0 %}
-                    <td class = "calday"></td>
-                {% else %}
-                <td class = "calday">
-                    <div class="d-flex flex-row justify-content-between">
-                        <div class="p-0 ">
-                            {{ d[0] }}
-                        </div>
-                        {% if current_user.utype == 'Student' %}
-                        <div class="p-0">
-                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
-                        </div>
-                        {% elif current_user.utype == 'Teacher' %}
-
-                        {% endif %}
-                    </div>
-                </td>
-                {% endif %}
+                {{ calendar_day(d, yr, mon_num) }}
             {% endif %}
         {% endfor %}
     </table>
