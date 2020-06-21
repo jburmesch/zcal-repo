@@ -20,10 +20,40 @@
             		<td>{{teacher.user.last}}</td>
             		<td>{{teacher.user.utype}}</td>
             		<td>{{teacher.user.email}}</td>
-            		<td>{{teacher.zoom.account}}</td>
-            		<td>Coming Soon</td>
+                    <td>{{teacher.zoom.account}}</td>
+            		<td>
+                        <span>
+                            <form style="display: inline" id="mg_form" method="POST" action="">
+                                {{ mg_form.hidden_tag() }}
+                                {{ mg_form.item_id(value=teacher.id, type="hidden")}}
+                                {{ mg_form.manage(class="btn btn-dark") }}
+                            </form>
+                            <form style="display: inline"  id="rem_form" method="POST" action="">
+                                {{ rem_form.hidden_tag() }}
+                                {{ rem_form.item_id(value=teacher.id, type="hidden")}}
+                            </form>
+                            <button class="btn btn-dark" id="rem_btn" onclick="confirm_remove()">Remove</button>
+                        </span>
+                    </td>
         		</tr>
             {% endfor %}
         </table>
     </div>
+{% endblock %}
+{% block scripts %}
+<script>
+function confirm_remove()
+{
+    var check = confirm("Are you sure that you want to permanently remove this teacher from the database?  (This can not be undone.)")
+    if (check === true)
+    {
+        document.getElementById("rem_form").submit();
+    }
+    else
+    {
+        alert("Teacher not removed.")
+        return
+    }
+}
+</script>
 {% endblock %}

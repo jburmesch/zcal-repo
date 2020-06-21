@@ -19,7 +19,8 @@
                         </div>
                     {% else %}
                         {{ add_form.start(class="form-control")}}
-                    {% endif %}                    
+                    {% endif %}    
+
                 </div>
                 <div class="form-group">
                     {{ add_form.duration.label(class="form-control-label") }}
@@ -33,7 +34,8 @@
                         </div>
                     {% else %}
                         {{ add_form.duration(class="form-control", placeholder="Minutes")}}
-                    {% endif %}                    
+                    {% endif %}     
+                                   
                 </div>
                 <div class="form-group">
                     {{ add_form.add(class="btn btn-dark")}}

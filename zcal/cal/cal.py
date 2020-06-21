@@ -22,18 +22,16 @@ def main():
         return redirect(url_for('auth.login'))
 
 
-@calbp.route('/schedule', methods=['POST'])
+@calbp.route('/schedule/', methods=['GET', 'POST'])
 @login_required
 def schedule():
     return "Not done yet."
-    # if form.validate_on_submit():
-    #     flash('okay!', 'success')
-    # return redirect(url_for('cal'))
 
 
 @calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
-def cal(u_id=1):
+def cal(u_id=0):
+    u_id = request.args.get("u_id")
     mod = request.args.get("mod")
     if not (mod and is_digit(mod)):
         mod = 0
@@ -47,7 +45,7 @@ def cal(u_id=1):
         elif Teacher.query.filter_by(user_id=u_id).first():
             return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
         else:
-            flash('That user either does not exist or is admin only.',
+            flash('User either does not exist or is admin only.',
                   "warning")
             return redirect(
                 url_for('cal.t_cal', u_id=current_user.id, mod=mod)
