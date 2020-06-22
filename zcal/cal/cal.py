@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
-from zcal.cal.cal_forms import ScheduleForm
-from zcal.models import Student, Teacher
+from zcal.cal.cal_forms import TeacherSchedule
+from zcal.models import Student, Teacher, Timeslot, Schedule
 from datetime import date
 from math import floor
 import calendar
@@ -40,9 +40,9 @@ def cal(u_id=0):
     elif current_user.utype == 'Teacher':
         return redirect(url_for('cal.t_cal', u_id=current_user.id, mod=mod))
     else:
-        if Student.query.filter_by(user_id=u_id).first():
+        if Student.query.filter(Student.user_id == str(u_id)).first():
             return redirect(url_for('cal.stu_cal', u_id=u_id, mod=mod))
-        elif Teacher.query.filter_by(user_id=u_id).first():
+        elif Teacher.query.filter(Teacher.user_id == str(u_id)).first():
             return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
         else:
             flash('User either does not exist or is admin only.',
@@ -53,11 +53,11 @@ def cal(u_id=0):
 
 
 # CALENDAR ROUTE
-@calbp.route('/calendar/user-<int:u_id>', methods=['GET', 'POST'])
+@calbp.route('/calendar/student/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def stu_cal(u_id):
+    flash('Student Calendar', 'warning')
     mod = request.args.get("mod")
-    form = ScheduleForm()
 
     year, month = process_mod(
         date.today().year,
@@ -70,7 +70,6 @@ def stu_cal(u_id):
 
     return render_template(
         'calendar.html',
-        form=form,
         caldays=caldays,
         yr=year,
         mon_num=month,
@@ -82,12 +81,20 @@ def stu_cal(u_id):
 
 
 # CALENDAR ROUTE
-@calbp.route('/calendar/user-<int:u_id>', methods=['GET', 'POST'])
+@calbp.route('/calendar/teacher/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def t_cal(u_id):
+    flash('Teacher Calendar', 'warning')
+    ts_form = TeacherSchedule()
     mod = request.args.get("mod")
-    form = ScheduleForm()
-
+    timeslots = Timeslot.query.all()
+    schedules = Schedule.query.join(
+        Schedule.teacher
+    ).filter(
+        Teacher.user_id == str(u_id)
+    ).order_by(
+        Schedule.date_time
+    ).all()
     year, month = process_mod(
         date.today().year,
         date.today().month,
@@ -99,7 +106,9 @@ def t_cal(u_id):
 
     return render_template(
         'calendar.html',
-        form=form,
+        ts_form=ts_form,
+        timeslots=timeslots,
+        schedules=schedules,
         caldays=caldays,
         yr=year,
         mon_num=month,
@@ -110,6 +119,7 @@ def t_cal(u_id):
     )
 
 
+# determine whether something is a number, even if it's negative.
 def is_digit(n):
     try:
         int(n)
@@ -127,7 +137,9 @@ def process_mod(year, month, mod):
     if not mod:
         mod = 0
     else:
+        # convert mod to int
         mod = int(mod)
+        # if it's negative, subtract from month and year
     if (mod < 0):
         mod = abs(mod)
         if mod >= month:
@@ -139,6 +151,7 @@ def process_mod(year, month, mod):
                 month = month - mod
         else:
             month = month - mod
+        # if it's positive, add to month and year
     elif mod > 0:
         if month + mod > 12:
             year = year + (floor((mod - month) / 12) + 1)

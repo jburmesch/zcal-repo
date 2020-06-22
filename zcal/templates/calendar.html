@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block body %}
+    <form method="POST" action="">
+        <legend>Add Availability</legend>
+        {{ render_field(ts_form.date) }}
+        {{ ts_form.slots(type="hidden") }}
+        {{ render_field(ts_form.submit) }}
+    </form>
     <table class="table table-bordered table-dark calmonth">
         <div class="caltitle">
             <h1>{{ mon }} {{ yr }}</h1>
@@ -70,7 +76,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="form-group">
-                                {{ form.reserve(class="btn btn-dark")}}
+                                <input type="submit" class="btn btn-dark">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             </div>
                         </div>

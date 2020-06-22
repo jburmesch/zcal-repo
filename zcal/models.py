@@ -78,9 +78,13 @@ class Teacher(db.Model):
     )
 
     def __repr__(self):
-        return f"<Teacher> Name: {self.user.full_name()} | "\
-            + f"Email: {self.user.email} | "\
-            + f"Zoom: {self.zoom.account}"
+        if self.zoom:
+            return f"<Teacher> Name: {self.user.full_name()} | "\
+                + f"Email: {self.user.email} | "\
+                + f"Zoom: {self.zoom.account}"
+        else:
+            return f"<Teacher> Name: {self.user.full_name()} | "\
+                + f"Email: {self.user.email} | "
 
 
 class Course(db.Model):
