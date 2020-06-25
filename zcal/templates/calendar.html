@@ -1,11 +1,27 @@
 {% extends 'base.html' %}
 {% block body %}
-    <form method="POST" action="">
-        <legend>Add Availability</legend>
-        {{ render_field(ts_form.date) }}
-        {{ ts_form.slots(type="hidden") }}
-        {{ render_field(ts_form.submit) }}
-    </form>
+    {%if current_user.utype == 'Admin'%}
+    <table>
+        <tr>
+            <td>
+                <form method="POST" action="">
+                    <legend>Add Availability</legend>
+                    {{ render_field(ts_form.date) }}
+                    {{ ts_form.slots(type="hidden") }}
+                    {{ render_field(ts_form.submit) }}
+                </form>
+            </td>
+            <td>
+                {% for ts in timeslots %}
+                    <div>
+                    <input type="checkbox" name="ts_{{ ts['id'] }}" value="ts['id']">
+                    <label for="ts_{{ ts['id'] }}">Start: {{ ts['start'] }} End: {{ ts['end'] }}</label>
+                    </div>
+                {% endfor %}
+            </td>
+        </tr>    
+    </table>
+    {% endif %}
     <table class="table table-bordered table-dark calmonth">
         <div class="caltitle">
             <h1>{{ mon }} {{ yr }}</h1>
