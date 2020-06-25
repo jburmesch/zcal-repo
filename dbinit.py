@@ -130,19 +130,44 @@ def create_teachers():
 
 def create_schedules():
     schedules = [
-        Schedule(teacher_id=1,
-                 date_time=datetime.datetime(2020, 6, 20, 13, 00),
-                 meeting_id=1),
-        Schedule(teacher_id=1,
-                 date_time=datetime.datetime(2020, 6, 21, 13, 00)),
-        Schedule(teacher_id=2,
-                 date_time=datetime.datetime(2020, 6, 22, 13, 00),
-                 meeting_id=2),
-        Schedule(teacher_id=3,
-                 date_time=datetime.datetime(2020, 6, 23, 13, 00),
-                 meeting_id=3),
-        Schedule(teacher_id=3,
-                 date_time=datetime.datetime(2020, 6, 24, 13, 00))
+        Schedule(
+            teacher_id=1,
+            date=datetime.date(2020, 6, 27),
+            start=datetime.time(8, 00),
+            end=datetime.time(8, 45),
+            duration=45,
+            meeting_id=1
+        ),
+        Schedule(
+            teacher_id=1,
+            date=datetime.date(2020, 6, 27),
+            start=datetime.time(9, 00),
+            end=datetime.time(9, 45),
+            duration=45
+        ),
+        Schedule(
+            teacher_id=2,
+            date=datetime.date(2020, 6, 27),
+            start=datetime.time(8, 00),
+            end=datetime.time(8, 45),
+            duration=45,
+            meeting_id=2
+        ),
+        Schedule(
+            teacher_id=3,
+            date=datetime.date(2020, 6, 27),
+            start=datetime.time(8, 00),
+            end=datetime.time(8, 45),
+            duration=45,
+            meeting_id=3
+        ),
+        Schedule(
+            teacher_id=3,
+            date=datetime.date(2020, 6, 27),
+            start=datetime.time(9, 00),
+            end=datetime.time(9, 45),
+            duration=45
+        )
     ]
 
     return schedules

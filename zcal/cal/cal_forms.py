@@ -6,5 +6,5 @@ from wtforms.validators import InputRequired
 
 class TeacherSchedule(FlaskForm):
     date = DateField(validators=[InputRequired()])
-    slots = StringField(validators=[InputRequired(), ])
+    slots = StringField("", validators=[InputRequired()])
     submit = SubmitField()

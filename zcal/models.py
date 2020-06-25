@@ -108,8 +108,8 @@ class Meeting(db.Model):
                            nullable=False)
 
     def __repr__(self):
-        return f"<Meeting> Date: {self.schedule.date_time.date()} | "\
-            + f"Time: {self.schedule.date_time.time()} | "\
+        return f"<Meeting> Date: {self.schedule.date} | "\
+            + f"Time: {self.schedule.start} | "\
             + f"Teacher: {self.schedule.teacher.user.full_name()} | "\
             + f"Student: {self.student.user.full_name()}"
 
@@ -118,7 +118,10 @@ class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'),
                            nullable=False)
-    date_time = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    start = db.Column(db.Time, nullable=False)
+    end = db.Column(db.Time, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
     meeting_id = db.Column(db.Integer, db.ForeignKey('meeting.id'),
                            nullable=True)
     meeting = db.relationship('Meeting', backref=db.backref('schedule',
@@ -127,13 +130,17 @@ class Schedule(db.Model):
     def __repr__(self):
         if self.meeting:
             return f"<Schedule> Teacher: {self.teacher.user.full_name()}, "\
-                + f"Date: {self.date_time.date()}, "\
-                + f"Time: {self.date_time.time()}, "\
+                + f"Date: {self.date} | "\
+                + f"Start Time: {self.start} | "\
+                + f"End Time: {self.end} | "\
+                + f"Duration: {self.duration} minutes |"\
                 + f"Student: {self.meeting.student.user.full_name()}"
         else:
             return f"<Schedule> Teacher: {self.teacher.user.full_name()}, "\
-                + f"Date: {self.date_time.date()}, "\
-                + f"Time: {self.date_time.time()}, "\
+                + f"Date: {self.date} | "\
+                + f"Start Time: {self.start} | "\
+                + f"End Time: {self.end} | "\
+                + f"Duration: {self.duration} minutes |"\
                 + "Student: None"
 
 

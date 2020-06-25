@@ -4,17 +4,17 @@
     <table>
         <tr>
             <td>
-                <form method="POST" action="">
+                <form method="POST" action="" id="slot_form">
                     <legend>Add Availability</legend>
                     {{ render_field(ts_form.date) }}
-                    {{ ts_form.slots(type="hidden") }}
-                    {{ render_field(ts_form.submit) }}
+                    {{ ts_form.slots(type="hidden", id="return") }}
                 </form>
+                <button onclick="get_slots()">Submit</button>
             </td>
             <td>
                 {% for ts in timeslots %}
                     <div>
-                    <input type="checkbox" name="ts_{{ ts['id'] }}" value="ts['id']">
+                    <input type="checkbox" name="ts_{{ ts['id'] }}" value="{{ ts['id'] }}">
                     <label for="ts_{{ ts['id'] }}">Start: {{ ts['start'].isoformat(timespec='minutes') }} - End: {{ ts['end'].isoformat(timespec='minutes') }}</label>
                     </div>
                 {% endfor %}
@@ -105,7 +105,25 @@
 {% block scripts %}
 <script>
     
-    
+    function get_slots()
+    {
+        form = document.querySelector("#slot_form");
+        slots = document.querySelectorAll('input[type="checkbox"]:checked');
+        r_val = document.querySelector("#return");
+        for (var slot of slots)
+        {
+            if (r_val.value)
+            {
+                r_val.value = r_val.value + " " + slot.value;
+            }
+            else
+            {
+                r_val.value = slot.value;
+            }
+        }
+        form.submit()
+    }
+
     function minus()
     {
         m = document.querySelector('#mod_in').value;

@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
 from zcal.models import Student, Teacher, Timeslot, Schedule
+from zcal import db
 from datetime import date
 from math import floor
 import calendar
@@ -100,6 +101,23 @@ def t_cal(u_id):
         date.today().month,
         mod
     )
+    if ts_form.validate_on_submit:
+        slots = ts_form.slots.data.split()
+        d = ts_form.slots.data
+        for slot in slots:
+            start = timeslots[slot]['start']
+            end = timeslots[slot]['end']
+            duration = timeslots[slot]['duration']
+            schedule = Schedule(
+                teacher_id=u_id,
+                date=d,
+                start=start,
+                end=end,
+                duration=duration
+            )
+            db.session.add(schedule)
+        db.session.commit()
+        return (redirect(url_for(cal.cal, u_id=u_id, mod=mod)))
 
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
