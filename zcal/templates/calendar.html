@@ -15,7 +15,7 @@
                 {% for ts in timeslots %}
                     <div>
                     <input type="checkbox" name="ts_{{ ts['id'] }}" value="ts['id']">
-                    <label for="ts_{{ ts['id'] }}">Start: {{ ts['start'] }} End: {{ ts['end'] }}</label>
+                    <label for="ts_{{ ts['id'] }}">Start: {{ ts['start'].isoformat(timespec='minutes') }} - End: {{ ts['end'].isoformat(timespec='minutes') }}</label>
                     </div>
                 {% endfor %}
             </td>
