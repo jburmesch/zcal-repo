@@ -92,22 +92,25 @@ def t_cal(u_id):
     schedules = Schedule.query.join(
         Schedule.teacher
     ).filter(
-        Teacher.user_id == str(u_id)
+        Teacher.user_id == '3'
     ).order_by(
-        Schedule.date_time
+        Schedule.date,
+        Schedule.start,
+        Schedule.duration
     ).all()
+    print(schedules)
     year, month = process_mod(
         date.today().year,
         date.today().month,
         mod
     )
-    if ts_form.validate_on_submit:
+    if ts_form.is_submitted():
         slots = ts_form.slots.data.split()
-        d = ts_form.slots.data
+        d = ts_form.date.data
         for slot in slots:
-            start = timeslots[slot]['start']
-            end = timeslots[slot]['end']
-            duration = timeslots[slot]['duration']
+            start = timeslots[int(slot) - 1].start
+            end = timeslots[int(slot) - 1].end
+            duration = timeslots[int(slot) - 1].duration
             schedule = Schedule(
                 teacher_id=u_id,
                 date=d,
@@ -117,7 +120,7 @@ def t_cal(u_id):
             )
             db.session.add(schedule)
         db.session.commit()
-        return (redirect(url_for(cal.cal, u_id=u_id, mod=mod)))
+        return (redirect(url_for('cal.cal', u_id=u_id, mod=mod)))
 
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)

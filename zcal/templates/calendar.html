@@ -107,9 +107,10 @@
     
     function get_slots()
     {
-        form = document.querySelector("#slot_form");
+        form = document.getElementById("slot_form");
         slots = document.querySelectorAll('input[type="checkbox"]:checked');
         r_val = document.querySelector("#return");
+        r_val.value = ""
         for (var slot of slots)
         {
             if (r_val.value)
