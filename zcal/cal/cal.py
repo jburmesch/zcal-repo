@@ -92,13 +92,21 @@ def t_cal(u_id):
     schedules = Schedule.query.join(
         Schedule.teacher
     ).filter(
-        Teacher.user_id == '3'
+        Teacher.user_id == str(u_id)
     ).order_by(
         Schedule.date,
         Schedule.start,
         Schedule.duration
     ).all()
+    print(Schedule.query.join(Schedule.teacher).all())
     print(schedules)
+    daydict = {}
+    for sched in schedules:
+        if sched.date in daydict.keys():
+            daydict[sched.date.day] += 1
+        else:
+            daydict.add(sched.date.day, 1)
+
     year, month = process_mod(
         date.today().year,
         date.today().month,
@@ -136,6 +144,7 @@ def t_cal(u_id):
         mon=calendar.month_name[month],
         mod=mod,
         u_id=u_id,
+        daydict=daydict,
         title='Calendar'
     )
 

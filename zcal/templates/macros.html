@@ -1,4 +1,4 @@
-{% macro calendar_day(d, yr, mon_num)%}
+{% macro calendar_day(d, yr, mon_num, daydict)%}
     {% if d[0] == 0 %}
         <td class = "calday"></td>
     {% else %}
@@ -11,8 +11,10 @@
                 <div class="p-0">
                     <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
                 </div>
-                {% elif current_user.utype == 'Teacher' %}
-
+                {% else %}
+                    {% if daydict[d[0]] %}
+                        <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ daydict[d[0]] }} Open</button>
+                    {% endif %}
                 {% endif %}
             </div>
         </td>
