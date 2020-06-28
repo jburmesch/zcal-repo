@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule
+from zcal.models import Student, Teacher, Timeslot, Schedule, User
 from zcal import db
 from datetime import date
 from math import floor
@@ -51,7 +51,7 @@ def cal(u_id=0):
         # teacher
         elif Teacher.query.filter(Teacher.user_id == str(u_id)).first():
             return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
-        # original admin doesn't have a meaningful calendar, but 
+        # original admin doesn't have a meaningful calendar, but
         # if they look themself up, we'll show them one anyway I guess.
         else:
             flash('User either does not exist or is admin only.',
@@ -98,7 +98,7 @@ def t_cal(u_id):
     # get all timeslots from db.
     timeslots = Timeslot.query.all()
     schedules = Schedule.query.join(
-        Schedule.teacher
+        Teacher
     ).filter(
         Teacher.user_id == str(u_id)
     ).order_by(
@@ -106,15 +106,35 @@ def t_cal(u_id):
         Schedule.start,
         Schedule.duration
     ).all()
-    print(Schedule.query.join(Schedule.teacher).all())
     print(schedules)
-    daydict = {}
+    a_dict = {}
+    m_dict = {}
     for sched in schedules:
-        d = sched.date.day
-        if d in daydict.keys():
-            daydict[d] += 1
+        if sched.meeting_id:
+            d = sched.date.day
+            t = User.query.filter(User.id == u_id).first().full_name()
+            dt = sched.date
+            st = sched.start
+            et = sched.end
+            stu = sched.student.user.full_name()
+            dur = sched.duration
+            if d in m_dict.keys():
+                pass
+            else:
+                m_dict[d] = {
+                    'date': dt,
+                    'start': st,
+                    'end': et,
+                    'duration': dur,
+                    'student': stu,
+                    'teacher': t
+                }
         else:
-            daydict[d] = 1
+            d = sched.date.day
+            if d in a_dict.keys():
+                a_dict[d] += 1
+            else:
+                a_dict[d] = 1
 
     # figure out which month should be displayed based on the current date
     # and the month modifier.
@@ -163,7 +183,8 @@ def t_cal(u_id):
         mon=calendar.month_name[month],
         mod=mod,
         u_id=u_id,
-        daydict=daydict,
+        a_dict=a_dict,
+        m_dict=m_dict,
         title='Calendar'
     )
 
