@@ -34,17 +34,25 @@ def schedule():
 def cal(u_id=0):
     u_id = request.args.get("u_id")
     mod = request.args.get("mod")
+    # if there's no month modifier, set it to 0.
     if not (mod and is_digit(mod)):
         mod = 0
+    # redirect for students
     if current_user.utype == 'Student':
         return redirect(url_for('cal.stu_cal', u_id=current_user.id, mod=mod))
+    # redirect for teachers
     elif current_user.utype == 'Teacher':
         return redirect(url_for('cal.t_cal', u_id=current_user.id, mod=mod))
+    # for admins, return calendar based on the type of user they're looking up.
     else:
+        # student
         if Student.query.filter(Student.user_id == str(u_id)).first():
             return redirect(url_for('cal.stu_cal', u_id=u_id, mod=mod))
+        # teacher
         elif Teacher.query.filter(Teacher.user_id == str(u_id)).first():
             return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
+        # original admin doesn't have a meaningful calendar, but 
+        # if they look themself up, we'll show them one anyway I guess.
         else:
             flash('User either does not exist or is admin only.',
                   "warning")
@@ -53,22 +61,22 @@ def cal(u_id=0):
             )
 
 
-# CALENDAR ROUTE
+# Student calendar route - for scheduling meetings with available teachers
 @calbp.route('/calendar/student/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def stu_cal(u_id):
-    flash('Student Calendar', 'warning')
     mod = request.args.get("mod")
-
+    # figure out which month should be displayed based on the current date
+    # and the month modifier.
     year, month = process_mod(
         date.today().year,
         date.today().month,
         mod
     )
-
+    # create calendar object and list of days.
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
-
+    # return the template
     return render_template(
         'calendar.html',
         caldays=caldays,
@@ -81,38 +89,47 @@ def stu_cal(u_id):
     )
 
 
-# CALENDAR ROUTE
+# Teacher calendar, for managing teacher meetings and availability.
 @calbp.route('/calendar/teacher/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def t_cal(u_id):
-    flash('Teacher Calendar', 'warning')
     ts_form = TeacherSchedule()
     mod = request.args.get("mod")
+    # get all timeslots from db.
     timeslots = Timeslot.query.all()
     schedules = Schedule.query.join(
         Schedule.teacher
     ).filter(
-        Teacher.user_id == '3'
+        Teacher.user_id == str(u_id)
     ).order_by(
         Schedule.date,
         Schedule.start,
         Schedule.duration
     ).all()
     print(schedules)
+    # figure out which month should be displayed based on the current date
+    # and the month modifier.
     year, month = process_mod(
         date.today().year,
         date.today().month,
         mod
     )
+    # TIMESLOT FORM SUBMISSION
     if ts_form.is_submitted():
+        # parse timeslots that have been submitted
         slots = ts_form.slots.data.split()
         d = ts_form.date.data
+        # add each timeslot to the db.
         for slot in slots:
             start = timeslots[int(slot) - 1].start
             end = timeslots[int(slot) - 1].end
             duration = timeslots[int(slot) - 1].duration
+            tid = Teacher.query.filter(
+                Teacher.user_id == u_id
+            ).first().id
+
             schedule = Schedule(
-                teacher_id=u_id,
+                teacher_id=tid,
                 date=d,
                 start=start,
                 end=end,
@@ -120,11 +137,12 @@ def t_cal(u_id):
             )
             db.session.add(schedule)
         db.session.commit()
+        # redirect back to same page.
         return (redirect(url_for('cal.cal', u_id=u_id, mod=mod)))
-
+    # create calendar object and list of days.
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
-
+    # generate template
     return render_template(
         'calendar.html',
         ts_form=ts_form,
