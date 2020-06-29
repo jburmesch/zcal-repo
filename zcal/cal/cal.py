@@ -98,7 +98,7 @@ def t_cal(u_id):
     # get all timeslots from db.
     timeslots = Timeslot.query.all()
     schedules = Schedule.query.join(
-        Schedule.teacher
+        Teacher
     ).filter(
         Teacher.user_id == str(u_id)
     ).order_by(
@@ -106,7 +106,6 @@ def t_cal(u_id):
         Schedule.start,
         Schedule.duration
     ).all()
-    print(Schedule.query.join(Schedule.teacher).all())
     print(schedules)
     daydict = {}
     for sched in schedules:
