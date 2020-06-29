@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule
+from zcal.models import Student, Teacher, Timeslot, Schedule, User
 from zcal import db
 from datetime import date
 from math import floor
@@ -51,7 +51,7 @@ def cal(u_id=0):
         # teacher
         elif Teacher.query.filter(Teacher.user_id == str(u_id)).first():
             return redirect(url_for('cal.t_cal', u_id=u_id, mod=mod))
-        # original admin doesn't have a meaningful calendar, but 
+        # original admin doesn't have a meaningful calendar, but
         # if they look themself up, we'll show them one anyway I guess.
         else:
             flash('User either does not exist or is admin only.',
@@ -73,6 +73,18 @@ def stu_cal(u_id):
         date.today().month,
         mod
     )
+    schedules = Schedule.query.filter(
+        Schedule.date >= date(date.today().year, month, 1),
+        Schedule.date < date(date.today().year, month + 1, 1)
+    ).all()
+    print(schedules)
+    a_dict = {}
+    for sched in schedules:
+        d = sched.date.day
+        if d in a_dict.keys():
+            a_dict[d] += 1
+        else:
+            a_dict[d] = 1
     # create calendar object and list of days.
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
@@ -85,7 +97,9 @@ def stu_cal(u_id):
         mon=calendar.month_name[month],
         mod=mod,
         u_id=u_id,
-        title='Calendar'
+        title='Calendar',
+        schedules=schedules,
+        a_dict=a_dict
     )
 
 
@@ -95,26 +109,6 @@ def stu_cal(u_id):
 def t_cal(u_id):
     ts_form = TeacherSchedule()
     mod = request.args.get("mod")
-    # get all timeslots from db.
-    timeslots = Timeslot.query.all()
-    schedules = Schedule.query.join(
-        Teacher
-    ).filter(
-        Teacher.user_id == str(u_id)
-    ).order_by(
-        Schedule.date,
-        Schedule.start,
-        Schedule.duration
-    ).all()
-    print(schedules)
-    daydict = {}
-    for sched in schedules:
-        d = sched.date.day
-        if d in daydict.keys():
-            daydict[d] += 1
-        else:
-            daydict[d] = 1
-
     # figure out which month should be displayed based on the current date
     # and the month modifier.
     year, month = process_mod(
@@ -122,6 +116,52 @@ def t_cal(u_id):
         date.today().month,
         mod
     )
+
+    # get all timeslots from db.
+    timeslots = Timeslot.query.all()
+    schedules = Schedule.query.join(
+        Teacher
+    ).filter(
+        Teacher.user_id == str(u_id),
+        Schedule.date >= date(date.today().year,
+                              month, 1),
+        Schedule.date < date(date.today().year,
+                             month + 1, 1)
+    ).order_by(
+        Schedule.date,
+        Schedule.start,
+        Schedule.duration
+    ).all()
+    print(schedules)
+    a_dict = {}
+    m_dict = {}
+    for sched in schedules:
+        if sched.meeting_id:
+            d = sched.date.day
+            t = User.query.filter(User.id == u_id).first().full_name()
+            dt = sched.date
+            st = sched.start
+            et = sched.end
+            stu = sched.student.user.full_name()
+            dur = sched.duration
+            if d in m_dict.keys():
+                pass
+            else:
+                m_dict[d] = {
+                    'date': dt,
+                    'start': st,
+                    'end': et,
+                    'duration': dur,
+                    'student': stu,
+                    'teacher': t
+                }
+        else:
+            d = sched.date.day
+            if d in a_dict.keys():
+                a_dict[d] += 1
+            else:
+                a_dict[d] = 1
+
     # TIMESLOT FORM SUBMISSION
     if ts_form.is_submitted():
         # parse timeslots that have been submitted
@@ -162,7 +202,8 @@ def t_cal(u_id):
         mon=calendar.month_name[month],
         mod=mod,
         u_id=u_id,
-        daydict=daydict,
+        a_dict=a_dict,
+        m_dict=m_dict,
         title='Calendar'
     )
 
