@@ -127,6 +127,9 @@ class Schedule(db.Model):
     meeting = db.relationship('Meeting', backref=db.backref('schedule',
                               uselist=False), lazy=True)
 
+    def month(self):
+        return self.date.month
+
     def __repr__(self):
         if self.meeting:
             return f"<Schedule> Teacher: {self.teacher.user.full_name()}, "\

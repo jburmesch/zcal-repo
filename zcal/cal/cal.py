@@ -73,6 +73,14 @@ def stu_cal(u_id):
         date.today().month,
         mod
     )
+    schedules = Schedule.query.filter(Schedule.month == month).all()
+    a_dict = {}
+    for sched in schedules:
+        d = sched.date.day
+        if d in a_dict.keys():
+            a_dict[d] += 1
+        else:
+            a_dict[d] = 1
     # create calendar object and list of days.
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
@@ -85,7 +93,9 @@ def stu_cal(u_id):
         mon=calendar.month_name[month],
         mod=mod,
         u_id=u_id,
-        title='Calendar'
+        title='Calendar',
+        schedules=schedules,
+        a_dict=a_dict
     )
 
 
@@ -95,12 +105,24 @@ def stu_cal(u_id):
 def t_cal(u_id):
     ts_form = TeacherSchedule()
     mod = request.args.get("mod")
+    # figure out which month should be displayed based on the current date
+    # and the month modifier.
+    year, month = process_mod(
+        date.today().year,
+        date.today().month,
+        mod
+    )
+
     # get all timeslots from db.
     timeslots = Timeslot.query.all()
     schedules = Schedule.query.join(
         Teacher
     ).filter(
-        Teacher.user_id == str(u_id)
+        Teacher.user_id == str(u_id),
+        Schedule.date >= date(date.today().year,
+                              month, 1),
+        Schedule.date < date(date.today().year,
+                             month + 1, 1)
     ).order_by(
         Schedule.date,
         Schedule.start,
@@ -136,13 +158,6 @@ def t_cal(u_id):
             else:
                 a_dict[d] = 1
 
-    # figure out which month should be displayed based on the current date
-    # and the month modifier.
-    year, month = process_mod(
-        date.today().year,
-        date.today().month,
-        mod
-    )
     # TIMESLOT FORM SUBMISSION
     if ts_form.is_submitted():
         # parse timeslots that have been submitted

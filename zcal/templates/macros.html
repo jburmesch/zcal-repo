@@ -8,9 +8,11 @@
                     {{ d[0] }}
                 </div>
                 {% if current_user.utype == 'Student' %}
-                <div class="p-0">
-                    <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+</button>
-                </div>
+                    {% if a_dict[d[0]] %}
+                        <div class="p-0">
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+ ({{ a_dict[d[0]] }} Open)</button>
+                        </div>
+                    {% endif %}
                 {% else %}
                     {% if a_dict[d[0]] %}
                         <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ a_dict[d[0]] }} Open</button>
