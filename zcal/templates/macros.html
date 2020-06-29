@@ -7,10 +7,13 @@
                 <div class="p-0 ">
                     {{ d[0] }}
                 </div>
+                <div></div>
+            </div>
+            <hr>
                 {% if current_user.utype == 'Student' %}
                     {% if a_dict[d[0]] %}
-                        <div class="p-0">
-                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">+ ({{ a_dict[d[0]] }} Open)</button>
+                        <div>
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{yr}}, {{mon_num}}, {{d[0]}})">Schedule meeting ({{ a_dict[d[0]] }} Open)</button>
                         </div>
                     {% endif %}
                 {% else %}
@@ -18,7 +21,6 @@
                         <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ a_dict[d[0]] }} Open</button>
                     {% endif %}
                 {% endif %}
-            </div>
         </td>
     {% endif %}
 {% endmacro %}

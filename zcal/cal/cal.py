@@ -73,7 +73,11 @@ def stu_cal(u_id):
         date.today().month,
         mod
     )
-    schedules = Schedule.query.filter(Schedule.month == month).all()
+    schedules = Schedule.query.filter(
+        Schedule.date >= date(date.today().year, month, 1),
+        Schedule.date < date(date.today().year, month + 1, 1)
+    ).all()
+    print(schedules)
     a_dict = {}
     for sched in schedules:
         d = sched.date.day
