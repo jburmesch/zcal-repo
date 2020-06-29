@@ -6,6 +6,7 @@ from zcal import db
 from datetime import date
 from math import floor
 import calendar
+import simplejson as json
 
 
 calbp = Blueprint('cal', __name__)
@@ -75,10 +76,17 @@ def stu_cal(u_id):
     )
     schedules = Schedule.query.filter(
         Schedule.date >= date(date.today().year, month, 1),
-        Schedule.date < date(date.today().year, month + 1, 1)
+        Schedule.date < date(date.today().year, month + 1, 1),
+        Schedule.meeting_id == None  # noqa
     ).all()
-    print(schedules)
+    # store all schedule data for the month in json format
+    sched_json = {}
+    for sched in schedules:
+        d = sched.date.day
+        sched_json[d] = sched.to_dict()
+    sched_json = json.dumps(sched_json)
     a_dict = {}
+
     for sched in schedules:
         d = sched.date.day
         if d in a_dict.keys():
@@ -99,7 +107,8 @@ def stu_cal(u_id):
         u_id=u_id,
         title='Calendar',
         schedules=schedules,
-        a_dict=a_dict
+        a_dict=a_dict,
+        sched_json=sched_json
     )
 
 

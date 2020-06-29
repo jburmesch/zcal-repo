@@ -64,7 +64,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form method="POST" action="/schedule">
+                <form method="POST" action="{{ url_for('cal.stu_cal', u_id=u_id, mod=mod) }}">
                     <fieldset>
                         <div class="modal-body">
                             <div class="form-group">
@@ -104,7 +104,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    
+    var avail = JSON.parse({{ sched_json | safe }})
     function get_slots()
     {
         form = document.getElementById("slot_form");
@@ -147,7 +147,6 @@
 
     function show_scheduler(year, month, day)
     {
-        // alert("It worked. " + month + " " + day + " " + year)
         $('#scheduler').modal()
         if (month < 10)
         {
@@ -158,6 +157,13 @@
             day = "0" + day;
         }
         dateInput = document.getElementById('date_in');
+        for (x in avail)
+        {
+            for (y in x)
+            {
+                alert(y)
+            }
+        }
         date = year + '-' + month + '-' + day;
         dateInput.value = date;
     }

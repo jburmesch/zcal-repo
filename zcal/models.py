@@ -127,8 +127,15 @@ class Schedule(db.Model):
     meeting = db.relationship('Meeting', backref=db.backref('schedule',
                               uselist=False), lazy=True)
 
-    def month(self):
-        return self.date.month
+    def to_dict(self):
+        return {
+            'teacher': self.teacher.user.first,
+            'date': str(self.date),
+            'start': str(self.start),
+            'end': str(self.end),
+            'duration': self.duration,
+            'meeting': self.meeting_id
+        }
 
     def __repr__(self):
         if self.meeting:
