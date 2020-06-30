@@ -131,6 +131,7 @@ class Schedule(db.Model):
         return {
             'teacher': self.teacher.user.first,
             'date': str(self.date),
+            'day': self.date.day,
             'start': str(self.start),
             'end': str(self.end),
             'duration': self.duration,

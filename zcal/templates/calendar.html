@@ -68,8 +68,7 @@
                     <fieldset>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="date_in" class="form-control-label">Meeting Date:</label>
-                                <input type="date" class="form-control" id="date_in" name="meeting_date">
+                                <label id="date_in" class="form-control-label">Meeting Date: </label>
                             </div>
                             <div class="form-group">
                                 <label for="teacher_in" class="form-control-label">Select Teacher:</label>
@@ -104,7 +103,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    var avail = JSON.parse({{ sched_json | safe }})
+    var avail = JSON.parse('{{ sched_json | safe }}')
     function get_slots()
     {
         form = document.getElementById("slot_form");
@@ -145,27 +144,28 @@
     }
 
 
-    function show_scheduler(year, month, day)
+    function show_scheduler(day)
     {
-        $('#scheduler').modal()
-        if (month < 10)
-        {
-            month = "0" + month;
-        }
-        if (day < 10)
-        {
-            day = "0" + day;
-        }
-        dateInput = document.getElementById('date_in');
-        for (x in avail)
-        {
-            for (y in x)
+        $('#scheduler').modal();
+        console.log(avail)
+        for (l in avail)
+        {   
+            if (l[0].day === day)
             {
-                alert(y)
+                let teachers[];
+                for (o in avail)
+                {
+                    if (!teachers.includes(o.teacher))
+                    {
+                        teachers.push(o.teacher);
+                    }
+                    
+                }
+                break;
             }
-        }
-        date = year + '-' + month + '-' + day;
-        dateInput.value = date;
+        };
+        dateInput = document.getElementById('date_in');
+        dateInput.innerHTML = "Meeting Date:" + a_ob.date;
     }
 </script>
 {% endblock %}
