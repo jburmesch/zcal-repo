@@ -148,22 +148,6 @@
     {
         $('#scheduler').modal();
         console.log(avail)
-        for (l in avail)
-        {   
-            if (l[0].day === day)
-            {
-                let teachers[];
-                for (o in avail)
-                {
-                    if (!teachers.includes(o.teacher))
-                    {
-                        teachers.push(o.teacher);
-                    }
-                    
-                }
-                break;
-            }
-        };
         dateInput = document.getElementById('date_in');
         dateInput.innerHTML = "Meeting Date:" + a_ob.date;
     }

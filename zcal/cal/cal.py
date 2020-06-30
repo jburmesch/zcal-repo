@@ -79,16 +79,9 @@ def stu_cal(u_id):
         Schedule.date < date(date.today().year, month + 1, 1),
         Schedule.meeting_id == None  # noqa
     ).all()
-    teachers = Teacher.query.join(Schedule).filter(Schedule.)
-    # store all schedule data for the month in json format
-    sched_json = {}
-    for sched in schedules:
-        d = 'd' + str(sched.date.day)
-        if sched_json.get(d):
-            sched_json[d].append(sched.to_dict())
-        else:
-            sched_json[d] = [sched.to_dict()]
-    sched_json = json.dumps(sched_json)
+
+    sched_json = get_json(schedules)
+
     a_dict = {}
 
     for sched in schedules:
@@ -265,3 +258,18 @@ def process_mod(year, month, mod):
         else:
             month = month + mod
     return (year, month)
+
+
+def get_json(schedules):
+    # key = day number, value = teacher dict
+    sched_dict = {}
+    for sched in schedules:
+        d = 'd' + str(sched.date.day)
+        t = sched.teacher.id
+        if sched_dict.get(d) and sched_dict[d].get(t):
+            sched_dict[d][t].append(sched.to_dict())
+        elif sched_dict.get(d):
+            sched_dict[d].update({t: sched.to_dict()})
+        else:
+            sched_dict[d] = {t: [sched.to_dict()]}
+    return json.dumps(sched_dict)
