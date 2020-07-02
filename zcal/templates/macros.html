@@ -13,7 +13,7 @@
                 {% if current_user.utype == 'Student' %}
                     {% if a_dict[d[0]] %}
                         <div>
-                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{d[0]}})">Schedule meeting ({{ a_dict[d[0]] }} Open)</button>
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{d[0]}})">要約 ({{ a_dict[d[0]] }})</button>
                         </div>
                     {% endif %}
                 {% else %}

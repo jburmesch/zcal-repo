@@ -73,10 +73,10 @@ class TimeslotForm(FlaskForm):
 
 
 class RemoveForm(FlaskForm):
-    item_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
+    rem_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
     remove = SubmitField('Remove')
 
 
 class ManageForm(FlaskForm):
-    item_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
+    mg_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
     manage = SubmitField('Manage')

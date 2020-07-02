@@ -189,9 +189,9 @@
 
     function rem_options(selObj)
     {
-        for (i = 0; i < selObj.options.length + 1; i++)
+        for (child in selObj.children)
         {
-            selObj.remove(0)
+            selObj.remove(child)
         }
     }
     

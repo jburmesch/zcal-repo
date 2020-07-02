@@ -138,7 +138,6 @@ def t_cal(u_id):
         Schedule.start,
         Schedule.duration
     ).all()
-    print(schedules)
     a_dict = {}
     m_dict = {}
     for sched in schedules:
@@ -269,7 +268,7 @@ def get_json(schedules):
         if sched_dict.get(d) and sched_dict[d].get(t):
             sched_dict[d][t].append(sched.to_dict())
         elif sched_dict.get(d):
-            sched_dict[d].update({t: sched.to_dict()})
+            sched_dict[d].update({t: [sched.to_dict()]})
         else:
             sched_dict[d] = {t: [sched.to_dict()]}
     return json.dumps(sched_dict)

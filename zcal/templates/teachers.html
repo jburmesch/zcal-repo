@@ -25,12 +25,12 @@
                         <span>
                             <form style="display: inline" id="mg_form" method="POST" action="">
                                 {{ mg_form.hidden_tag() }}
-                                {{ mg_form.item_id(value=teacher.id, type="hidden")}}
+                                {{ mg_form.mg_id(value=teacher.id, type="hidden")}}
                                 {{ mg_form.manage(class="btn btn-dark") }}
                             </form>
                             <form style="display: inline"  id="rem_form" method="POST" action="">
                                 {{ rem_form.hidden_tag() }}
-                                {{ rem_form.item_id(value=teacher.id, type="hidden")}}
+                                {{ rem_form.rem_id(value=teacher.id, type="hidden")}}
                             </form>
                             <button class="btn btn-dark" id="rem_btn" onclick="confirm_remove()">Remove</button>
                         </span>

@@ -5,7 +5,9 @@ from zcal.admin.admin_forms import (
     TeacherForm, CourseForm, TimeslotForm, RemoveForm, ManageForm
 )
 from flask_login import login_required, current_user
-from zcal.models import User, Teacher, Course, Student, Timeslot
+from zcal.models import (
+    User, Teacher, Course, Student, Timeslot, Schedule, Meeting
+)
 from datetime import datetime, timedelta
 import secrets
 
@@ -62,24 +64,37 @@ def teachers():
         if mg_form.validate_on_submit():
 
             u_id = Teacher.query.filter_by(
-                id=mg_form.item_id.data
+                id=mg_form.mg_id.data
             ).first().user_id
 
             return redirect(url_for('cal.cal', u_id=u_id))
         # if remove button is clicked
         elif rem_form.validate_on_submit():
+            t_id = rem_form.rem_id.data
+            teacher = Teacher.query.filter_by(id=t_id).first()
+            scheds = Schedule.query.filter_by(teacher_id=t_id).all()
+            meets = Meeting.query.join(
+                Schedule
+            ).filter(Schedule.teacher_id == t_id).all()
 
-            teacher = Teacher.query.filter_by(id=rem_form.item_id.data).first()
-            if teacher:
-                user = User.query.filter_by(id=teacher.user_id).first()
-                db.session.delete(teacher)
-                db.session.delete(user)
-                db.session.commit()
-                flash("Teacher successfully removed.", "success")
-                return redirect(url_for('admin.teachers'))
+            # Make sure the teacher doesn't have meetings scheduled
+            # with students.
+            if meets:
+                flash("Teacher has meetings scheduled! Reschedule before "
+                      + "removing!", "error")
             else:
-                flash("Teacher not found.", "error")
-                return redirect(url_for('admin.teachers'))
+                if teacher:
+                    user = User.query.filter_by(id=teacher.user_id).first()
+                    for sched in scheds:
+                        db.session.delete(sched)
+                    db.session.delete(teacher)
+                    db.session.delete(user)
+                    db.session.commit()
+                    flash("Teacher successfully removed.", "success")
+                    return redirect(url_for('admin.teachers'))
+                else:
+                    flash("Teacher not found.", "error")
+            return redirect(url_for('admin.teachers'))
 
         else:
 
