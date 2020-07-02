@@ -129,11 +129,12 @@ class Schedule(db.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'teacher': self.teacher.user.first,
             'date': str(self.date),
             'day': self.date.day,
-            'start': str(self.start),
-            'end': str(self.end),
+            'start': str(self.start.isoformat(timespec='minutes')),
+            'end': str(self.end.isoformat(timespec='minutes')),
             'duration': self.duration,
             'meeting': self.meeting_id
         }

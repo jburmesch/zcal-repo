@@ -6,6 +6,7 @@
             <td>
                 <form method="POST" action="" id="slot_form">
                     <legend>Add Availability</legend>
+                    {{ts_form.hidden_tag()}}
                     {{ render_field(ts_form.date) }}
                     {{ ts_form.slots(type="hidden", id="return") }}
                 </form>
@@ -69,24 +70,17 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label id="date_in" class="form-control-label">Meeting Date: </label>
+                                <input type="hidden" id="modDay">
                             </div>
                             <div class="form-group">
-                                <label for="teacher_in" class="form-control-label">Select Teacher:</label>
-                                <input list="teachers" name="teacher_list" id="teacher_in">
-                                <datalist id="teachers">
-                                    <option value="Justin">
-                                </datalist>
+                                <label for="teachers" class="form-control-label">Select Teacher:</label>
+                                <select name="teacher_list" onChange="update_times()" id="teachers">
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="time_in" class="form-control-label">Select Meeting Time:</label>
-                                <input list="times" name="meeting_times" id="time_in">
-                                <datalist id="times">
-                                    <option value="8:00">
-                                    <option value="8:30">
-                                    <option value="9:00">
-                                    <option value="9:30">
-                                    <option value="10:00">
-                                </datalist>
+                                <label for="times" class="form-control-label">Select Meeting Time:</label>
+                                <select name="time_list" id="times">
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -147,9 +141,59 @@
     function show_scheduler(day)
     {
         $('#scheduler').modal();
-        console.log(avail)
+        let tlist = document.querySelector('#teachers');
+        let slist = document.querySelector('#times');
+        let mDay = document.querySelector('#modDay');
+        let currentAvail = avail["d" + day];
+        let teachers = Object.keys(currentAvail);
+
+        mDay.value = day
+        tnames = [];
+        rem_options(tlist);
+        rem_options(slist);
+
+        for (i = 0; i < teachers.length; i++)
+        {
+            let tId = parseInt(teachers[i]);
+            let option = document.createElement("option");
+            option.text = currentAvail[tId][0].teacher;
+            option.value = tId;
+            tlist.add(option);
+        }
+
         dateInput = document.getElementById('date_in');
-        dateInput.innerHTML = "Meeting Date:" + a_ob.date;
+        dateInput.innerHTML = "Meeting Date: " + currentAvail[teachers[0]][0].date;
+        update_times()
     }
+
+
+    function update_times()
+    {
+        let tlist = document.querySelector('#teachers');
+        let slist = document.querySelector('#times');
+        let mDay = document.querySelector('#modDay');
+        let currentAvail = avail["d" + mDay.value];
+        let scheds = currentAvail[tlist.value];
+
+        rem_options(slist);
+
+        for (i = 0; i < scheds.length; i++)
+        {
+            let option = document.createElement("option");
+            option.text = scheds[i].start + " - " + scheds[i].end;
+            option.value = scheds[i].id;
+            slist.add(option);
+        }
+    }
+
+
+    function rem_options(selObj)
+    {
+        for (i = 0; i < selObj.options.length + 1; i++)
+        {
+            selObj.remove(0)
+        }
+    }
+    
 </script>
 {% endblock %}
