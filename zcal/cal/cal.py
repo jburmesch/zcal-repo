@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, Blueprint, flash
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule, User
+from zcal.models import Student, Teacher, Timeslot, Schedule, User, Meeting
 from zcal import db
 from datetime import date
 from math import floor
@@ -67,6 +67,16 @@ def cal(u_id=0):
 @login_required
 def stu_cal(u_id):
     mod = request.args.get("mod")
+    if request.method == 'POST':
+        sched = Schedule.query.filter_by(id=request.form.get("time_list")).first()
+        mtg = Meeting(
+            student_id=u_id,
+        )
+        db.session.add(mtg)
+        db.session.commit()
+        sched.meeting_id = mtg.id
+        db.session.commit()
+
     # figure out which month should be displayed based on the current date
     # and the month modifier.
     year, month = process_mod(
