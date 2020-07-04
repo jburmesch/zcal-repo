@@ -5,5 +5,7 @@ zcal/__pycache__/
 zcal/routes/__pycache__/
 zcal/routes/temppass.txt
 zcal/zcal.db
+instance
+zcal/config.py
 *.pyc
 *.bak

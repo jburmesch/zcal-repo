@@ -1,6 +1,8 @@
-from flask import render_template, request, redirect, url_for, Blueprint, flash
+from flask import (
+    render_template, request, redirect, url_for, Blueprint, flash, current_app
+) 
 from flask_login import login_required, current_user
-from zcal.cal.cal_forms import TeacherSchedule
+from zcal.cal.cal_forms import TeacherSchedule, ZoomForm
 from zcal.models import Student, Teacher, Timeslot, Schedule, User, Meeting
 from zcal import db
 from datetime import date
@@ -24,7 +26,23 @@ def main():
         return redirect(url_for('auth.login'))
 
 
-@calbp.route('/schedule/', methods=['GET', 'POST'])
+@calbp.route('/zoom-auth', methods=['GET', 'POST'])
+@login_required
+def zoom_auth():
+    o_id = current_app.config['OAUTH_ID']
+    oauth_form = ZoomForm()
+    code = request.args.get('code')
+    if oauth_form.validate_on_submit():
+        return redirect("https://zoom.us/oauth/authorize"
+                        + f"?response_type=code&client_id={o_id}"
+                        + f"&redirect_uri={url_for('cal.zoom_auth', _external=True)}")
+    if code:
+        return code
+    else:
+        return "This isn't done yet. "
+
+
+@calbp.route('/schedule', methods=['GET', 'POST'])
 @login_required
 def schedule():
     return "Not done yet."
@@ -67,7 +85,9 @@ def cal(u_id=0):
 @login_required
 def stu_cal(u_id):
     mod = request.args.get("mod")
+    # ADD VALIDATION TO THIS!
     if request.method == 'POST':
+        # CHECK THAT ID IS INT AND IN SCHED LIST!
         sched = Schedule.query.filter_by(id=request.form.get("time_list")).first()
         mtg = Meeting(
             student_id=u_id,
@@ -124,6 +144,7 @@ def stu_cal(u_id):
 @login_required
 def t_cal(u_id):
     ts_form = TeacherSchedule()
+    oauth_form = ZoomForm()
     mod = request.args.get("mod")
     # figure out which month should be displayed based on the current date
     # and the month modifier.
@@ -157,7 +178,7 @@ def t_cal(u_id):
             dt = sched.date
             st = sched.start
             et = sched.end
-            stu = sched.student.user.full_name()
+            stu = sched.meeting.student.user.full_name()
             dur = sched.duration
             if d in m_dict.keys():
                 pass
@@ -209,6 +230,7 @@ def t_cal(u_id):
     return render_template(
         'calendar.html',
         ts_form=ts_form,
+        oauth_form=oauth_form,
         timeslots=timeslots,
         schedules=schedules,
         caldays=caldays,

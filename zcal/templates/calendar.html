@@ -1,27 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
     {% if current_user.utype == 'Admin' %}
-    <table>
-        <tr>
-            <td>
-                <form method="POST" action="" id="slot_form">
-                    <legend>Add Availability</legend>
-                    {{ts_form.hidden_tag()}}
-                    {{ render_field(ts_form.date) }}
-                    {{ ts_form.slots(type="hidden", id="return") }}
-                </form>
-                <button onclick="get_slots()">Submit</button>
-            </td>
-            <td>
-                {% for ts in timeslots %}
-                    <div>
-                    <input type="checkbox" name="ts_{{ ts['id'] }}" value="{{ ts['id'] }}">
-                    <label for="ts_{{ ts['id'] }}">Start: {{ ts['start'].isoformat(timespec='minutes') }} - End: {{ ts['end'].isoformat(timespec='minutes') }}</label>
-                    </div>
-                {% endfor %}
-            </td>
-        </tr>    
-    </table>
+        {{ admin_menu(ts_form, timeslots) }}
     {% endif %}
     <table class="table table-bordered table-dark calmonth">
         <div class="caltitle">
