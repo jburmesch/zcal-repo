@@ -174,7 +174,9 @@ class Timeslot(db.Model):
 
 class Zoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    account = db.Column(db.String(120), nullable=False)
+    zoom_account_id = db.Column(db.String(), nullable=False)
+    refresh = db.Column(db.String(), nullable=False)
 
     def __repr__(self):
-        return f"<Zoom Info> Account: {self.account}"
+        return f"<Zoom> Zoom ID: {self.zoom_id} |"\
+             + f"Refresh Token: {self.refresh}"

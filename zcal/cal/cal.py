@@ -1,5 +1,5 @@
 from flask import (
-    render_template, request, redirect, url_for, Blueprint, flash, current_app
+    render_template, request, redirect, url_for, Blueprint, flash
 ) 
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule, ZoomForm
@@ -8,7 +8,7 @@ from zcal import db
 from datetime import date
 from math import floor
 import calendar
-import simplejson as json
+import json
 
 
 calbp = Blueprint('cal', __name__)
@@ -24,22 +24,6 @@ def main():
             return redirect(url_for('cal.cal'))
     else:
         return redirect(url_for('auth.login'))
-
-
-@calbp.route('/zoom-auth', methods=['GET', 'POST'])
-@login_required
-def zoom_auth():
-    o_id = current_app.config['OAUTH_ID']
-    oauth_form = ZoomForm()
-    code = request.args.get('code')
-    if oauth_form.validate_on_submit():
-        return redirect("https://zoom.us/oauth/authorize"
-                        + f"?response_type=code&client_id={o_id}"
-                        + f"&redirect_uri={url_for('cal.zoom_auth', _external=True)}")
-    if code:
-        return code
-    else:
-        return "This isn't done yet. "
 
 
 @calbp.route('/schedule', methods=['GET', 'POST'])

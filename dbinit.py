@@ -175,9 +175,18 @@ def create_schedules():
 
 def create_zooms():
     zooms = [
-        Zoom(account='zoom@account1.com'),
-        Zoom(account='zoom@account2.com'),
-        Zoom(account='zoom@account3.com')
+        Zoom(
+            zoom_account='abcdefghijklmnopqrstuvwxyz',
+            refresh='sda;flkjhew083h20fisdh08823y04uhfg0ewyh408hf'
+        ),
+        Zoom(
+            zoom_account='sdlkfhweournsdlkvhowo',
+            refresh='dslfhw39ouvbdlfivh2o834hfv97sdheef09fo8h230'
+        ),
+        Zoom(
+            zoom_account='sldkfhwoeunvuo9sghviwue',
+            refresh='hsdoufebwovclskjdehygoeughfoshf03128yt4923uhgtf9s7dyt3'
+        )
     ]
     return zooms
 

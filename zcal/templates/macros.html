@@ -76,7 +76,7 @@
                 </table>
             </td>
             <td>
-                <form method="POST" action="{{ url_for('cal.zoom_auth') }}" id="oauth_form">
+                <form method="POST" action="{{ url_for('zoom.zoom_auth') }}" id="oauth_form">
                     {{ oauth_form.hidden_tag() }}
                     {{ render_field(oauth_form.account, class="form-control")}}
                     {{ oauth_form.authorize(class="btn btn-dark") }}

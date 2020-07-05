@@ -41,8 +41,10 @@ def create_app(test_config=None):
         from zcal.auth.auth import auth
         from zcal.cal.cal import calbp
         from zcal.admin.admin import admin
+        from zcal.zoom.zoom import zoom
         app.register_blueprint(auth)
         app.register_blueprint(calbp)
         app.register_blueprint(admin)
+        app.register_blueprint(zoom)
 
     return app
