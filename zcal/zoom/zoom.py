@@ -1,10 +1,29 @@
-from flask import (request, redirect, url_for, Blueprint, current_app)
-from zcal.cal.cal_forms import ZoomForm
+from flask import (
+    request, redirect, url_for, Blueprint, current_app, flash, render_template
+)
+from zcal.zoom.zoom_forms import ZoomForm
+from zcal.admin.admin_forms import RemoveForm
+from zcal.models import Zoom
+from zcal import db
 from flask_login import login_required
 import requests
 from base64 import urlsafe_b64encode as encode64
 
 zoom = Blueprint('zoom', __name__, url_prefix='/zoom')
+
+
+@zoom.route('/manage', methods=['GET', 'POST'])
+@login_required
+def manage():
+    oauth_form = ZoomForm()
+    rem_form = RemoveForm()
+    zooms = Zoom.query.all()
+    return render_template(
+        'zoom.html',
+        oauth_form=oauth_form,
+        zooms=zooms,
+        rem_form=rem_form
+    )
 
 
 @zoom.route('/zoom-auth', methods=['GET', 'POST'])
@@ -50,6 +69,14 @@ def zoom_auth():
             'https://api.zoom.us/v2/users/me',
             headers={'Authorization': 'Bearer ' + access}
         ).json()
-        return z_user
+        new_account = Zoom(
+            account=z_user['email'],
+            zoom_account_id=z_user['id'],
+            refresh=refresh
+        )
+        db.session.add(new_account)
+        db.session.commit()
+        flash('Zoom Account Successfully added!', 'success')
+        return redirect(url_for('zoom.manage'))
     else:
-        return "This isn't done yet. "
+        return redirect(url_for('zoom.manage'))

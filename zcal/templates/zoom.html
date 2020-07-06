@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h1>Manage Zoom Accounts</h1>
+        <hr>
+        <div class=tsdiv>
+            <form method="POST" action="{{ url_for('zoom.zoom_auth') }}" id="oauth_form">
+                {{ oauth_form.hidden_tag() }}
+                {{ oauth_form.authorize(class="btn btn-dark") }}
+            </form>
+        </div>
+        <hr>
+        <legend>Current Zoom Accounts</legend>
+    	<table class="table">
+            <tr>
+                <th>Account Email</th>
+                <th>Teacher</th>
+                <th>Management Options</th>
+            </tr>
+            {% for zoom in zooms %}
+                <tr>
+                    <td>{{ zoom.account}}</td>
+                    <td>
+                        {% if zoom.teacher %}
+                            {{zoom.teacher.user.full_name()}}
+                        {% else %}
+                            Teacher Not Assigned
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form id="rem_form" method="POST" action="">
+                            {{ rem_form.hidden_tag() }}
+                            {{ rem_form.rem_id(value=zoom.id, type="hidden")}}
+                            {{ rem_form.remove(class="btn btn-dark") }}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
