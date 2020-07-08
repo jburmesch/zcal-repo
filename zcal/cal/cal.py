@@ -154,6 +154,7 @@ def t_cal(u_id):
         Schedule.start,
         Schedule.duration
     ).all()
+    zoom = Teacher.query.filter_by(user_id=u_id).first().zoom
     a_dict = {}
     m_dict = {}
     for sched in schedules:
@@ -214,6 +215,7 @@ def t_cal(u_id):
     # generate template
     return render_template(
         'calendar.html',
+        zoom=zoom,
         ts_form=ts_form,
         timeslots=timeslots,
         schedules=schedules,

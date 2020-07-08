@@ -1,9 +1,9 @@
 from flask import (
     request, redirect, url_for, Blueprint, current_app, flash, render_template
 )
-from zcal.zoom.zoom_forms import ZoomForm
+from zcal.zoom.zoom_forms import ZoomForm, ZoomlessTeachers
 from zcal.admin.admin_forms import RemoveForm
-from zcal.models import Zoom
+from zcal.models import Zoom, Teacher
 from zcal import db
 from flask_login import login_required
 import requests
@@ -17,9 +17,17 @@ zoom = Blueprint('zoom', __name__, url_prefix='/zoom')
 def manage():
     oauth_form = ZoomForm()
     rem_form = RemoveForm()
+    zl_teachers = Teacher.query.filter_by(zoom=None).all()
+    t_form = ZoomlessTeachers()
+    t_form.teachers.choices = [(t.id, t.user.full_name()) for t in zl_teachers]
     zooms = Zoom.query.all()
+    if t_form.validate_on_submit():
+        t = Teacher.query.filter_by(id=t_form.teachers.data).first()
+        t.zoom_id = t_form.zm_id.data
+        db.session.commit()
     return render_template(
         'zoom.html',
+        t_form=t_form,
         oauth_form=oauth_form,
         zooms=zooms,
         rem_form=rem_form
@@ -69,14 +77,21 @@ def zoom_auth():
             'https://api.zoom.us/v2/users/me',
             headers={'Authorization': 'Bearer ' + access}
         ).json()
-        new_account = Zoom(
-            account=z_user['email'],
-            zoom_account_id=z_user['id'],
-            refresh=refresh
-        )
-        db.session.add(new_account)
-        db.session.commit()
-        flash('Zoom Account Successfully added!', 'success')
-        return redirect(url_for('zoom.manage'))
+        old_account = Zoom.query.filter_by(account=z_user['email']).first()
+        if old_account:
+            flash('That account has already been registered! Go to the zoom'
+                  + ' homepage and log out if you\'d like to register a'
+                  + 'different account.', 'danger')
+            return redirect(url_for('zoom.manage'))
+        else:
+            new_account = Zoom(
+                account=z_user['email'],
+                zoom_account_id=z_user['id'],
+                refresh=refresh
+            )
+            db.session.add(new_account)
+            db.session.commit()
+            flash('Zoom Account Successfully added!', 'success')
+            return redirect(url_for('zoom.manage'))
     else:
         return redirect(url_for('zoom.manage'))

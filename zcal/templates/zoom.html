@@ -22,16 +22,26 @@
                     <td>{{ zoom.account}}</td>
                     <td>
                         {% if zoom.teacher %}
-                            {{zoom.teacher.user.full_name()}}
+                            {{ zoom.teacher.user.full_name() }}
+                        {% elif t_form.teachers.choices %}
+                            <form id="t_form" method="POST" action="" style="display: inline">
+                                {{ t_form.hidden_tag() }}
+                                {{ t_form.teachers(class="form-control in-frm in-select") }}
+                                {{ t_form.zm_id(type="hidden", value=zoom.id)}}
                         {% else %}
-                            Teacher Not Assigned
+                            No Teachers Available
                         {% endif %}
                     </td>
                     <td>
-                        <form id="rem_form" method="POST" action="">
+                        
+                            {% if not zoom.teacher and t_form.teachers.choices %}
+                                {{ t_form.submit(class="btn btn-dark in-frm in-btn") }}
+                                </form>
+                            {% endif %}
+                        <form id="rem_form" method="POST" action="" style="display: inline">
                             {{ rem_form.hidden_tag() }}
                             {{ rem_form.rem_id(value=zoom.id, type="hidden")}}
-                            {{ rem_form.remove(class="btn btn-dark") }}
+                            {{ rem_form.remove(value='Remove Account', class="btn btn-dark") }}
                         </form>
                     </td>
                 </tr>

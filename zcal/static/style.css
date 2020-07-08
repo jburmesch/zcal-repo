@@ -64,7 +64,11 @@ main .form-control
     padding-bottom: 0px;
 }
 
-.tsdiv
+.in-frm
 {
-    max-width: 15em;
+    display: inline;
+    margin-left: 2px;
+    margin-right: 2px;
 }
+
+

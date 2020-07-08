@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
     {% if current_user.utype == 'Admin' %}
-        {{ admin_menu(ts_form, timeslots, u_id) }}
+        {{ admin_menu(ts_form, timeslots, u_id, zoom) }}
     {% endif %}
     <table class="table table-bordered table-dark calmonth">
         <div class="caltitle">
@@ -36,6 +36,7 @@
             {% endif %}
         {% endfor %}
     </table>
+    {% if sched_json %}
     <div class="modal fade" id="scheduler" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -74,10 +75,13 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}
 {% block scripts %}
 <script>
-    var avail = JSON.parse('{{ sched_json | safe }}')
+    {% if sched_json %}
+        var avail = JSON.parse('{{ sched_json | safe }}')
+    {% endif %}
     function get_slots()
     {
         form = document.getElementById("slot_form");
@@ -117,7 +121,7 @@
         document.querySelector('#navform').submit();
     }
 
-
+{% if sched_json %}
     function show_scheduler(day)
     {
         $('#scheduler').modal();
@@ -174,6 +178,6 @@
             selObj.remove(child)
         }
     }
-    
+{% endif %}    
 </script>
 {% endblock %}

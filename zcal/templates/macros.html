@@ -40,7 +40,7 @@
 {% endmacro %}
 
 <!-- ######################################################################## -->
-{% macro admin_menu(ts_form, timeslots, u_id) %}
+{% macro admin_menu(ts_form, timeslots, u_id, zoom) %}
     <table class="table">
         <tr>
             {% if zoom %}
@@ -81,7 +81,7 @@
             {% endif %}
             <td>
                 {% if zoom %}
-                    <h4>{{ zoom }}</h4>
+                    <h4>{{ zoom.account }}</h4>
                 {% else %}
                     <h4>Please go to "Manage Zooms" to set up a zoom account for this teacher.</h4>
                 {% endif %}
