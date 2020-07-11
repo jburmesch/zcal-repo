@@ -176,6 +176,7 @@ class Zoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account = db.Column(db.String(), nullable=False)
     zoom_account_id = db.Column(db.String(), nullable=False)
+    access = db.Column(db.String(), nullable=False)
     refresh = db.Column(db.String(), nullable=False)
 
     def __repr__(self):

@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
 from zcal.models import Student, Teacher, Timeslot, Schedule, User, Meeting
 from zcal import db
+from zcal.zoom.zoom import schedule_zoom
 from datetime import date
 from math import floor
 import calendar
@@ -71,17 +72,21 @@ def stu_cal(u_id):
     mod = request.args.get("mod")
     # ADD VALIDATION TO THIS!
     if request.method == 'POST':
+        '''
         # CHECK THAT ID IS INT AND IN SCHED LIST!
+        # ALSO CHECK THAT THE MEETING DOESN'T ALREADY EXIST!
+        '''
         sched = Schedule.query.filter_by(
             id=request.form.get("time_list")
         ).first()
         mtg = Meeting(
-            student_id=u_id,
+            student_id=Student.query.filter_by(user_id=u_id).first().id,
         )
         db.session.add(mtg)
         db.session.commit()
         sched.meeting_id = mtg.id
         db.session.commit()
+        schedule_zoom(sched)
 
     # figure out which month should be displayed based on the current date
     # and the month modifier.
@@ -109,9 +114,16 @@ def stu_cal(u_id):
     # create calendar object and list of days.
     c = calendar.Calendar()
     caldays = c.itermonthdays2(year, month)
+    meetings = Meeting.query.join(Student, Schedule).filter(
+        Student.user_id == u_id,
+        Schedule.date >= date(date.today().year, month, 1),
+        Schedule.date < date(date.today().year, month + 1, 1)
+    ).all()
+
     # return the template
     return render_template(
         'calendar.html',
+        meetings=meetings,
         caldays=caldays,
         yr=year,
         mon_num=month,
@@ -154,7 +166,9 @@ def t_cal(u_id):
         Schedule.start,
         Schedule.duration
     ).all()
+    # get teacher's zoom account email
     zoom = Teacher.query.filter_by(user_id=u_id).first().zoom
+    # Definitely comment this better some time...
     a_dict = {}
     m_dict = {}
     for sched in schedules:

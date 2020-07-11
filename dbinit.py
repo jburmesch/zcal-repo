@@ -178,17 +178,20 @@ def create_zooms():
         Zoom(
             account="account1@zoom.com",
             zoom_account_id='abcdefghijklmnopqrstuvwxyz',
-            refresh='sda;flkjhew083h20fisdh08823y04uhfg0ewyh408hf'
+            refresh='sda;flkjhew083h20fisdh08823y04uhfg0ewyh408hf',
+            access='sdlkfhweljhsdflfhwe'
         ),
         Zoom(
             account="account2@zoom.com",
             zoom_account_id='sdlkfhweournsdlkvhowo',
-            refresh='dslfhw39ouvbdlfivh2o834hfv97sdheef09fo8h230'
+            refresh='dslfhw39ouvbdlfivh2o834hfv97sdheef09fo8h230',
+            access='sdlfkhwep;fuoihwefiugszdaliuga'
         ),
         Zoom(
             account="account3@zoom.com",
             zoom_account_id='sldkfhwoeunvuo9sghviwue',
-            refresh='hsdoufebwovclskjdehygoeughfoshf03128yt4923uhgtf9s7dyt3'
+            refresh='hsdoufebwovclskjdehygoeughfoshf03128yt4923uhgtf9s7dyt3',
+            access='sdlfh2w9euhfowuhefpofihds00832hrfslkdyhoeyr'
         )
     ]
     return zooms

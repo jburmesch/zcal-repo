@@ -20,6 +20,9 @@
                     {% if a_dict[d[0]] %}
                         <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ a_dict[d[0]] }} Open</button>
                     {% endif %}
+                    {% if m_dict[d[0]] %}
+                        <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ m_dict[d[0]]['start'].isoformat(timespec='minutes')  }} {{ m_dict[d[0]]['student'] }}</button>
+                    {% endif %}
                 {% endif %}
         </td>
     {% endif %}

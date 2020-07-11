@@ -37,8 +37,6 @@ def manage():
 @zoom.route('/zoom-auth', methods=['GET', 'POST'])
 @login_required
 def zoom_auth():
-    o_id = current_app.config['OAUTH_ID']
-    o_sec = current_app.config['OAUTH_SECRET']
     oauth_form = ZoomForm()
     code = request.args.get('code')
     # redirect to zoom's oauth authorization page if the form
@@ -46,19 +44,13 @@ def zoom_auth():
     if oauth_form.validate_on_submit():
         return redirect(
             'https://zoom.us/oauth/authorize'
-            + f'?response_type=code&client_id={o_id}'
+            + f'?response_type=code&client_id={current_app.config["OAUTH_ID"]}'
             + f'&redirect_uri={url_for("zoom.zoom_auth", _external=True)}'
         )
     # if the user was redirected back here with a code, use that
     # to get access and refresh codes for their account.
     if code:
-        # create oauth_id:oauth_secret authorization header
-        s = o_id + ':' + o_sec
-        # must be 'Basic' followed by string containing base64 encoded s
-        headers = {
-            'Authorization': 'Basic ' + str(encode64(s.encode("utf-8")),
-                                            "utf-8")
-        }
+        headers = auth_headers()
         # prepare data for request
         data = {
             'grant_type': 'authorization_code',
@@ -75,7 +67,7 @@ def zoom_auth():
         refresh = r['refresh_token']
         z_user = requests.get(
             'https://api.zoom.us/v2/users/me',
-            headers={'Authorization': 'Bearer ' + access}
+            headers=auth_headers(access)
         ).json()
         old_account = Zoom.query.filter_by(account=z_user['email']).first()
         if old_account:
@@ -87,7 +79,8 @@ def zoom_auth():
             new_account = Zoom(
                 account=z_user['email'],
                 zoom_account_id=z_user['id'],
-                refresh=refresh
+                refresh=refresh,
+                access=access
             )
             db.session.add(new_account)
             db.session.commit()
@@ -95,3 +88,65 @@ def zoom_auth():
             return redirect(url_for('zoom.manage'))
     else:
         return redirect(url_for('zoom.manage'))
+
+
+def auth_headers(access_token=None):
+    if access_token:
+        return {
+            'Authorization': 'Bearer ' + access_token
+        }
+    else:
+        o_id = current_app.config['OAUTH_ID']
+        o_sec = current_app.config['OAUTH_SECRET']
+        # create oauth_id:oauth_secret authorization header
+        s = o_id + ':' + o_sec
+        # must be 'Basic' followed by string containing base64 encoded s
+        return {
+            'Authorization': 'Basic ' + str(encode64(s.encode("utf-8")),
+                                            "utf-8")
+        }
+
+
+def refresh(zoom):
+    ref = zoom.refresh
+    data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': ref
+    }
+    r = requests.post(
+        'https://zoom.us/oauth/token',
+        data=data,
+        headers=auth_headers()
+    ).json()
+    ''' do we need to commit this?'''
+    zoom.refresh = r['refresh_token']
+    zoom.access = r['access_token']
+    db.session.commit()
+    return r['access_token']
+
+
+'''invalid content type?'''
+
+
+def schedule_zoom(schedule):
+    t = schedule.teacher
+    z = t.zoom
+    access = refresh(z)
+    data = {
+        'duration': schedule.duration,
+        'password': schedule.meeting.student.course.code,
+        'start_time': f'{schedule.date.year}-{schedule.date.month}'
+        + f'-{schedule.date.day}T{schedule.start.hour}'
+        + f':{schedule.start.minute}:00',
+        'timezone': 'Asia/Tokyo',
+        'topic': schedule.meeting.student.course.name + ' w/ '
+        + schedule.meeting.student.user.full_name(),
+        'type': 2
+    }
+    r = requests.post(
+        'https://api.zoom.us/v2/users/me/meetings',
+        json=data,
+        headers=auth_headers(access)
+    )
+    print(r)
+    flash('Zoom meeting created!')
