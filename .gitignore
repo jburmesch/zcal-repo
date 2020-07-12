@@ -7,5 +7,6 @@ zcal/routes/temppass.txt
 zcal/zcal.db
 instance
 zcal/config.py
+zcal/static/Aicon.ico
 *.pyc
 *.bak
