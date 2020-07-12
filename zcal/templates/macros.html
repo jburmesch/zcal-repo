@@ -10,18 +10,25 @@
                 <div></div>
             </div>
             <hr>
-                {% if current_user.utype == 'Student' %}
+                {% if cal_type == 'student' %}
                     {% if a_dict[d[0]] %}
                         <div>
                             <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{d[0]}})">要約 ({{ a_dict[d[0]] }})</button>
                         </div>
+                    {% endif %}
+                    {% if m_dict[d[0]] %}
+                        {% for mtg in m_dict[d[0]] %}
+                            <button class="btn btn-secondary btn-sm sub-btn" id='open{{ d[0] }}'>{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['teacher'] }}</button>
+                        {% endfor %}
                     {% endif %}
                 {% else %}
                     {% if a_dict[d[0]] %}
                         <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ a_dict[d[0]] }} Open</button>
                     {% endif %}
                     {% if m_dict[d[0]] %}
-                        <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ m_dict[d[0]]['start'].isoformat(timespec='minutes')  }} {{ m_dict[d[0]]['student'] }}</button>
+                        {% for mtg in m_dict[d[0]] %}
+                            <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'>{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['student'] }}</button>
+                        {% endfor %}
                     {% endif %}
                 {% endif %}
         </td>

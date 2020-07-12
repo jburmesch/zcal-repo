@@ -63,18 +63,23 @@ def zoom_auth():
             data=data,
             headers=headers,
         ).json()
+        # save the access and refresh tokens
         access = r['access_token']
         refresh = r['refresh_token']
+        # make request for user info.
         z_user = requests.get(
             'https://api.zoom.us/v2/users/me',
             headers=auth_headers(access)
         ).json()
+        # query db to see if the zoom account is already registered and error
+        # if so.
         old_account = Zoom.query.filter_by(account=z_user['email']).first()
         if old_account:
             flash('That account has already been registered! Go to the zoom'
                   + ' homepage and log out if you\'d like to register a'
                   + 'different account.', 'danger')
             return redirect(url_for('zoom.manage'))
+        # add zoom account to db
         else:
             new_account = Zoom(
                 account=z_user['email'],
@@ -86,15 +91,19 @@ def zoom_auth():
             db.session.commit()
             flash('Zoom Account Successfully added!', 'success')
             return redirect(url_for('zoom.manage'))
+    # if nothing useful was submitted
     else:
         return redirect(url_for('zoom.manage'))
 
 
+# return appropriate authorization header for api authorization or request
 def auth_headers(access_token=None):
+    # if an access token is provided, assume it's an api request
     if access_token:
         return {
             'Authorization': 'Bearer ' + access_token
         }
+    # otherwise return headers for an auth request
     else:
         o_id = current_app.config['OAUTH_ID']
         o_sec = current_app.config['OAUTH_SECRET']
@@ -107,31 +116,36 @@ def auth_headers(access_token=None):
         }
 
 
+# refresh access token (they expire after 1 hour.)
 def refresh(zoom):
+    # store data
     ref = zoom.refresh
     data = {
         'grant_type': 'refresh_token',
         'refresh_token': ref
     }
+    # make request
     r = requests.post(
         'https://zoom.us/oauth/token',
         data=data,
         headers=auth_headers()
     ).json()
-    ''' do we need to commit this?'''
+    # store new refresh and access tokens
     zoom.refresh = r['refresh_token']
     zoom.access = r['access_token']
+    # commit is important!
     db.session.commit()
+    # return access token
     return r['access_token']
 
 
-'''invalid content type?'''
-
-
+# add zoom meeting to zoom account via api
 def schedule_zoom(schedule):
     t = schedule.teacher
     z = t.zoom
+    # get a fresh access token
     access = refresh(z)
+    # content of request
     data = {
         'duration': schedule.duration,
         'password': schedule.meeting.student.course.code,
@@ -143,10 +157,18 @@ def schedule_zoom(schedule):
         + schedule.meeting.student.user.full_name(),
         'type': 2
     }
+    # make request (data must be submit as json!)
     r = requests.post(
         'https://api.zoom.us/v2/users/me/meetings',
         json=data,
         headers=auth_headers(access)
-    )
+    ).json()
+    ''' ADD VALIDATION THAT IT WORKED '''
     print(r)
-    flash('Zoom meeting created!')
+    if r['uuid']:
+        flash('Zoom meeting created!', 'success')
+    else:
+        flash(
+            'Zoom meeting creation failed!, please contact administrator!',
+            'danger'
+        )

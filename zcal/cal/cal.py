@@ -3,7 +3,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule, User, Meeting
+from zcal.models import Student, Teacher, Timeslot, Schedule, Meeting
 from zcal import db
 from zcal.zoom.zoom import schedule_zoom
 from datetime import date
@@ -104,7 +104,6 @@ def stu_cal(u_id):
     sched_json = get_json(schedules)
 
     a_dict = {}
-
     for sched in schedules:
         d = sched.date.day
         if d in a_dict.keys():
@@ -119,11 +118,40 @@ def stu_cal(u_id):
         Schedule.date >= date(date.today().year, month, 1),
         Schedule.date < date(date.today().year, month + 1, 1)
     ).all()
+    m_dict = {}
+    for m in meetings:
+        d = m.schedule.date.day
+        d = m.schedule.date.day
+        t = m.schedule.teacher.user.full_name()
+        dt = m.schedule.date
+        st = m.schedule.start
+        et = m.schedule.end
+        stu = m.schedule.meeting.student.user.full_name()
+        dur = m.schedule.duration
 
+        if d in m_dict.keys():
+            m_dict[d].append({
+                'date': dt,
+                'start': st,
+                'end': et,
+                'duration': dur,
+                'student': stu,
+                'teacher': t
+            })
+        else:
+            m_dict[d] = [{
+                'date': dt,
+                'start': st,
+                'end': et,
+                'duration': dur,
+                'student': stu,
+                'teacher': t
+            }]
     # return the template
     return render_template(
         'calendar.html',
-        meetings=meetings,
+        cal_type='student',
+        m_dict=m_dict,
         caldays=caldays,
         yr=year,
         mon_num=month,
@@ -174,23 +202,30 @@ def t_cal(u_id):
     for sched in schedules:
         if sched.meeting_id:
             d = sched.date.day
-            t = User.query.filter(User.id == u_id).first().full_name()
+            t = sched.teacher.user.full_name()
             dt = sched.date
             st = sched.start
             et = sched.end
             stu = sched.meeting.student.user.full_name()
             dur = sched.duration
             if d in m_dict.keys():
-                pass
-            else:
-                m_dict[d] = {
+                m_dict[d].append({
                     'date': dt,
                     'start': st,
                     'end': et,
                     'duration': dur,
                     'student': stu,
                     'teacher': t
-                }
+                })
+            else:
+                m_dict[d] = [{
+                    'date': dt,
+                    'start': st,
+                    'end': et,
+                    'duration': dur,
+                    'student': stu,
+                    'teacher': t
+                }]
         else:
             d = sched.date.day
             if d in a_dict.keys():
@@ -229,6 +264,7 @@ def t_cal(u_id):
     # generate template
     return render_template(
         'calendar.html',
+        cal_type='teacher',
         zoom=zoom,
         ts_form=ts_form,
         timeslots=timeslots,
@@ -291,6 +327,7 @@ def process_mod(year, month, mod):
     return (year, month)
 
 
+# create json of schedule data to be used on front end.
 def get_json(schedules):
     # key = day number, value = teacher dict
     sched_dict = {}
