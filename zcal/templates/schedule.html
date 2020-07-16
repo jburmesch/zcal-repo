@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h1>Meeting Schedule</h1>
+        <hr>
+    	<table class="table">
+            <tr>
+            	<th>Course Code</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Teacher</th>
+                <th>Student</th>
+                <th>Options</th>
+            </tr>
+            {% for meeting in meetings %}
+        		<tr>
+            		<td>{{meeting.student.course}}</td>
+                    <td>{{meeting.schedule.start}}</td>
+                    <td>{{meeting.schedule.end}}</td>
+                    <td>{{meeting.schedule.teacher}}</td>
+                    <td>{{meeting.student}}</td>
+                    <td>Coming Soon</td>
+        		</tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% if teacher %}
+        <div class="container">
+            <h1>Open Timeslots</h1>
+            <hr>
+            <table class="table">
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Options</th>
+                </tr>
+                {% for schedule in schedules %}
+                    <tr>
+                        <td>{{schedule.start}}</td>
+                        <td>{{schedule.end}}</td>
+                        <td>Coming Soon</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

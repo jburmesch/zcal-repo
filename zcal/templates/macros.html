@@ -18,7 +18,7 @@
                     {% endif %}
                     {% if m_dict[d[0]] %}
                         {% for mtg in m_dict[d[0]] %}
-                            <button class="btn btn-secondary btn-sm sub-btn" id='open{{ d[0] }}'>{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['teacher'] }}</button>
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="location.href='{{ url_for('cal.s_meetings', date=yr + '-' + m + '-' + d, u_id=u_id) }}';" id='open{{ d[0] }}'>{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['teacher'] }}</button>
                         {% endfor %}
                     {% endif %}
                 {% else %}

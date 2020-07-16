@@ -36,6 +36,7 @@ def schedule():
 @calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def cal(u_id=0):
+    '''MAKE SURE USER EXISTS'''
     u_id = request.args.get("u_id")
     mod = request.args.get("mod")
     # if there's no month modifier, set it to 0.
@@ -195,7 +196,12 @@ def t_cal(u_id):
         Schedule.duration
     ).all()
     # get teacher's zoom account email
-    zoom = Teacher.query.filter_by(user_id=u_id).first().zoom
+    '''MAKE SURE IT EXISTS'''
+    t = Teacher.query.filter_by(user_id=u_id).first()
+    if t:
+        zoom = t.zoom
+    else:
+        zoom = None
     # Definitely comment this better some time...
     a_dict = {}
     m_dict = {}

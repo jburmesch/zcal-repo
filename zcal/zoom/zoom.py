@@ -163,8 +163,6 @@ def schedule_zoom(schedule):
         json=data,
         headers=auth_headers(access)
     ).json()
-    ''' ADD VALIDATION THAT IT WORKED '''
-    print(r)
     if r['uuid']:
         flash('Zoom meeting created!', 'success')
     else:
