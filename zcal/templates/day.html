@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class="container">
-        <h1>Meeting Schedule</h1>
+        <h1>Meeting Schedule: {{ date }}</h1>
         <hr>
     	<table class="table">
             <tr>
@@ -14,11 +14,11 @@
             </tr>
             {% for meeting in meetings %}
         		<tr>
-            		<td>{{meeting.student.course}}</td>
-                    <td>{{meeting.schedule.start}}</td>
-                    <td>{{meeting.schedule.end}}</td>
-                    <td>{{meeting.schedule.teacher}}</td>
-                    <td>{{meeting.student}}</td>
+            		<td>{{meeting.student.course.name}}</td>
+                    <td>{{meeting.schedule.start.isoformat(timespec='minutes')}}</td>
+                    <td>{{meeting.schedule.end.isoformat(timespec='minutes')}}</td>
+                    <td>{{meeting.schedule.teacher.user.full_name()}}</td>
+                    <td>{{meeting.student.user.full_name()}}</td>
                     <td>Coming Soon</td>
         		</tr>
             {% endfor %}
