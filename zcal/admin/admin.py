@@ -184,7 +184,7 @@ def timeslots():
             flash('Timeslot Added!')
             return redirect(url_for('admin.timeslots'))
         elif rem_form.validate_on_submit():
-            slot = Timeslot.query.filter_by(id=rem_form.item_id.data).first()
+            slot = Timeslot.query.filter_by(id=rem_form.rem_id.data).first()
             if slot:
                 db.session.delete(slot)
                 db.session.commit()
