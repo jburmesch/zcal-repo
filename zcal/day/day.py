@@ -25,11 +25,11 @@ def t_meetings(date, u_id):
     ).all()
 
     meetings = Meeting.query.join(
-        Student
-    ).join(
         Schedule
+    ).join(
+        Teacher
     ).filter(
-        Student.user_id == u_id
+        Teacher.user_id == u_id
     ).filter(
         Schedule.date == datetime.date(
             year=int(date_parts[0]),
@@ -40,6 +40,7 @@ def t_meetings(date, u_id):
 
     return render_template(
         'day.html',
+        teacher=True,
         date=date,
         meetings=meetings,
         schedules=schedules
@@ -67,5 +68,6 @@ def s_meetings(date, u_id):
     return render_template(
         'day.html',
         date=date,
-        meetings=meetings
+        meetings=meetings,
+        teacher=False
     )
