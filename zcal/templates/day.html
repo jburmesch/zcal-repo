@@ -19,7 +19,13 @@
                     <td>{{meeting.schedule.end.isoformat(timespec='minutes')}}</td>
                     <td>{{meeting.schedule.teacher.user.full_name()}}</td>
                     <td>{{meeting.student.user.full_name()}}</td>
-                    <td>Coming Soon</td>
+                    <td>
+                        <form id="m_rem_form" method="POST" action="">
+                            {{ rem_form.hidden_tag() }}
+                            {{ rem_form.rem_id(value=meeting.id, type="hidden")}}
+                            {{ rem_form.remove(class="btn btn-dark") }}
+                        </form>
+                    </td>
         		</tr>
             {% endfor %}
         </table>
@@ -38,7 +44,13 @@
                     <tr>
                         <td>{{schedule.start}}</td>
                         <td>{{schedule.end}}</td>
-                        <td>Coming Soon</td>
+                        <td>
+                            <form id="s_rem_form" method="POST" action="">
+                                {{ rem_form.hidden_tag() }}
+                                {{ rem_form.rem_id(value=schedule.id, type="hidden")}}
+                                {{ rem_form.remove(class="btn btn-dark") }}
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>

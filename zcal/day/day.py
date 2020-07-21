@@ -1,5 +1,7 @@
 from flask import (render_template, Blueprint)
 from flask_login import login_required
+from zcal import db
+from zcal.admin.admin_forms import RemoveForm
 from zcal.models import Meeting, Student, Schedule, Teacher
 import datetime
 
@@ -11,6 +13,16 @@ day = Blueprint('day', __name__)
 @login_required
 def t_meetings(date, u_id):
     date_parts = date.split("-")
+    m_rem_form = RemoveForm
+    s_rem_form = RemoveForm
+    
+    # remove timeslot when remove form is submitted.
+    if s_rem_form.validate_on_submit():
+        r_sched = Schedule.query.filter_by(
+            id == s_rem_form.rem_id.data
+        ).first()
+        db.session.delete(r_sched)
+        db.session.commit()
 
     schedules = Schedule.query.join(
         Teacher
@@ -43,7 +55,9 @@ def t_meetings(date, u_id):
         teacher=True,
         date=date,
         meetings=meetings,
-        schedules=schedules
+        schedules=schedules,
+        m_rem_form=m_rem_form,
+        s_rem_form=s_rem_form
     )
 
 
