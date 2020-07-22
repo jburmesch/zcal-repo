@@ -3,7 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from models import Course
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -30,7 +29,7 @@ def create_app(test_config=None):
         app.config.from_pyfile('config.py', silent=True)
     else:
         # load the test config if passed in
-        app.config.from_mapping(test_config)
+        app.config.from_pyfile('testconfig.py', silent=True)
 
     try:
         os.makedirs(app.instance_path)
@@ -54,6 +53,7 @@ def create_app(test_config=None):
 
 # BE CAREFUL WITH THIS
 def init_db():
+    from zcal.models import Course
     db.drop_all()
     db.create_all()
     course = create_course()
@@ -70,6 +70,7 @@ def init_db():
 
 
 def create_course():
+    from zcal.models import Course
     course = Course(
         name='ADMIN',
         code='ADMIN'
