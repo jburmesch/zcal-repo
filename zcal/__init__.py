@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from models import Course
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -49,3 +50,28 @@ def create_app(test_config=None):
         app.register_blueprint(day)
 
     return app
+
+
+# BE CAREFUL WITH THIS
+def init_db():
+    db.drop_all()
+    db.create_all()
+    course = create_course()
+
+    db.session.add(course)
+    db.session.commit()
+
+    print('\n')
+    print(
+        'Database has been reinitialized.'
+        + 'The next user to register will be admin!'
+    )
+    print(Course.query.all())
+
+
+def create_course():
+    course = Course(
+        name='ADMIN',
+        code='ADMIN'
+    )
+    return course
