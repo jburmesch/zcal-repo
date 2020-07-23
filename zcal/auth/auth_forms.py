@@ -44,17 +44,17 @@ class RegistrationForm(FlaskForm):
         course = Course.query.filter_by(code=code.data).first()
         # make it so admin code only works for first user
         # to log in with admin course
-        if course.id == 1:
-            user = User.query.all()
-            if user:
-                raise ValidationError(
-                    'Course code not found.'
-                )
         # otherwise, make sure course exists
         if not course:
             raise ValidationError(
                 'Course code not found.'
             )
+        elif course.id == 1:
+            user = User.query.all()
+            if user:
+                raise ValidationError(
+                    'Course code not found.'
+                )
 
 
 class LoginForm(FlaskForm):

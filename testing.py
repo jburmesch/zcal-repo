@@ -7,7 +7,7 @@ from zcal.models import (
 )
 
 
-class MyTest(TestCase):
+class AuthTest(TestCase):
 
     def create_app(self):
         app = create(True)
@@ -22,81 +22,11 @@ class MyTest(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_db(self):
+    @staticmethod
+    def pr(title, response):
+        print(f'\n{title}: \n{str(response)}')
 
-        course = self.create_course()
-        users = self.create_users()
-        teachers = self.create_teachers()
-        students = self.create_students()
-        schedules = self.create_schedules()
-        zooms = self.create_zooms()
-        meetings = self.create_meetings()
-        timeslots = self.create_timeslots()
-
-        db.session.add(course)
-        db.session.commit()
-        assert Course.query.first().name == 'ADMIN'
-
-        for user in users:
-            db.session.add(user)
-        db.session.commit()
-        users = User.query.all()
-        for user in users:
-            assert user.full_name()
-
-        for student in students:
-            db.session.add(student)
-        db.session.commit()
-        students = Student.query.all()
-        for student in students:
-            assert student.course.name == 'ADMIN'
-            assert student.user.full_name()
-
-        for teacher in teachers:
-            db.session.add(teacher)
-        db.session.commit()
-
-        for meeting in meetings:
-            db.session.add(meeting)
-        db.session.commit()
-
-        for schedule in schedules:
-            db.session.add(schedule)
-        db.session.commit()
-
-        for slot in timeslots:
-            db.session.add(slot)
-        db.session.commit
-
-        meetings = Meeting.query.all()
-        for meeting in meetings:
-            assert meeting.student.user.full_name()
-            assert meeting.schedule.teacher.user.full_name()
-
-        for zoom in zooms:
-            db.session.add(zoom)
-        db.session.commit()
-
-        zooms = Zoom.query.all()
-        for zoom in zooms:
-            assert zoom.account
-
-        teachers = Teacher.query.all()
-        for teacher in teachers:
-            assert teacher.user.full_name()
-
-        timeslots = Timeslot.query.all()
-        for timeslot in timeslots:
-            assert Timeslot.start
-
-        db.drop_all()
-        db.create_all()
-
-        course = self.create_course()
-
-        db.session.add(course)
-        db.session.commit()
-
+    '''Helper methods for DB testing'''
     @staticmethod
     def create_course():
         course = Course(
@@ -250,8 +180,9 @@ class MyTest(TestCase):
             ),
         ]
         return timeslots
+    '''*********************'''
 
-    # log in using passed in email and password
+    '''Helper Methods'''
     def login(self, email, password):
         return self.client.post('/auth/login', data=dict(
             email=email,
@@ -261,23 +192,25 @@ class MyTest(TestCase):
     def logout(self):
         return self.get('/logout', follow_redirects=True)
 
-    # register using passed in info
-    def register(self, course, first, last, email, password):
+    def register(self, code, first, last, email, password,
+                 confirm_password):
         return self.client.post('/auth/register', data=dict(
-            course=course,
+            code=code,
             first=first,
             last=last,
             email=email,
-            password=password
-        ))
+            password=password,
+            confirm_password=confirm_password
+        ), follow_redirects=True)
 
     def register_admin(self):
         return self.register(
-            course='ADMIN',
+            code='ADMIN',
             first='Test',
             last='Admin',
             email='test@admin.com',
-            password='testpass'
+            password='testpass',
+            confirm_password='testpass'
         )
 
     def login_admin(self):
@@ -288,11 +221,12 @@ class MyTest(TestCase):
 
     def register_student(self):
         return self.register(
-            course='TEST',
+            code='TEST',
             first='Test',
             last='Student',
             email='test@student.com',
-            password='testpass'
+            password='testpass',
+            confirm_password='testpass'
         )
 
     def login_student(self):
@@ -301,23 +235,112 @@ class MyTest(TestCase):
             password='testpass'
         )
 
-    @staticmethod
-    def pr(title, response):
-        print(f'\n{title}: \n{str(response)}')
+    '''Tests'''
+    def test_db(self):
+
+        course = self.create_course()
+        users = self.create_users()
+        teachers = self.create_teachers()
+        students = self.create_students()
+        schedules = self.create_schedules()
+        zooms = self.create_zooms()
+        meetings = self.create_meetings()
+        timeslots = self.create_timeslots()
+
+        db.session.add(course)
+        db.session.commit()
+        assert Course.query.first().name == 'ADMIN'
+
+        for user in users:
+            db.session.add(user)
+        db.session.commit()
+        users = User.query.all()
+        for user in users:
+            assert user.full_name()
+
+        for student in students:
+            db.session.add(student)
+        db.session.commit()
+        students = Student.query.all()
+        for student in students:
+            assert student.course.name == 'ADMIN'
+            assert student.user.full_name()
+
+        for teacher in teachers:
+            db.session.add(teacher)
+        db.session.commit()
+
+        for meeting in meetings:
+            db.session.add(meeting)
+        db.session.commit()
+
+        for schedule in schedules:
+            db.session.add(schedule)
+        db.session.commit()
+
+        for slot in timeslots:
+            db.session.add(slot)
+        db.session.commit
+
+        meetings = Meeting.query.all()
+        for meeting in meetings:
+            assert meeting.student.user.full_name()
+            assert meeting.schedule.teacher.user.full_name()
+
+        for zoom in zooms:
+            db.session.add(zoom)
+        db.session.commit()
+
+        zooms = Zoom.query.all()
+        for zoom in zooms:
+            assert zoom.account
+
+        teachers = Teacher.query.all()
+        for teacher in teachers:
+            assert teacher.user.full_name()
+
+        timeslots = Timeslot.query.all()
+        for timeslot in timeslots:
+            assert Timeslot.start
+
+        db.drop_all()
+        db.create_all()
+
+        course = self.create_course()
+
+        db.session.add(course)
+        db.session.commit()
 
     def test_main(self):
         response = self.client.get("/", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
         self.pr('Main', response)
-        assert response.status_code == 200
 
     def test_register(self):
+        course1 = Course(name='ADMIN', code='ADMIN')
+        course2 = Course(name='TEST', code='TEST')
+        db.session.add(course1)
+        db.session.add(course2)
+        db.session.commit()
+
         response = self.register_admin()
-        assert response.status_code == 200
+        self.assertEqual(response.status_code, 200)
         self.pr('Reg Admin', response)
 
         response = self.register_student()
-        assert response.status_code == 200
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Account Created. Please check your '
+                      + b'email for account validation.', response.data)
         self.pr('Reg Student', response)
+
+        nopass = dict(
+            code='TEST',
+            first='Test',
+            last='Student',
+            email='test@student.com',
+            password=None,
+            confirm_password=None
+        )
 
 
 if __name__ == '__main__':
