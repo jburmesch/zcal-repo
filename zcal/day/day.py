@@ -15,7 +15,7 @@ def t_meetings(date, u_id):
     date_parts = date.split("-")
     m_rem_form = RemoveForm
     s_rem_form = RemoveForm
-    
+
     # remove timeslot when remove form is submitted.
     if s_rem_form.validate_on_submit():
         r_sched = Schedule.query.filter_by(
