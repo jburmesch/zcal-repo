@@ -11,7 +11,6 @@ class MyTest(TestCase):
 
     def create_app(self):
         app = create(True)
-        # pass in test configuration
         return app
 
     def setUp(self):
@@ -92,15 +91,11 @@ class MyTest(TestCase):
 
         db.drop_all()
         db.create_all()
+
         course = self.create_course()
 
         db.session.add(course)
         db.session.commit()
-
-        print('\n')
-        print('Database has been reinitialized.'
-              + 'The next user to register will be admin!')
-        print(Course.query.all())
 
     @staticmethod
     def create_course():
@@ -255,6 +250,74 @@ class MyTest(TestCase):
             ),
         ]
         return timeslots
+
+    # log in using passed in email and password
+    def login(self, email, password):
+        return self.client.post('/auth/login', data=dict(
+            email=email,
+            password=password
+        ), follow_redirects=True)
+
+    def logout(self):
+        return self.get('/logout', follow_redirects=True)
+
+    # register using passed in info
+    def register(self, course, first, last, email, password):
+        return self.client.post('/auth/register', data=dict(
+            course=course,
+            first=first,
+            last=last,
+            email=email,
+            password=password
+        ))
+
+    def register_admin(self):
+        return self.register(
+            course='ADMIN',
+            first='Test',
+            last='Admin',
+            email='test@admin.com',
+            password='testpass'
+        )
+
+    def login_admin(self):
+        return self.login(
+            email='test@admin.com',
+            password='testpass'
+        )
+
+    def register_student(self):
+        return self.register(
+            course='TEST',
+            first='Test',
+            last='Student',
+            email='test@student.com',
+            password='testpass'
+        )
+
+    def login_student(self):
+        return self.login(
+            email='test@student.com',
+            password='testpass'
+        )
+
+    @staticmethod
+    def pr(title, response):
+        print(f'\n{title}: \n{str(response)}')
+
+    def test_main(self):
+        response = self.client.get("/", follow_redirects=True)
+        self.pr('Main', response)
+        assert response.status_code == 200
+
+    def test_register(self):
+        response = self.register_admin()
+        assert response.status_code == 200
+        self.pr('Reg Admin', response)
+
+        response = self.register_student()
+        assert response.status_code == 200
+        self.pr('Reg Student', response)
 
 
 if __name__ == '__main__':
