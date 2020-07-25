@@ -20,16 +20,16 @@ def create_app(test_config=None):
     # secrets.token_hex(16)
     # exit()
 
-    db.init_app(app)
-    bcrypt.init_app(app)
-    login_manager.init_app(app)
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
     else:
         # load the test config if testing
         app.config.from_pyfile('../testing/testconfig.py', silent=True)
+
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
 
     try:
         os.makedirs(app.instance_path)

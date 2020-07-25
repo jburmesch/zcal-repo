@@ -82,7 +82,6 @@ class AuthTest(TestCase):
     def test_main(self):
         response = self.client.get("/", follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        # self.pr('Main', response)
 
     def test_register(self):
         course1 = Course(name='ADMIN', code='ADMIN')
@@ -93,13 +92,11 @@ class AuthTest(TestCase):
 
         response = self.register_admin()
         self.assertEqual(response.status_code, 200)
-        # self.pr('Reg Admin', response)
 
         response = self.register_student()
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Account Created. Please check your '
                       + b'email for account validation.', response.data)
-        # self.pr('Reg Student', response)
 
         response = self.register(
             code='TEST',
@@ -110,7 +107,36 @@ class AuthTest(TestCase):
             confirm_password="t"
         )
         self.assertIn(b'Field must be equal to password.', response.data)
-        # self.pr('Password Mismatch', response)
+
+        response = self.register(
+            code='TEST',
+            first='Test',
+            last='Student',
+            email='t',
+            password="testpass",
+            confirm_password="testpass"
+        )
+        self.assertIn(b'Invalid email address.', response.data)
+
+        response = self.register(
+            code='x',
+            first='Test',
+            last='Student',
+            email='t',
+            password="testpass",
+            confirm_password="testpass"
+        )
+        self.assertIn(b'Course code not found.', response.data)
+
+        response = self.register(
+            code='ADMIN',
+            first='Test',
+            last='Student',
+            email='t@s.com',
+            password="testpass",
+            confirm_password="testpass"
+        )
+        self.assertIn(b'Course code not found.', response.data)
 
 
 if __name__ == "__main__":
