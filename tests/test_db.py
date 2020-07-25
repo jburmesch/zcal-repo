@@ -252,10 +252,7 @@ class AuthTest(TestCase):
         db.drop_all()
         db.create_all()
 
-        course = self.create_course()
-
-        db.session.add(course)
-        db.session.commit()
+        # self.pr('DB Tests', 'Complete')
 
 
 if __name__ == "__main__":
