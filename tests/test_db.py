@@ -1,8 +1,8 @@
 import unittest
 from flask_testing import TestCase
-from zcalendar import create_app as create, db
+from zcal import create_app as create, db
 import datetime
-from zcalendar.zcal.models import (
+from zcal.models import (
     Course, User, Teacher, Schedule, Meeting, Student, Zoom, Timeslot
 )
 
