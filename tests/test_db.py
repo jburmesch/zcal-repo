@@ -1,4 +1,3 @@
-import unittest
 from flask_testing import TestCase
 from zcal import create_app as create, db
 import datetime
@@ -251,9 +250,3 @@ class AuthTest(TestCase):
 
         db.drop_all()
         db.create_all()
-
-        # self.pr('DB Tests', 'Complete')
-
-
-if __name__ == "__main__":
-    unittest.main()
