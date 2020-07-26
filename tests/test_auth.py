@@ -25,6 +25,7 @@ class AuthTest(TestCase):
         db.drop_all()
 
     '''Tests'''
+    # make sure that main is accessible
     def test_main(self):
         response = self.client.get("/", follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -37,14 +38,17 @@ class AuthTest(TestCase):
         db.session.add(course2)
         db.session.commit()
 
+        # check that first user admin registration works.
         response = register_admin(self)
         self.assertEqual(response.status_code, 200)
 
+        # check that student registration works.
         response = register_student(self)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Account Created. Please check your '
                       + b'email for account validation.', response.data)
 
+        # check that mismatched passwords don't work.
         response = register(
             test=self,
             code='TEST',
@@ -56,6 +60,7 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Field must be equal to password.', response.data)
 
+        # check that bad emails don't work
         response = register(
             test=self,
             code='TEST',
@@ -67,6 +72,7 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Invalid email address.', response.data)
 
+        # check that bad course codes don't work.
         response = register(
             test=self,
             code='x',
@@ -78,6 +84,7 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Course code not found.', response.data)
 
+        # check that admin login won't work after first user
         response = register(
             test=self,
             code='ADMIN',
@@ -91,6 +98,7 @@ class AuthTest(TestCase):
 
         # test passwords that are too short
         response = register(
+            test=self,
             code='TEST',
             first='Test',
             last='Student',
@@ -104,4 +112,28 @@ class AuthTest(TestCase):
         )
 
     def test_login(self):
-        pass
+        # need courses for users to be created successfuly
+        course1 = Course(name='ADMIN', code='ADMIN')
+        course2 = Course(name='TEST', code='TEST')
+        db.session.add(course1)
+        db.session.add(course2)
+        db.session.commit()
+        response = register_admin(self)
+
+        # check that admin can log in
+        response = login_admin(self)
+        self.assert200(response)
+        self.assertIn(
+            b'Manage Teachers',
+            response.data
+        )
+
+        # check that student can log in
+        response = login_student(self)
+        self.assert200(response)
+        self.assertIn(
+            b'Mon',
+            response.data
+        )
+
+        response = register_student(self)
