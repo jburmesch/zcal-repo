@@ -1,8 +1,11 @@
-import unittest
 from flask_testing import TestCase
 from zcal import create_app as create, db
 from zcal.models import (
     Course  # , User, Teacher, Schedule, Meeting, Student, Zoom, Timeslot
+)
+from tests.helpers import (
+    register, register_admin, register_student, login,
+    login_admin, login_student
 )
 
 
@@ -21,63 +24,6 @@ class AuthTest(TestCase):
         db.session.remove()
         db.drop_all()
 
-    @staticmethod
-    def pr(title, response):
-        print(f'\n{title}: \n{str(response)}')
-
-    '''Helper Methods'''
-    def login(self, email, password):
-        return self.client.post('/auth/login', data=dict(
-            email=email,
-            password=password
-        ), follow_redirects=True)
-
-    def logout(self):
-        return self.get('/logout', follow_redirects=True)
-
-    def register(self, code, first, last, email, password,
-                 confirm_password):
-        return self.client.post('/auth/register', data=dict(
-            code=code,
-            first=first,
-            last=last,
-            email=email,
-            password=password,
-            confirm_password=confirm_password
-        ), follow_redirects=True)
-
-    def register_admin(self):
-        return self.register(
-            code='ADMIN',
-            first='Test',
-            last='Admin',
-            email='test@admin.com',
-            password='testpass',
-            confirm_password='testpass'
-        )
-
-    def login_admin(self):
-        return self.login(
-            email='test@admin.com',
-            password='testpass'
-        )
-
-    def register_student(self):
-        return self.register(
-            code='TEST',
-            first='Test',
-            last='Student',
-            email='test@student.com',
-            password='testpass',
-            confirm_password='testpass'
-        )
-
-    def login_student(self):
-        return self.login(
-            email='test@student.com',
-            password='testpass'
-        )
-
     '''Tests'''
     def test_main(self):
         response = self.client.get("/", follow_redirects=True)
@@ -90,15 +36,16 @@ class AuthTest(TestCase):
         db.session.add(course2)
         db.session.commit()
 
-        response = self.register_admin()
+        response = register_admin(self)
         self.assertEqual(response.status_code, 200)
 
-        response = self.register_student()
+        response = register_student(self)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Account Created. Please check your '
                       + b'email for account validation.', response.data)
 
-        response = self.register(
+        response = register(
+            test=self,
             code='TEST',
             first='Test',
             last='Student',
@@ -108,7 +55,8 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Field must be equal to password.', response.data)
 
-        response = self.register(
+        response = register(
+            test=self,
             code='TEST',
             first='Test',
             last='Student',
@@ -118,7 +66,8 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Invalid email address.', response.data)
 
-        response = self.register(
+        response = register(
+            test=self,
             code='x',
             first='Test',
             last='Student',
@@ -128,7 +77,8 @@ class AuthTest(TestCase):
         )
         self.assertIn(b'Course code not found.', response.data)
 
-        response = self.register(
+        response = register(
+            test=self,
             code='ADMIN',
             first='Test',
             last='Student',
@@ -137,7 +87,3 @@ class AuthTest(TestCase):
             confirm_password="testpass"
         )
         self.assertIn(b'Course code not found.', response.data)
-
-
-if __name__ == "__main__":
-    unittest.main()
