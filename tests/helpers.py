@@ -12,7 +12,7 @@ def login(test, email, password):
 
 
 def logout(test):
-    return test.get('/logout', follow_redirects=True)
+    return test.client.get('/auth/logout', follow_redirects=True)
 
 
 def register(test, code, first, last, email, password,

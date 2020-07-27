@@ -5,7 +5,7 @@ from zcal.models import (
 )
 from tests.helpers import (
     register, register_admin, register_student, login,
-    login_admin, login_student
+    login_admin, login_student, logout
 )
 
 
@@ -118,9 +118,9 @@ class AuthTest(TestCase):
         db.session.add(course1)
         db.session.add(course2)
         db.session.commit()
-        response = register_admin(self)
 
         # check that admin can log in
+        register_admin(self)
         response = login_admin(self)
         self.assert200(response)
         self.assertIn(
@@ -128,11 +128,46 @@ class AuthTest(TestCase):
             response.data
         )
 
+        # logout admin
+        response = logout(self)
+        self.assertIn(
+            b'Not registered? <a href="/auth/register">Register here.</a>',
+            response.data
+        )
+
         # check that student can log in
+        register_student(self)
         response = login_student(self)
-        self.assert200(response)
         self.assertIn(
             b'Mon',
+            response.data
+        )
+        # logout student
+        response = logout(self)
+        self.assertIn(
+            b'Not registered? <a href="/auth/register">Register here.</a>',
+            response.data
+        )
+
+        # check that bad email doesn't work
+        response = login(
+            test=self,
+            email='x@x.com',
+            password='testpass'
+        )
+        self.assertIn(
+            b'Invalid email/password combination.',
+            response.data
+        )
+
+        # check that bad password doesn't work
+        response = login(
+            test=self,
+            email='test@student.com',
+            password='x'
+        )
+        self.assertIn(
+            b'Invalid email/password combination.',
             response.data
         )
 
