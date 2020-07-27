@@ -1,11 +1,8 @@
 from flask_testing import TestCase
 from zcal import create_app as create, db
-from zcal.models import (
-    Course  # , User, Teacher, Schedule, Meeting, Student, Zoom, Timeslot
-)
 from tests.helpers import (
     register, register_admin, register_student, login,
-    login_admin, login_student, logout
+    login_admin, login_student, logout, create_courses
 )
 
 
@@ -25,32 +22,24 @@ class AuthTest(TestCase):
         db.drop_all()
 
     '''Tests'''
-    # make sure that main is accessible
-    def test_main(self):
-        response = self.client.get("/", follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
     def test_register(self):
         # need courses for users to be created successfuly
-        course1 = Course(name='ADMIN', code='ADMIN')
-        course2 = Course(name='TEST', code='TEST')
-        db.session.add(course1)
-        db.session.add(course2)
-        db.session.commit()
+        c = self.client
+        create_courses()
 
         # check that first user admin registration works.
-        response = register_admin(self)
+        response = register_admin(c)
         self.assertEqual(response.status_code, 200)
 
         # check that student registration works.
-        response = register_student(self)
+        response = register_student(c)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Account Created. Please check your '
                       + b'email for account validation.', response.data)
 
         # check that mismatched passwords don't work.
         response = register(
-            test=self,
+            client=c,
             code='TEST',
             first='Test',
             last='Student',
@@ -62,7 +51,7 @@ class AuthTest(TestCase):
 
         # check that bad emails don't work
         response = register(
-            test=self,
+            client=c,
             code='TEST',
             first='Test',
             last='Student',
@@ -74,7 +63,7 @@ class AuthTest(TestCase):
 
         # check that bad course codes don't work.
         response = register(
-            test=self,
+            client=c,
             code='x',
             first='Test',
             last='Student',
@@ -86,7 +75,7 @@ class AuthTest(TestCase):
 
         # check that admin login won't work after first user
         response = register(
-            test=self,
+            client=c,
             code='ADMIN',
             first='Test',
             last='Student',
@@ -98,7 +87,7 @@ class AuthTest(TestCase):
 
         # test passwords that are too short
         response = register(
-            test=self,
+            client=c,
             code='TEST',
             first='Test',
             last='Student',
@@ -113,45 +102,44 @@ class AuthTest(TestCase):
 
     def test_login(self):
         # need courses for users to be created successfuly
-        course1 = Course(name='ADMIN', code='ADMIN')
-        course2 = Course(name='TEST', code='TEST')
-        db.session.add(course1)
-        db.session.add(course2)
-        db.session.commit()
+        c = self.client
+        create_courses()
 
         # check that admin can log in
-        register_admin(self)
-        response = login_admin(self)
-        self.assert200(response)
-        self.assertIn(
-            b'Manage Teachers',
-            response.data
-        )
+        with c:
+            register_admin(c)
+            response = login_admin(c)
+            self.assert200(response)
+            self.assertIn(
+                b'Manage Teachers',
+                response.data
+            )
 
-        # logout admin
-        response = logout(self)
-        self.assertIn(
-            b'Not registered? <a href="/auth/register">Register here.</a>',
-            response.data
-        )
+            # logout admin
+            response = logout(c)
+            self.assertIn(
+                b'Not registered? <a href="/auth/register">Register here.</a>',
+                response.data
+            )
 
         # check that student can log in
-        register_student(self)
-        response = login_student(self)
-        self.assertIn(
-            b'Mon',
-            response.data
-        )
-        # logout student
-        response = logout(self)
-        self.assertIn(
-            b'Not registered? <a href="/auth/register">Register here.</a>',
-            response.data
-        )
+        with c:
+            register_student(c)
+            response = login_student(c)
+            self.assertIn(
+                b'Mon',
+                response.data
+            )
+            # logout student
+            response = logout(c)
+            self.assertIn(
+                b'Not registered? <a href="/auth/register">Register here.</a>',
+                response.data
+            )
 
         # check that bad email doesn't work
         response = login(
-            test=self,
+            client=c,
             email='x@x.com',
             password='testpass'
         )
@@ -162,7 +150,7 @@ class AuthTest(TestCase):
 
         # check that bad password doesn't work
         response = login(
-            test=self,
+            client=c,
             email='test@student.com',
             password='x'
         )
@@ -170,5 +158,3 @@ class AuthTest(TestCase):
             b'Invalid email/password combination.',
             response.data
         )
-
-        response = register_student(self)

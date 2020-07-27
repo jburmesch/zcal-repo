@@ -27,12 +27,6 @@ def main():
         return redirect(url_for('auth.login'))
 
 
-@calbp.route('/schedule', methods=['GET', 'POST'])
-@login_required
-def schedule():
-    return "Not done yet."
-
-
 @calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def cal(u_id=0):
