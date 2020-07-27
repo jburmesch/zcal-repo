@@ -42,7 +42,7 @@ class AuthTest(TestCase):
             self.assertIn(b'Manage Teachers', response.data)
             logout(c)
 
-        # test students
+        # test student
         with c:
             register_student(c)
             login_student(c)
