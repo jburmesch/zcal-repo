@@ -2,7 +2,8 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 from tests.helpers import (
     register, register_admin, register_student, login,
-    login_admin, login_student, logout, create_courses
+    login_admin, login_student, logout, create_courses,
+    register_teacher, login_teacher
 )
 
 
@@ -156,5 +157,12 @@ class AuthTest(TestCase):
         )
         self.assertIn(
             b'Invalid email/password combination.',
+            response.data
+        )
+
+        register_teacher()
+        response = login_teacher(c)
+        self.assertIn(
+            b'Mon',
             response.data
         )

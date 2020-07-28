@@ -1,5 +1,5 @@
-from zcal import db
-from zcal.models import Course
+from zcal import db, bcrypt
+from zcal.models import Course, User, Teacher
 
 
 def create_courses():
@@ -73,5 +73,33 @@ def login_student(client):
     return login(
         client=client,
         email='test@student.com',
+        password='testpass'
+    )
+
+
+def register_teacher():
+    hashed_password = bcrypt.generate_password_hash(
+        'testpass'
+    ).decode('utf-8')
+    user = User(
+        first='Test',
+        last='Teacher',
+        utype='Teacher',
+        email='test@teacher.com',
+        password=hashed_password
+    )
+    db.session.add(user)
+    db.session.commit()
+    teacher = Teacher(
+        user_id=user.id,
+    )
+    db.session.add(teacher)
+    db.session.commit()
+
+
+def login_teacher(client):
+    return login(
+        client=client,
+        email='test@teacher.com',
         password='testpass'
     )
