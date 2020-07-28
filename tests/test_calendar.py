@@ -2,8 +2,9 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 from tests.helpers import (
     register_admin, register_student, login_admin, login_student, logout,
-    create_courses
+    create_courses, register_teacher, login_teacher
 )
+from flask import url_for
 
 
 class AuthTest(TestCase):
@@ -38,14 +39,34 @@ class AuthTest(TestCase):
         with c:
             register_admin(c)
             login_admin(c)
-            response = c.get("/", follow_redirects=True)
-            self.assertIn(b'Manage Teachers', response.data)
+            response = c.get("/")
+            self.assertRedirects(
+                response, url_for(
+                    'admin.teachers'
+                )
+            )
             logout(c)
 
         # test student
         with c:
             register_student(c)
             login_student(c)
-            response = c.get("/", follow_redirects=True)
-            self.assertIn(b'Mon', response.data)
+            response = c.get("/")
+            self.assertRedirects(
+                response, url_for(
+                    'cal.cal'
+                )
+            )
+            logout(c)
+
+        # test teacher
+        with c:
+            register_teacher()
+            login_teacher(c)
+            response = c.get("/")
+            self.assertRedirects(
+                response, url_for(
+                    'cal.cal'
+                )
+            )
             logout(c)
