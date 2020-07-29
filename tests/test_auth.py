@@ -146,7 +146,7 @@ class AuthTest(TestCase):
         )
         self.assertIn(
             b'Invalid email/password combination.',
-            response.dat
+            response.data
         )
 
         # check that bad password doesn't work
