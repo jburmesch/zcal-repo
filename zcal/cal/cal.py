@@ -240,9 +240,10 @@ def t_cal(u_id):
         d = ts_form.date.data
         # add each timeslot to the db.
         for slot in slots:
-            start = timeslots[int(slot) - 1].start
-            end = timeslots[int(slot) - 1].end
-            duration = timeslots[int(slot) - 1].duration
+            ts = find_slot(timeslots, int(slot))
+            start = ts.start
+            end = ts.end
+            duration = ts.duration
             tid = Teacher.query.filter(
                 Teacher.user_id == u_id
             ).first().id
@@ -279,6 +280,14 @@ def t_cal(u_id):
         m_dict=m_dict,
         title='Calendar'
     )
+
+
+# find timeslot by id
+def find_slot(timeslots, id):
+    for slot in timeslots:
+        if slot.id == id:
+            return slot
+    return
 
 
 # determine whether something is a number, even if it's negative.
