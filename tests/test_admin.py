@@ -1,7 +1,8 @@
 from flask_testing import TestCase
 from zcal import create_app as create, db
 from tests.helpers import (
-    register_admin, login_admin, logout, create_courses
+    register_admin, login_admin, logout, create_courses,
+    reg_10_teachers
 )
 from flask import url_for
 
@@ -48,6 +49,7 @@ class AuthTest(TestCase):
             register_admin(c)
             login_admin(c)
 
+            # check that bad email doesn't work
             response = c.post(
                 url_for('admin.add_teacher'), data=dict(
                     first='Test',
@@ -57,3 +59,20 @@ class AuthTest(TestCase):
             )
             self.assertIn(b'Invalid email address.', response.data)
             logout(c)
+
+        with c:
+            register_admin(c)
+            login_admin(c)
+
+            # log in 10 teachers
+            reg_10_teachers(self)
+            logout(c)
+
+    def test_manage_teachers(self):
+        c = self.client
+
+        with c:
+            register_admin(c)
+            login_admin(c)
+            reg_10_teachers(c)
+

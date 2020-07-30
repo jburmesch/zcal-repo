@@ -1,5 +1,6 @@
 from zcal import db, bcrypt
 from zcal.models import Course, User, Teacher
+from flask import url_for
 
 
 def create_courses():
@@ -103,3 +104,15 @@ def login_teacher(client):
         email='test@teacher.com',
         password='testpass'
     )
+
+
+def reg_10_teachers(test):
+    for x in range(10):
+        response = test.client.post(
+            url_for('admin.add_teacher'), data=dict(
+                first='Test',
+                last='Teacher',
+                email=f't{x}@t.com'
+            ), follow_redirects=True
+        )
+        test.assertIn(b'Account Created.', response.data)
