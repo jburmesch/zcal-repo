@@ -5,6 +5,7 @@ from tests.helpers import (
     reg_10_teachers
 )
 from flask import url_for
+from zcal.models import Teacher
 
 
 class AuthTest(TestCase):
@@ -70,9 +71,30 @@ class AuthTest(TestCase):
 
     def test_manage_teachers(self):
         c = self.client
+        create_courses()
 
         with c:
             register_admin(c)
             login_admin(c)
-            reg_10_teachers(c)
-
+            reg_10_teachers(self)
+            teachers = Teacher.query.all()
+            count = 0
+            # check that all 
+            for teacher in teachers:
+                count += 1
+                response = c.post(
+                    url_for('admin.teachers'), data=dict(
+                        mg_id=teacher.id
+                    )
+                )
+                self.assertRedirects(response, url_for(
+                    'cal.cal',
+                    u_id=teacher.user_id
+                ))
+            # check that 11 doesn't redirect
+            response = c.post(
+                url_for('admin.teachers', data=dict(
+                    mg_id=11
+                ))
+            )
+            self.assert200(response)
