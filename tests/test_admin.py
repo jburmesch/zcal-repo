@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 from tests.helpers import (
     register_admin, login_admin, logout, create_courses,
-    reg_10_teachers, pr
+    reg_10_teachers
 )
 from flask import url_for
 from zcal.models import Teacher
@@ -102,8 +102,10 @@ class AuthTest(TestCase):
 
             # remove all teachers in random order
             m = 10
+            order = []
             for n in range(m):
                 i = random.randint(0, m - 1)
+                order.append(i)
                 response = c.post(
                     url_for('admin.teachers'), data=dict(
                         rem_id=teachers[i].id
@@ -111,6 +113,10 @@ class AuthTest(TestCase):
                 )
                 teachers = Teacher.query.all()
                 m -= 1
-                self.assertIn(b'Teacher successfully removed.', response.data)
+                self.assertIn(
+                    b'Teacher successfully removed.',
+                    response.data,
+                    f'\n\nFailed To Remove Teacher: Removal Order: {order}'
+                )
             # make sure that all 10 teachers have been removed
             assert len(teachers) == 0
