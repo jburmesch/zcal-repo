@@ -1,12 +1,10 @@
 from flask_testing import TestCase
 from zcal import create_app as create, db
-from tests.helpers import (
-    register_admin, login_admin, logout, create_courses,
-    reg_10_teachers, register_teacher
-)
+import tests.helpers as h
 from flask import url_for
-from zcal.models import Teacher, Zoom
+from zcal.models import Teacher
 import random
+from datetime import datetime
 
 
 class AuthTest(TestCase):
@@ -28,9 +26,9 @@ class AuthTest(TestCase):
     def test_add_teacher(self):
         c = self.client
         with c:
-            create_courses()
-            register_admin(c)
-            login_admin(c)
+            h.create_courses()
+            h.register_admin(c)
+            h.login_admin(c)
 
             # make sure page is accessible
             response = c.get(url_for('admin.add_teacher'))
@@ -45,11 +43,11 @@ class AuthTest(TestCase):
                 ), follow_redirects=True
             )
             self.assertIn(b'Account Created.', response.data)
-            logout(c)
+            h.logout(c)
 
         with c:
-            register_admin(c)
-            login_admin(c)
+            h.register_admin(c)
+            h.login_admin(c)
 
             # check that bad email doesn't work
             response = c.post(
@@ -60,24 +58,24 @@ class AuthTest(TestCase):
                 ), follow_redirects=True
             )
             self.assertIn(b'Invalid email address.', response.data)
-            logout(c)
+            h.logout(c)
 
         with c:
-            register_admin(c)
-            login_admin(c)
+            h.register_admin(c)
+            h.login_admin(c)
 
             # log in 10 teachers
-            reg_10_teachers(self)
-            logout(c)
+            h.reg_10_teachers(self)
+            h.logout(c)
 
     def test_manage_teachers(self):
         c = self.client
-        create_courses()
+        h.create_courses()
 
         with c:
-            register_admin(c)
-            login_admin(c)
-            reg_10_teachers(self)
+            h.register_admin(c)
+            h.login_admin(c)
+            h.reg_10_teachers(self)
             teachers = Teacher.query.all()
             count = 0
             # check that all teachers redirect correctly for 'manage'
@@ -121,17 +119,10 @@ class AuthTest(TestCase):
             # make sure that all 10 teachers have been removed
             assert len(teachers) == 0
             # register teacher with zoom account
-            register_teacher()
-            t = Teacher.query.first()
-            z = Zoom(
-                account='test@zoom.com',
-                zoom_account_id='1234567',
-                access='abc123',
-                refresh='def456'
-            )
-            db.session.add(z)
+            t = h.make_teacher()
+            z = h.make_zoom()
+            t.zoom_id = z.id
             db.session.commit()
-            t.zoom_id = Zoom.query.first().id
             # make sure the teacher has been removed
             response = c.post(
                 url_for('admin.teachers'), data=dict(
@@ -142,4 +133,10 @@ class AuthTest(TestCase):
                     b'Teacher successfully removed.',
                     response.data
                 )
-
+            # Add another teacher and student
+            c = h.make_course()
+            s = h.make_student()
+            t = h.make_teacher()
+            # schedule a meeting between them
+            sched = h.make_schedule(t.id, s.id, datetime.now().time(), 45)
+            print(sched)
