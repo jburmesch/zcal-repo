@@ -234,7 +234,7 @@ def t_cal(u_id):
                 a_dict[d] = 1
 
     # TIMESLOT FORM SUBMISSION
-    if ts_form.is_submitted():
+    if ts_form.validate_on_submit():
         # parse timeslots that have been submitted
         slots = ts_form.slots.data.split()
         d = ts_form.date.data
