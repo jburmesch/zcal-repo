@@ -18,19 +18,6 @@ def t_meetings(date, u_id):
     mg_form = ManageForm()
     rem_form = RemoveForm()
 
-    # remove timeslot when remove form is submitted.
-    if rem_form.validate_on_submit():
-        r_sched = Schedule.query.filter(
-            Schedule.id == rem_form.rem_id.data
-        ).first()
-        db.session.delete(r_sched)
-        db.session.commit()
-        flash('Timeslot removed!', 'success')
-    # redirect to meeting management page
-    elif mg_form.validate_on_submit():
-        m_id = mg_form.mg_id.data
-        return redirect(url_for('day.manage_meeting', mtg_id=m_id))
-
     schedules = Schedule.query.join(
         Teacher
     ).filter(
@@ -56,6 +43,20 @@ def t_meetings(date, u_id):
             day=int(date_parts[2])
         )
     ).all()
+
+    # remove timeslot when remove form is submitted.
+    if rem_form.validate_on_submit():
+        r_sched = Schedule.query.filter(
+            Schedule.id == rem_form.rem_id.data
+        ).first()
+        db.session.delete(r_sched)
+        db.session.commit()
+        flash('Timeslot removed!', 'success')
+
+    # redirect to meeting management page
+    elif mg_form.validate_on_submit():
+        m_id = mg_form.mg_id.data
+        return redirect(url_for('day.manage_meeting', mtg_id=m_id))
 
     return render_template(
         'day.html',
@@ -111,8 +112,8 @@ def s_meetings(date, u_id):
 @login_required
 def manage_meeting(mtg_id):
     meeting = Meeting.query.filter(Meeting.id == mtg_id).first()
-    print(meeting)
     return render_template(
         'manage_meeting.html',
+        title="Manage Meeting",
         meeting=meeting
     )
