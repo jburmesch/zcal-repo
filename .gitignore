@@ -6,7 +6,9 @@ zcal/routes/__pycache__/
 zcal/routes/temppass.txt
 zcal/zcal.db
 instance
+testing
 zcal/config.py
 zcal/static/Aicon.ico
 *.pyc
 *.bak
+*.egg-info

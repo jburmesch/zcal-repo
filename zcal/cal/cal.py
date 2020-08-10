@@ -27,12 +27,6 @@ def main():
         return redirect(url_for('auth.login'))
 
 
-@calbp.route('/schedule', methods=['GET', 'POST'])
-@login_required
-def schedule():
-    return "Not done yet."
-
-
 @calbp.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def cal(u_id=0):
@@ -240,15 +234,16 @@ def t_cal(u_id):
                 a_dict[d] = 1
 
     # TIMESLOT FORM SUBMISSION
-    if ts_form.is_submitted():
+    if ts_form.validate_on_submit():
         # parse timeslots that have been submitted
         slots = ts_form.slots.data.split()
         d = ts_form.date.data
         # add each timeslot to the db.
         for slot in slots:
-            start = timeslots[int(slot) - 1].start
-            end = timeslots[int(slot) - 1].end
-            duration = timeslots[int(slot) - 1].duration
+            ts = find_slot(timeslots, int(slot))
+            start = ts.start
+            end = ts.end
+            duration = ts.duration
             tid = Teacher.query.filter(
                 Teacher.user_id == u_id
             ).first().id
@@ -285,6 +280,14 @@ def t_cal(u_id):
         m_dict=m_dict,
         title='Calendar'
     )
+
+
+# find timeslot by id
+def find_slot(timeslots, id):
+    for slot in timeslots:
+        if slot.id == id:
+            return slot
+    return
 
 
 # determine whether something is a number, even if it's negative.
