@@ -85,6 +85,13 @@ def login_student(client):
     )
 
 
+def register_course(client, name, code):
+    return client.post(url_for('admin.add_course'), data=dict(
+        name=name,
+        code=code
+    ))
+
+
 def make_course():
     c = Course(
         name='Test Course',

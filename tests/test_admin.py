@@ -140,3 +140,40 @@ class AuthTest(TestCase):
             # schedule a meeting between them
             sched = h.make_schedule(t.id, s.id, datetime.now().time(), 45)
             print(sched)
+
+    def test_add_course(self):
+        c = self.client
+        h.create_courses()
+
+        with c:
+            h.register_admin(c)
+            h.login_admin(c)
+
+            # create 10 courses, and make sure that they show up.
+            for i in range(10):
+                count = i + 1
+                response = h.register_course(
+                    client=c,
+                    name=f'Course {count}',
+                    code=f'C{count}'
+                )
+                self.assertRedirects(response, url_for('admin.add_course'))
+                response = c.get(url_for('admin.courses'))
+                c_name = f'Course {count}'
+                self.assertIn(bytes(c_name, 'utf-8'), response.data)
+
+    # def test_manage_courses(self):
+    #     c = self.client
+    #     h.create_courses()
+
+    #     with c:
+    #         h.register_admin(c)
+    #         h.login_admin(c)
+
+    #         for i in range(10):
+    #             count = i + 1
+    #             h.register_course(
+    #                 client=c,
+    #                 name=f'Course {count}',
+    #                 code=f'C{count}'
+    #             )
