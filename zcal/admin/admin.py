@@ -22,11 +22,14 @@ def add_teacher():
         form = TeacherForm()
         # see if form was submitted
         if form.validate_on_submit():
+            # Create password for the new teacher
             password = secrets.token_urlsafe(6)
+            # hash it.
             hashed_password = bcrypt.generate_password_hash(
                 password
             ).decode('utf-8')
 
+            # create user
             user = User(
                 first=form.first.data,
                 last=form.last.data,
@@ -34,18 +37,19 @@ def add_teacher():
                 email=form.email.data,
                 password=hashed_password
             )
-
             db.session.add(user)
             db.session.commit()
 
+            # create teacher
             teacher = Teacher(
                 user_id=user.id,
             )
-
             db.session.add(teacher)
             db.session.commit()
 
             # display success message
+            '''Display of temp password is TEMPORARY!
+            Eventually want to send an email to teacher.'''
             flash(f'Account Created. TEMP PASS: { password }', 'success')
             return redirect(url_for('admin.add_teacher'))
         return render_template(
@@ -65,56 +69,58 @@ def teachers():
         mg_form = ManageForm()
         rem_form = RemoveForm()
         teachers = Teacher.query.all()
-        # if manage button is clicked
-        if mg_form.validate_on_submit():
 
+        # manage form
+        if mg_form.validate_on_submit():
+            # query the database for teacher who was selected
             u_id = Teacher.query.filter_by(
                 id=mg_form.mg_id.data
             ).first().user_id
-
+            # display that user's calendar
             return redirect(url_for('cal.cal', u_id=u_id))
-        # if remove button is clicked
+        
+        # remove form
         elif rem_form.validate_on_submit():
+            # store teacher id sent from removal form
             t_id = rem_form.rem_id.data
+            # get teacher from db.
             teacher = Teacher.query.filter_by(id=t_id).first()
+            # get all of their open meeting slots
             scheds = Schedule.query.filter_by(teacher_id=t_id).all()
+            # and all of their scheduled meetings
             meets = Meeting.query.join(
                 Schedule
             ).filter(Schedule.teacher_id == t_id).all()
 
-            # Make sure the teacher doesn't have meetings scheduled
-            # with students.
             if meets:
                 flash("Teacher has meetings scheduled! Reschedule before "
                       + "removing!", "error")
             else:
+                # make sure that a teacher was actually found in the db
                 if teacher:
+                    # find user in db.
                     user = User.query.filter_by(id=teacher.user_id).first()
+                    # delete all of users open schedule slots
                     for sched in scheds:
                         db.session.delete(sched)
+                    # delete teacher
                     db.session.delete(teacher)
+                    # delete user
                     db.session.delete(user)
                     db.session.commit()
+
+                    # report success.
                     flash("Teacher successfully removed.", "success")
                     return redirect(url_for('admin.teachers'))
                 else:
                     flash("Teacher not found.", "error")
             return redirect(url_for('admin.teachers'))
-
+        # if no form was submitted:
         else:
-
             return render_template('teachers.html', title='Manage Teachers',
                                    teachers=teachers, rem_form=rem_form,
                                    mg_form=mg_form)
-    else:
-        return redirect(url_for('cal.cal'))
-
-
-@admin.route('/default-schedule')
-@login_required
-def default_schedule():
-    if current_user.utype == "Admin":
-        return 'To be continued...'
+    # if not admin:
     else:
         return redirect(url_for('cal.cal'))
 
@@ -124,7 +130,7 @@ def default_schedule():
 def add_course():
     if current_user.utype == "Admin":
         form = CourseForm()
-        # check for valid data
+
         if form.validate_on_submit():
             # add course to db
             course = Course(
@@ -136,22 +142,65 @@ def add_course():
             # display success message
             flash('Course Created.', 'success')
             return redirect(url_for('admin.add_course'))
+        # form not submitted:
         return render_template(
             'add_course.html',
             title='Add Course',
             form=form
         )
+    # not admin:
     else:
         return redirect(url_for('cal.cal'))
 
 
-@admin.route('/course-management')
+@admin.route('/course-management', methods=['GET', 'POST'])
 @login_required
 def courses():
     if current_user.utype == "Admin":
         courses = Course.query.all()
-        return render_template('courses.html', title='Manage Courses',
-                               courses=courses)
+        rem_form = RemoveForm()
+        mg_form = ManageForm()
+
+        # remove form
+        if rem_form.validate_on_submit():
+            c_id = rem_form.rem_id.data
+            # get course from db
+            c = Course.query.filter(Course.id == c_id).first()
+            # get course's students
+            students = Student.query.filter(Student.course_id == c_id).all()
+            if students:
+                flash(
+                    'This course can not be removed while it'
+                    + ' has students attached to it.', "error"
+                )
+            # no students:
+            else:
+                db.session.delete(c)
+                db.session.commit()
+                flash("Course Deleted.", "success")
+                return redirect(url_for('admin.courses'))
+
+        # manage form
+        if mg_form.validate_on_submit():
+            c_id = mg_form.mg_id.data
+            c = Course.query.filter(Course.id == c_id).first()
+            students = Student.query.filter(Student.course_id == c_id).all()
+            return render_template(
+                'students.html',
+                title=f'{c.name}: Student Management',
+                students=students,
+                course=c
+            )
+
+        # no form submitted
+        return render_template(
+            'courses.html',
+            title='Manage Courses',
+            courses=courses,
+            rem_form=rem_form,
+            mg_form=mg_form
+        )
+    # not admin:
     else:
         return redirect(url_for('cal.cal'))
 
@@ -163,6 +212,7 @@ def students():
         students = Student.query.all()
         return render_template('students.html', title='Manage Teachers',
                                students=students)
+    # not admin:
     else:
         return redirect(url_for('cal.cal'))
 
@@ -174,6 +224,8 @@ def timeslots():
         add_form = TimeslotForm()
         rem_form = RemoveForm()
         slots = Timeslot.query.order_by(Timeslot.start).all()
+
+        # add form is submit
         if add_form.validate_on_submit():
             end = (datetime(
                 1, 1, 1, add_form.start.data.hour, add_form.start.data.minute
@@ -188,6 +240,8 @@ def timeslots():
             db.session.commit()
             flash('Timeslot Added!')
             return redirect(url_for('admin.timeslots'))
+
+        # remove form is submitted
         elif rem_form.validate_on_submit():
             slot = Timeslot.query.filter_by(id=rem_form.rem_id.data).first()
             if slot:
@@ -197,6 +251,8 @@ def timeslots():
                 return redirect(url_for('admin.timeslots'))
             else:
                 flash('Failed to remove timeslot!', 'warning')
+
+        # no form is submitted
         else:
             return render_template(
                 'timeslots.html',
@@ -205,5 +261,6 @@ def timeslots():
                 add_form=add_form,
                 rem_form=rem_form
             )
+    # not admin:
     else:
         return redirect('cal.cal')

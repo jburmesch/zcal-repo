@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class="container">
-        <h1>Manage Students</h1>
+        {% if course %}
+            <h1>{{ course.name }}: Students</h1>
+        {% else %}
+            <h1>All Students</h1>
+        {% endif %}
         <hr>
     	<table class="table">
             <tr>
