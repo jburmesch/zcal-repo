@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 import tests.helpers as h
 from flask import url_for
-from zcal.models import Teacher
+from zcal.models import Teacher, Course
 import random
 from datetime import datetime
 
@@ -99,16 +99,12 @@ class AuthTest(TestCase):
             self.assert200(response)
 
             # remove all teachers in random order
-            m = 10
+            m = len(teachers)
             order = []
             for n in range(m):
                 i = random.randint(0, m - 1)
                 order.append(i)
-                response = c.post(
-                    url_for('admin.teachers'), data=dict(
-                        rem_id=teachers[i].id
-                    ), follow_redirects=True
-                )
+                response = h.remove_teacher(c, teachers[i].id)
                 teachers = Teacher.query.all()
                 m -= 1
                 self.assertIn(
@@ -162,18 +158,34 @@ class AuthTest(TestCase):
                 c_name = f'Course {count}'
                 self.assertIn(bytes(c_name, 'utf-8'), response.data)
 
-    # def test_manage_courses(self):
-    #     c = self.client
-    #     h.create_courses()
+    def test_manage_courses(self):
+        c = self.client
+        h.create_courses()
 
-    #     with c:
-    #         h.register_admin(c)
-    #         h.login_admin(c)
+        with c:
+            h.register_admin(c)
+            h.login_admin(c)
 
-    #         for i in range(10):
-    #             count = i + 1
-    #             h.register_course(
-    #                 client=c,
-    #                 name=f'Course {count}',
-    #                 code=f'C{count}'
-    #             )
+            for i in range(10):
+                count = i + 1
+                h.register_course(
+                    client=c,
+                    name=f'Course {count}',
+                    code=f'C{count}'
+                )
+
+            courses = Course.query.all()
+            # remove all courses in random order
+            m = len(courses)
+            order = []
+            for n in range(m - 2):
+                i = random.randint(2, m - 1)
+                order.append(i)
+                response = h.remove_course(c, courses[i].id)
+                courses = Course.query.all()
+                m -= 1
+                self.assertIn(
+                    b'Course Deleted.',
+                    response.data,
+                    f'\n\nFailed To Remove Teacher - Removal Order: {order}'
+                )

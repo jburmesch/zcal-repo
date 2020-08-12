@@ -206,3 +206,19 @@ def make_zoom():
     )
     db_commit([z])
     return z
+
+
+def remove_teacher(client, rem_id):
+    return client.post(
+        url_for('admin.teachers'), data=dict(
+            rem_id=rem_id
+        ), follow_redirects=True
+    )
+
+
+def remove_course(client, rem_id):
+    return client.post(
+        url_for('admin.courses'), data=dict(
+            rem_id=rem_id
+        ), follow_redirects=True
+    )
