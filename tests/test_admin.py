@@ -135,7 +135,7 @@ class AuthTest(TestCase):
             t = h.make_teacher()
             # schedule a meeting between them
             sched = h.make_schedule(t.id, s.id, datetime.now().time(), 45)
-            print(sched)
+            assert sched.meeting.student == s
 
     def test_add_course(self):
         c = self.client
