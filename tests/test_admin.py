@@ -120,22 +120,24 @@ class AuthTest(TestCase):
             t.zoom_id = z.id
             db.session.commit()
             # make sure the teacher has been removed
-            response = c.post(
-                url_for('admin.teachers'), data=dict(
-                    rem_id=t.id
-                ), follow_redirects=True
-            )
+            response = h.remove_teacher(c, t.id)
             self.assertIn(
                     b'Teacher successfully removed.',
                     response.data
                 )
             # Add another teacher and student
-            c = h.make_course()
+            h.make_course()
             s = h.make_student()
             t = h.make_teacher()
             # schedule a meeting between them
             sched = h.make_schedule(t.id, s.id, datetime.now().time(), 45)
             assert sched.meeting.student == s
+            response = h.remove_teacher(c, t.id)
+            self.assertIn(
+                    b'Teacher has meetings scheduled!'
+                    + b'Reschedule before removing!',
+                    response.data
+                )
 
     def test_add_course(self):
         c = self.client
