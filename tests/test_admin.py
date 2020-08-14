@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 import tests.helpers as h
 from flask import url_for
-from zcal.models import Teacher, Course
+from zcal.models import Teacher, Course, Student
 import random
 from datetime import datetime
 
@@ -135,7 +135,7 @@ class AuthTest(TestCase):
             response = h.remove_teacher(c, t.id)
             self.assertIn(
                     b'Teacher has meetings scheduled!'
-                    + b'Reschedule before removing!',
+                    + b' Reschedule before removing!',
                     response.data
                 )
 
@@ -191,3 +191,17 @@ class AuthTest(TestCase):
                     response.data,
                     f'\n\nFailed To Remove Teacher - Removal Order: {order}'
                 )
+
+            # create another course and add a student to it.
+            course = h.register_course(
+                client=c,
+                name='Course A',
+                code='CA'
+            )
+            course = Course.query.filter(Course.code == 'CA').first()
+            h.make_student(c_id=course.id)
+            response = h.remove_course(c, course.id)
+            self.assertIn(
+                b'This course can not be removed while it'
+                + b' has students attached to it.', response.data
+            )

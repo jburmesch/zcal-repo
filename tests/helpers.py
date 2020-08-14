@@ -101,8 +101,9 @@ def make_course():
     return c
 
 
-def make_student():
-    c_id = make_course().id
+def make_student(c_id=None):
+    if not c_id:
+        c_id = make_course().id
     hashed_password = bcrypt.generate_password_hash(
         'testpass'
     ).decode('utf-8')
