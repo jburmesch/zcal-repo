@@ -93,8 +93,11 @@ def teachers():
             ).filter(Schedule.teacher_id == t_id).all()
 
             if meets:
-                flash("Teacher has meetings scheduled! Reschedule before "
-                      + "removing!", "error")
+                flash(
+                    'Teacher has meetings scheduled! Reschedule before '
+                    + 'removing!',
+                    'error'
+                )
             else:
                 # make sure that a teacher was actually found in the db
                 if teacher:
@@ -171,7 +174,8 @@ def courses():
             if students:
                 flash(
                     'This course can not be removed while it'
-                    + ' has students attached to it.', "warning"
+                    + ' has students attached to it.',
+                    'warning'
                 )
             # no students:
             else:
@@ -210,8 +214,48 @@ def courses():
 def students():
     if current_user.utype == "Admin":
         students = Student.query.all()
-        return render_template('students.html', title='Manage Teachers',
-                               students=students)
+        rem_form = RemoveForm()
+        mg_form = ManageForm()
+
+        # remove form
+        if rem_form.validate_on_submit():
+            s_id = rem_form.rem_id.data
+            student = Student.query.filter(Student.id == s_id).first()
+            meetings = Meeting.query.filter(Meeting.student.id == s_id).all()
+
+            # error if student has meetings scheduled.
+            if meetings:
+                flash(
+                    'Student has meetings scheduled. Cancel before removing.',
+                    'warning'
+                )
+                return redirect(
+                    url_for('admin.students')
+                )
+
+            # delete if no meetings.
+            else:
+                db.session.delete(student)
+                db.session.commit()
+                flash('Student Removed.', 'success')
+                return redirect(url_for('admin.students'))
+
+        # manage form
+        if mg_form.validate_on_submit():
+            s_id = mg_form.mg_id.data
+            student = Student.query.filter(Student.id == s_id).first()
+            '''make user.student!'''
+            return redirect(
+                url_for('user.student', u_id=student.user_id)
+            )
+
+        return render_template(
+            'students.html',
+            title='Manage Teachers',
+            students=students,
+            rem_form=rem_form,
+            mg_form=mg_form
+        )
     # not admin:
     else:
         return redirect(url_for('cal.cal'))
@@ -239,7 +283,9 @@ def timeslots():
             db.session.add(slot)
             db.session.commit()
             flash('Timeslot Added!')
-            return redirect(url_for('admin.timeslots'))
+            return redirect(
+                url_for('admin.timeslots')
+            )
 
         # remove form is submitted
         elif rem_form.validate_on_submit():
@@ -248,7 +294,9 @@ def timeslots():
                 db.session.delete(slot)
                 db.session.commit()
                 flash('Timeslot Removed!', 'success')
-                return redirect(url_for('admin.timeslots'))
+                return redirect(
+                    url_for('admin.timeslots')
+                )
             else:
                 flash('Failed to remove timeslot!', 'warning')
 
