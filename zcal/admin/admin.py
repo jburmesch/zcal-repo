@@ -78,7 +78,7 @@ def teachers():
             ).first().user_id
             # display that user's calendar
             return redirect(url_for('cal.cal', u_id=u_id))
-        
+
         # remove form
         elif rem_form.validate_on_submit():
             # store teacher id sent from removal form
@@ -171,7 +171,7 @@ def courses():
             if students:
                 flash(
                     'This course can not be removed while it'
-                    + ' has students attached to it.', "error"
+                    + ' has students attached to it.', "warning"
                 )
             # no students:
             else:

@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 import tests.helpers as h
 from flask import url_for
-from zcal.models import Teacher, Course, Student
+from zcal.models import Teacher, Course
 import random
 from datetime import datetime
 
@@ -176,6 +176,15 @@ class AuthTest(TestCase):
                     code=f'C{count}'
                 )
 
+            for i in range(10):
+                response = c.post(
+                    url_for('admin.courses'),
+                    data=dict(
+                        mg_id=i+3
+                    )
+                )
+                self.assertIn(b': Students', response.data)
+
             courses = Course.query.all()
             # remove all courses in random order
             m = len(courses)
@@ -201,6 +210,7 @@ class AuthTest(TestCase):
             course = Course.query.filter(Course.code == 'CA').first()
             h.make_student(c_id=course.id)
             response = h.remove_course(c, course.id)
+            # make sure that removing it is not successful.
             self.assertIn(
                 b'This course can not be removed while it'
                 + b' has students attached to it.', response.data
