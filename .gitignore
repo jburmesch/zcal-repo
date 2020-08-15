@@ -12,3 +12,4 @@ zcal/static/Aicon.ico
 *.pyc
 *.bak
 *.egg-info
+zcal.egg-info
