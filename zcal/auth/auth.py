@@ -1,7 +1,7 @@
 from flask import (render_template, request, redirect, url_for,
                    flash, Blueprint)
 from zcal import db, bcrypt
-from zcal.models import User, Course, Student
+from zcal.models import User, Course, Student, Teacher
 from zcal.auth.auth_forms import LoginForm, RegistrationForm
 from flask_login import login_user, current_user, logout_user
 
@@ -36,6 +36,12 @@ def register():
                     Course.query.filter_by(id=1).first().code:
                 user.utype = 'Admin'
                 db.session.commit()
+                teacher = Teacher(
+                    user_id=user.id
+                )
+                db.session.add(teacher)
+                db.session.commit()
+
             else:
                 student = Student(
                     user_id=user.id,
