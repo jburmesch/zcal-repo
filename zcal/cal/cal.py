@@ -8,6 +8,7 @@ from zcal import db
 from zcal.zoom.zoom import schedule_zoom
 from datetime import date
 from math import floor
+from zcal.zoom.zoom_forms import ZoomForm
 import calendar
 import json
 
@@ -53,7 +54,7 @@ def cal(u_id=0):
         # original admin doesn't have a meaningful calendar, but
         # if they look themself up, we'll show them one anyway I guess.
         else:
-            flash('User either does not exist or is admin only.',
+            flash('User either does not exist or is admin.',
                   "warning")
             return redirect(
                 url_for('cal.t_cal', u_id=current_user.id, mod=mod)
@@ -165,6 +166,7 @@ def stu_cal(u_id):
 @login_required
 def t_cal(u_id):
     ts_form = TeacherSchedule()
+    zoom_form = ZoomForm()
     mod = request.args.get("mod")
     # figure out which month should be displayed based on the current date
     # and the month modifier.
@@ -192,7 +194,7 @@ def t_cal(u_id):
     # get teacher's zoom account email
     '''MAKE SURE IT EXISTS'''
     t = Teacher.query.filter_by(user_id=u_id).first()
-    if t:
+    if t.zoom:
         zoom = t.zoom
     else:
         zoom = None
@@ -278,6 +280,7 @@ def t_cal(u_id):
         u_id=u_id,
         a_dict=a_dict,
         m_dict=m_dict,
+        zoom_form=zoom_form,
         title='Calendar'
     )
 

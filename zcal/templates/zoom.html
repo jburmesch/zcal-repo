@@ -33,11 +33,10 @@
                         {% endif %}
                     </td>
                     <td>
-                        
-                            {% if not zoom.teacher and t_form.teachers.choices %}
-                                {{ t_form.submit(class="btn btn-dark in-frm in-btn") }}
-                                </form>
-                            {% endif %}
+                        {% if not zoom.teacher and t_form.teachers.choices %}
+                            {{ t_form.submit(class="btn btn-dark in-frm in-btn") }}
+                            </form>
+                        {% endif %}
                         <form id="rem_form" method="POST" action="" style="display: inline">
                             {{ rem_form.hidden_tag() }}
                             {{ rem_form.rem_id(value=zoom.id, type="hidden")}}

@@ -70,7 +70,7 @@
                 <table>
                     <td>
                         <form method="POST" action="" id="slot_form">
-                        <div clas="form-group">
+                        <div class="form-group">
                                 {{ts_form.hidden_tag()}}
                                 {{ render_field(ts_form.date, class="form-control") }}
                                 {{ ts_form.slots(type="hidden", id="return") }}
@@ -98,6 +98,28 @@
                     <h4>Please go to "Manage Zooms" to set up a zoom account for this teacher.</h4>
                 {% endif %}
 
+            </td>
+        </tr>
+    </table>
+{% endmacro %}
+
+
+<!-- ######################################################################## -->
+{% macro teacher_menu(zoom_form) %}
+    <table class="table">
+        <tr>
+            <td>
+                <legend>Add Zoom Account</legend>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="POST" action={{ url_for( 'zoom.zoom_auth' ) }} id="slot_form">
+                    <div class="form-group">
+                        {{zoom_form.hidden_tag()}}
+                        {{zoom_form.authorize()}}
+                    </div>
+                </form>
             </td>
         </tr>
     </table>
