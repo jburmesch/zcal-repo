@@ -114,7 +114,7 @@
         </tr>
         <tr>
             <td>
-                <form method="POST" action={{ url_for( 'zoom.zoom_auth' ) }} id="slot_form">
+                <form method="POST" action={{ url_for( 'zoom.zoom_auth' ) }} , id="slot_form">
                     <div class="form-group">
                         {{zoom_form.hidden_tag()}}
                         {{zoom_form.authorize()}}

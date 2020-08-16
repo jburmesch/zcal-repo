@@ -1,4 +1,53 @@
 {% extends 'base.html' %}
     {% block body %}
-        This isn't finished yet.
+        <h2>Account Information:</h2>
+        <table class="table">
+            <tr>
+                <th>First Name:</th><td>Current</td><td>Submit</td>
+            </tr>
+            <tr>
+                <th>Last Name:</th><td>Current</td><td>Submit</td>
+            </tr>
+            <tr>
+                <th>email address:</th><td>Current</td><td>Confirm</td><td>Submit</td>
+            </tr>
+            <tr>
+                <th>Password:</th><td>Current</td><td>Confirm</td><td>Submit</td>
+            </tr>
+        </table>
+                {% if user.utype == 'Admin' %}
+                <h2>Admin Options:</h2>
+                <table class='table'>
+                    <tr>
+                        <th>Course:</th><td>Select</td><td>Submit</td><td>Remove</td>
+                    </tr>
+                    <tr>
+                        <th>User Type:</th><td>Select</td><td>Submit</td>
+                    </tr>
+                </table>
+                {% endif %}
+        {% if meetings %}
+            <h2>Scheduled Meetings:</h2>
+            <table>
+                <tr>
+                    <th>Meeting Date</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Teacher</th>
+                    <th>Options</th>
+                </tr>
+                {% for meeting in meetings %}
+                    <tr>
+                        <td>{{ meeting.schedule.date }}</td>
+                        <td>{{ meeting.schedule.start.isoformat(timespec='minutes') }}</td>
+                        <td>{{ meeting.schedule.end.isoformat(timespec='minutes') }}</td>
+                        <td>{{ meeting.teacher.user.full_name }}</td>
+                        <td>Coming Soon</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if user.utype == 'Teacher' or user.utype == 'Admin' %}
+        {% endif %}
     {% endblock %}
