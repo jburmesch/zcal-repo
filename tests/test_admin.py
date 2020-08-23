@@ -99,10 +99,10 @@ class AuthTest(TestCase):
             self.assert200(response)
 
             # remove all teachers in random order
-            m = len(teachers)
+            m = len(teachers) - 1
             order = []
             for n in range(m):
-                i = random.randint(0, m - 1)
+                i = random.randint(1, m )
                 order.append(i)
                 response = h.remove_teacher(c, teachers[i].id)
                 teachers = Teacher.query.all()
@@ -113,7 +113,7 @@ class AuthTest(TestCase):
                     f'\n\nFailed To Remove Teacher - Removal Order: {order}'
                 )
             # make sure that all 10 teachers have been removed
-            assert len(teachers) == 0
+            assert len(teachers) == 1
             # register teacher with zoom account
             t = h.make_teacher()
             z = h.make_zoom()
