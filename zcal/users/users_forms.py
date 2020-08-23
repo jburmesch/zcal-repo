@@ -3,7 +3,7 @@ from zcal import bcrypt
 from wtforms import (
     StringField, PasswordField, SubmitField, SelectField, IntegerField
 )
-from zcal.models import User, Course
+from zcal.models import User
 from wtforms.validators import (
     InputRequired, Length, Email, ValidationError, EqualTo
 )
