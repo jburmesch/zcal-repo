@@ -12,7 +12,7 @@
                     <td>
                         {{ name_form.hidden_tag() }}
                         {{ name_form.name(placeholder=user.first) }}
-                        {% if name_form.name.errors %}
+                        {% if form == 'First' and name_form.name.errors %}
                             <ul class=errors>
                                 {% for error in name_form.name.errors %}
                                     <li>
@@ -36,7 +36,7 @@
                     <td>
                         {{ name_form.hidden_tag() }}
                         {{ name_form.name(placeholder=user.last) }}
-                        {% if name_form.name.errors %}
+                        {% if form == 'Last' and name_form.name.errors %}
                             <ul class=errors>
                                 {% for error in name_form.name.errors %}
                                     <li>
@@ -60,7 +60,7 @@
                     <td>
                         {{ email_form.hidden_tag() }}
                         {{ email_form.email(placeholder=user.email) }}
-                        {% if email_form.email.errors %}
+                        {% if form == 'Email' and email_form.email.errors %}
                             <ul class=errors>
                                 {% for error in email_form.email.errors %}
                                     <li>
@@ -71,7 +71,7 @@
                         {% endif %}
                     <p>
                         {{ email_form.confirm_email(placeholder="Confirm Email") }}
-                        {% if email_form.confirm_email.errors %}
+                        {% if form == 'Email' and email_form.confirm_email.errors %}
                             <ul class=errors>
                                 {% for error in email_form.confirm_email.errors %}
                                     <li>
@@ -95,7 +95,7 @@
                         {{ password_form.hidden_tag() }}
                         {{ password_form.user_field(value=user.id, type="hidden") }}
                         {{ password_form.password(placeholder="Current Password") }}
-                        {% if password_form.password.errors %}
+                        {% if form == 'Password' and password_form.password.errors %}
                             <ul class=errors>
                                 {% for error in password_form.password.errors %}
                                     <li>
@@ -106,7 +106,7 @@
                         {% endif %}
                     <hr>
                         {{ password_form.new_password(placeholder="New Password") }}
-                        {% if password_form.new_password.errors %}
+                        {% if form == 'Password' and password_form.new_password.errors %}
                             <ul class=errors>
                                 {% for error in password_form.new_password.errors %}
                                     <li>
@@ -117,7 +117,7 @@
                         {% endif %}
                     <p>
                         {{ password_form.confirm_password(placeholder="Confirm Password") }}
-                        {% if password_form.confirm_password.errors %}
+                        {% if form == 'Password' and password_form.confirm_password.errors %}
                             <ul class=errors>
                                 {% for error in password_form.confirm_password.errors %}
                                     <li>
@@ -133,7 +133,7 @@
                 </form>
             </tr>
         </table>
-                {% if user.utype == 'Admin' %}
+                {% if current_user.utype == 'Admin' %}
                     <h2>Admin Options:</h2>
                     <form method="POST" action="" id="admin_form">
                         <table class='table'>
@@ -144,7 +144,7 @@
                                 <td>
                                     {% if user.student %}
                                         {{ admin_form.hidden_tag() }}
-                                        {{ admin_form.code(placeholder=user.student.course.code) }}
+                                        {{ admin_form.code(placeholder=course.code) }}
                                         {% if admin_form.code.errors %}
                                             <ul class=errors>
                                                 {% for error in admin_form.code.errors %}
@@ -156,7 +156,7 @@
                                         {% endif %}
                                     {% else %}
                                         {{ admin_form.code() }}
-                                        {% if admin_form.code.errors %}
+                                        {% if form == 'Admin' and admin_form.code.errors %}
                                             <ul class=errors>
                                                 {% for error in admin_form.code.errors %}
                                                     <li>
@@ -173,8 +173,9 @@
                                     User Type:
                                 </th>
                                 <td>
-                                    {{ admin_form.utype(value=user.utype) }}
-                                    {% if admin_form.utype.errors %}
+                                    Current User Type: {{user.utype}}<p>
+                                    {{ admin_form.utype() }}
+                                    {% if form == 'Admin' and admin_form.utype.errors %}
                                         <ul class=errors>
                                             {% for error in admin_form.utype.errors %}
                                                 <li>

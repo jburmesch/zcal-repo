@@ -55,7 +55,7 @@ class PasswordForm(FlaskForm):
 
     def validate_password(self, password):
         u = User.query.filter(User.id == self.user_field.data).one()
-        if not u and bcrypt.check_password_hash(
+        if not u or not bcrypt.check_password_hash(
             u.password,
             password.data
         ):
@@ -66,19 +66,15 @@ class AdminForm(FlaskForm):
     code = StringField(
         validators=[Length(max=10)]
     )
-    utype = SelectField(choices=['Admin', 'Teacher', 'Student'])
+    utype = SelectField(choices=[
+        ('Change', 'Change'),
+        ('Student', 'Student'),
+        ('Teacher', 'Teacher'),
+        ('Admin', 'Admin')
+    ])
     submit = SubmitField()
 
-    def validate_utype(self, utype):
-        if utype != 'Admin' and utype != 'Teacher' and utype != 'Student':
-            raise ValidationError('Utype Error')
-
-    def validate_code(self, code, utype):
-        if utype.data == 'Student' and code:
-            course = Course.query.filter(Course.code == code).one()
-            if not course:
-                raise ValidationError('Course Code Not Found')
-        elif utype.data == 'Student':
-            raise ValidationError('Students must be assigned to a course.')
-        elif code:
-            raise ValidationError('Couse must be blank for Teacher and Admin')
+    # def validate_code(self, code):
+    #     c = Course.query.filter(Course.code == code.data).one()
+    #     if c is None:
+    #         raise ValidationError('Course Code Not Found')
