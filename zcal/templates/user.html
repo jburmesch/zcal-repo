@@ -142,8 +142,8 @@
                                     Course:
                                 </th>
                                 <td>
+                                    {{ admin_form.hidden_tag() }}
                                     {% if user.student %}
-                                        {{ admin_form.hidden_tag() }}
                                         {{ admin_form.code(placeholder=course.code) }}
                                         {% if admin_form.code.errors %}
                                             <ul class=errors>

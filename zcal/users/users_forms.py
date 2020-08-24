@@ -3,7 +3,7 @@ from zcal import bcrypt
 from wtforms import (
     StringField, PasswordField, SubmitField, SelectField, IntegerField
 )
-from zcal.models import User
+from zcal.models import User, Course
 from wtforms.validators import (
     InputRequired, Length, Email, ValidationError, EqualTo
 )
@@ -74,7 +74,7 @@ class AdminForm(FlaskForm):
     ])
     submit = SubmitField()
 
-    # def validate_code(self, code):
-    #     c = Course.query.filter(Course.code == code.data).one()
-    #     if c is None:
-    #         raise ValidationError('Course Code Not Found')
+    def validate_code(self, code):
+        c = Course.query.filter(Course.code == code.data).one()
+        if c is None:
+            raise ValidationError('Course Code Not Found')

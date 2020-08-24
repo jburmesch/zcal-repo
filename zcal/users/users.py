@@ -27,13 +27,17 @@ def user(u_id):
         # Student:
 
         if user.utype == 'Student':
-            student = Student.query.filter(Student.user_id == u_id).one()
-            course = student.course
-            meetings = Schedule.query.join(
-                Meeting
-            ).filter(
-                Meeting.student_id == student.id
-            ).all()
+            student = Student.query.filter(Student.user_id == u_id).first()
+            if student is None:
+                flash('Student not found', 'warning')
+                course = None
+            else:
+                course = student.course
+                meetings = Schedule.query.join(
+                    Meeting
+                ).filter(
+                    Meeting.student_id == student.id
+                ).all()
 
         # Teacher/Admin:
 
@@ -88,18 +92,73 @@ def user(u_id):
         # Admin:
         elif admin_form.validate_on_submit():
             form = 'Admin'
-            if admin_form.utype.data == user.utype \
+
+            # Change user to Student
+            if admin_form.utype.data != 'Change' \
+                    and admin_form.utype.data != user.utype:
+                # make sure a course was provided
+                if admin_form.utype.data == 'Student'\
+                        and admin_form.utype.data is None:
+                    flash('Students must be attached to a course.', 'error')
+                    return redirect(url_for('users.user', u_id=u_id))
+                elif admin_form.utype.data == 'Student'\
+                        and user.utype != 'Student':
+                    # find the user's teacher entry
+                    teacher = Teacher.query.filter(
+                        Teacher.user_id == user.id
+                    ).one()
+                    # make sure that a teacher entry is found
+                    if teacher is None:
+                        flash('Teacher not found.', 'error')
+                        # return redirect(url_for('users.user', u_id=u_id))
+                    # make sure they don't have meetings scheduled
+                    if meetings:
+                        flash(
+                            'Cannot change user type while user has meetings '
+                            + 'scheduled.', 'error'
+                        )
+                        return redirect(url_for('users.user', u_id=u_id))
+                    # If everything's okay...
+                    db.session.delete(teacher)
+                    # find course
+                    course = Course.query.filter(
+                        Course.code == admin_form.code.data
+                    ).one()
+                    # create student entry:
+                    student = Student(
+                        user_id=u_id,
+                        course_id=admin_form.code.data
+                    )
+                    db.session.add(student)
+                    # change user type
+                    user.utype = 'Student'
+                    db.session.commit()
+                    flash(
+                        'User changed to Student.  Course set to '
+                        + f'{course.name}.', "success"
+                    )
+
+            # Change student's course:
+            elif admin_form.utype.data == user.utype \
                     or admin_form.utype.data == 'Change' \
                     and user.utype == 'Student' \
                     and admin_form.code.data != course.code:
                 c_id = Course.query.filter(
                     Course.code == admin_form.code.data
                 ).one().id
-                student.course_id = c_id
+                if student:
+                    student.course_id = c_id
+                else:
+                    student = Student(
+                        user_id=u_id,
+                        course_id=c_id
+                    )
+                    db.session.add(student)
                 db.session.commit()
                 flash('Course Changed.', 'success')
                 return redirect(url_for('users.user', u_id=u_id))
 
+        # Generate Template
         return render_template(
             'user.html',
             title="User Account Management",
