@@ -75,6 +75,7 @@ class AdminForm(FlaskForm):
     submit = SubmitField()
 
     def validate_code(self, code):
-        c = Course.query.filter(Course.code == code.data).one()
-        if c is None:
-            raise ValidationError('Course Code Not Found')
+        if code.data:
+            c = Course.query.filter(Course.code == code.data).one()
+            if c is None:
+                raise ValidationError('Course Code Not Found')

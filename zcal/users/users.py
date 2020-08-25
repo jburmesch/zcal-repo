@@ -93,17 +93,29 @@ def user(u_id):
         elif admin_form.validate_on_submit():
             form = 'Admin'
 
-            # Change user to Student
+            # Change user type
             if admin_form.utype.data != 'Change' \
                     and admin_form.utype.data != user.utype:
-                # make sure a course was provided
+                # Ensure there's still an admin.
+                if user.utype == 'Admin':
+                    admins = User.query.filter(User.utype == 'Admin').all()
+                    if len(admins) == 1:
+                        flash(
+                            f'{user.full_name()} is currently the only '
+                            + 'admin. Another user must be set as admin '
+                            + 'before this user\'s type can be changed.',
+                            'warning'
+                        )
+                        return redirect(url_for('users.user', u_id=u_id))
+                # To Student:
                 if admin_form.utype.data == 'Student'\
-                        and admin_form.utype.data is None:
-                    flash('Students must be attached to a course.', 'error')
-                    return redirect(url_for('users.user', u_id=u_id))
-                elif admin_form.utype.data == 'Student'\
                         and user.utype != 'Student':
-                    # find the user's teacher entry
+                    # Ensure course has been set
+                    if admin_form.utype.data == 'Student'\
+                            and admin_form.utype.data is None:
+                        flash('Students must be attached to a course.', 'error')
+                        return redirect(url_for('users.user', u_id=u_id))
+                    # Find the user's teacher entry
                     teacher = Teacher.query.filter(
                         Teacher.user_id == user.id
                     ).one()
@@ -137,6 +149,10 @@ def user(u_id):
                         'User changed to Student.  Course set to '
                         + f'{course.name}.', "success"
                     )
+                # To Teacher:
+                elif admin_form.utype.data == 'Teacher' \
+                        and user.utype != 'Teacher':
+                    pass
 
             # Change student's course:
             elif admin_form.utype.data == user.utype \
