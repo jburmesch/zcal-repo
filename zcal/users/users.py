@@ -107,13 +107,21 @@ def user(u_id):
                             'warning'
                         )
                         return redirect(url_for('users.user', u_id=u_id))
+                # make sure they don't have meetings scheduled
+                if meetings:
+                    flash(
+                        'Cannot change user type while user has meetings '
+                        + 'scheduled.', 'error'
+                    )
+                    return redirect(url_for('users.user', u_id=u_id))
                 # To Student:
-                if admin_form.utype.data == 'Student'\
-                        and user.utype != 'Student':
+                if admin_form.utype.data == 'Student':
                     # Ensure course has been set
                     if admin_form.utype.data == 'Student'\
                             and admin_form.utype.data is None:
-                        flash('Students must be attached to a course.', 'error')
+                        flash(
+                            'Students must be attached to a course.', 'error'
+                        )
                         return redirect(url_for('users.user', u_id=u_id))
                     # Find the user's teacher entry
                     teacher = Teacher.query.filter(
@@ -122,16 +130,8 @@ def user(u_id):
                     # make sure that a teacher entry is found
                     if teacher is None:
                         flash('Teacher not found.', 'error')
-                        # return redirect(url_for('users.user', u_id=u_id))
-                    # make sure they don't have meetings scheduled
-                    if meetings:
-                        flash(
-                            'Cannot change user type while user has meetings '
-                            + 'scheduled.', 'error'
-                        )
-                        return redirect(url_for('users.user', u_id=u_id))
-                    # If everything's okay...
-                    db.session.delete(teacher)
+                    else:
+                        db.session.delete(teacher)
                     # find course
                     course = Course.query.filter(
                         Course.code == admin_form.code.data
@@ -139,7 +139,7 @@ def user(u_id):
                     # create student entry:
                     student = Student(
                         user_id=u_id,
-                        course_id=admin_form.code.data
+                        course_id=course.id
                     )
                     db.session.add(student)
                     # change user type
@@ -149,11 +149,31 @@ def user(u_id):
                         'User changed to Student.  Course set to '
                         + f'{course.name}.', "success"
                     )
+                    return redirect(url_for('users.user', u_id=u_id))
                 # To Teacher:
-                elif admin_form.utype.data == 'Teacher' \
-                        and user.utype != 'Teacher':
-                    pass
-
+                elif admin_form.utype.data == 'Teacher':
+                    # from Student:
+                    if user.utype == 'Student':
+                        change_student(user)
+                    user.utype = 'Teacher'
+                    db.session.commit()
+                    flash(
+                        'User changed to Teacher',
+                        'success'
+                    )
+                    return redirect(url_for('users.user', u_id=u_id))
+                # To Admin:
+                elif admin_form.utype.data == 'Admin':
+                    # from student:
+                    if user.utype == 'Student':
+                        change_student(user)
+                    user.utype = 'Admin'
+                    db.session.commit()
+                    flash(
+                        'User changed to Admin',
+                        'success'
+                    )
+                    return redirect(url_for('users.user', u_id=u_id))
             # Change student's course:
             elif admin_form.utype.data == user.utype \
                     or admin_form.utype.data == 'Change' \
@@ -192,3 +212,14 @@ def user(u_id):
     # not correct user or admin
     else:
         return redirect(url_for('cal.cal'))
+
+
+def change_student(user):
+    student = Student.query.filter(
+        Student.user_id == user.id
+    ).one()
+    db.session.delete(student)
+    teacher = Teacher(
+        user_id=user.id
+    )
+    db.session.add(teacher)
