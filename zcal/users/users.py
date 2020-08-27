@@ -8,24 +8,56 @@ from zcal.admin.admin_forms import ManageForm
 users = Blueprint('users', __name__)
 
 
+def check_form(form):
+    for d in form.data:
+        if d != 'csrf_token' and d != 'submit' and form.data.get(d):
+            return True
+    return False
+
+
+def change_student(user):
+    student = Student.query.filter(
+        Student.user_id == user.id
+    ).one()
+    db.session.delete(student)
+    teacher = Teacher(
+        user_id=user.id
+    )
+    db.session.add(teacher)
+
+
 @users.route('/user/<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def user(u_id):
     # make sure user is the user that was submitted, or admin.
     if current_user.id == u_id or current_user.utype == 'Admin':
+        # Find User:
         user = User.query.filter(User.id == u_id).one()
+        # Create Vars
         meetings = None
         form = None
         course = None
 
+        # Create Forms:
         name_form = forms.NameForm()
         email_form = forms.EmailForm()
         password_form = forms.PasswordForm()
         admin_form = forms.AdminForm()
         mg_form = ManageForm()
 
-        # Student:
+        # Check which form was submitted:
+        if check_form(name_form):
+            form = 'Name'
+        elif check_form(email_form):
+            form = 'Email'
+        elif check_form(password_form):
+            form = 'Password'
+        elif check_form(admin_form):
+            form = 'Admin'
+        elif check_form(mg_form):
+            form = 'Manage'
 
+        # Student:
         if user.utype == 'Student':
             student = Student.query.filter(Student.user_id == u_id).first()
             if student is None:
@@ -40,7 +72,6 @@ def user(u_id):
                 ).all()
 
         # Teacher/Admin:
-
         elif user.utype == 'Teacher' or user.utype == 'Adimn':
             teacher = Teacher.query.filter(Teacher.user_id == u_id).one()
             schedules = Schedule.query.filter(
@@ -63,25 +94,24 @@ def user(u_id):
         # First Name:
         if name_form.validate_on_submit() \
                 and name_form.name_type.data == 'First':
-            form = 'First'
             user.first = name_form.name.data
             db.session.commit()
             return redirect(url_for('users.user', u_id=u_id))
+
         # Last Name:
         elif name_form.validate_on_submit():
-            form = 'Last'
             user.last = name_form.name.data
             db.session.commit()
             return redirect(url_for('users.user', u_id=u_id))
+
         # Email:
         elif email_form.validate_on_submit():
-            form = 'Email'
             user.email = email_form.email.data
             db.session.commit()
             return redirect(url_for('users.user', u_id=u_id))
+
         # Password:
         elif password_form.validate_on_submit():
-            form = 'Password'
             hashed_password = bcrypt.generate_password_hash(
                 password_form.new_password.data
             ).decode('utf-8')
@@ -89,13 +119,14 @@ def user(u_id):
             db.session.commit()
             flash('Password successfully changed.', 'success')
             return redirect(url_for('users.user', u_id=u_id))
+
         # Admin:
         elif admin_form.validate_on_submit():
-            form = 'Admin'
 
             # Change user type
             if admin_form.utype.data != 'Change' \
                     and admin_form.utype.data != user.utype:
+
                 # Ensure there's still an admin.
                 if user.utype == 'Admin':
                     admins = User.query.filter(User.utype == 'Admin').all()
@@ -107,6 +138,7 @@ def user(u_id):
                             'warning'
                         )
                         return redirect(url_for('users.user', u_id=u_id))
+
                 # make sure they don't have meetings scheduled
                 if meetings:
                     flash(
@@ -114,8 +146,10 @@ def user(u_id):
                         + 'scheduled.', 'error'
                     )
                     return redirect(url_for('users.user', u_id=u_id))
-                # To Student:
+
+                # Change To Student:
                 if admin_form.utype.data == 'Student':
+
                     # Ensure course has been set
                     if admin_form.utype.data == 'Student'\
                             and admin_form.utype.data is None:
@@ -123,25 +157,30 @@ def user(u_id):
                             'Students must be attached to a course.', 'error'
                         )
                         return redirect(url_for('users.user', u_id=u_id))
+
                     # Find the user's teacher entry
                     teacher = Teacher.query.filter(
                         Teacher.user_id == user.id
                     ).one()
+
                     # make sure that a teacher entry is found
                     if teacher is None:
                         flash('Teacher not found.', 'error')
                     else:
                         db.session.delete(teacher)
+
                     # find course
                     course = Course.query.filter(
                         Course.code == admin_form.code.data
                     ).one()
+
                     # create student entry:
                     student = Student(
                         user_id=u_id,
                         course_id=course.id
                     )
                     db.session.add(student)
+
                     # change user type
                     user.utype = 'Student'
                     db.session.commit()
@@ -150,7 +189,8 @@ def user(u_id):
                         + f'{course.name}.', "success"
                     )
                     return redirect(url_for('users.user', u_id=u_id))
-                # To Teacher:
+
+                # Change To Teacher:
                 elif admin_form.utype.data == 'Teacher':
                     # from Student:
                     if user.utype == 'Student':
@@ -162,7 +202,8 @@ def user(u_id):
                         'success'
                     )
                     return redirect(url_for('users.user', u_id=u_id))
-                # To Admin:
+
+                # Change To Admin:
                 elif admin_form.utype.data == 'Admin':
                     # from student:
                     if user.utype == 'Student':
@@ -174,6 +215,7 @@ def user(u_id):
                         'success'
                     )
                     return redirect(url_for('users.user', u_id=u_id))
+
             # Change student's course:
             elif admin_form.utype.data == user.utype \
                     or admin_form.utype.data == 'Change' \
@@ -212,14 +254,3 @@ def user(u_id):
     # not correct user or admin
     else:
         return redirect(url_for('cal.cal'))
-
-
-def change_student(user):
-    student = Student.query.filter(
-        Student.user_id == user.id
-    ).one()
-    db.session.delete(student)
-    teacher = Teacher(
-        user_id=user.id
-    )
-    db.session.add(teacher)

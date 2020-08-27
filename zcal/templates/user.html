@@ -243,6 +243,15 @@
                         <td>
                             {{ mg_form.hidden_tag() }}
                             {{ mg_form.manage() }}
+                            {% if form == 'Manage' and mg_form.utype.errors %}
+                                <ul class=errors>
+                                    {% for error in mg_form.utype.errors %}
+                                        <li>
+                                            {{ error }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
