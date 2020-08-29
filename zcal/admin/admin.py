@@ -72,12 +72,13 @@ def teachers():
 
         # manage form
         if mg_form.validate_on_submit():
-            # query the database for teacher who was selected
-            u_id = Teacher.query.filter_by(
-                id=mg_form.mg_id.data
-            ).first().user_id
-            # display that user's calendar
-            return redirect(url_for('cal.cal', u_id=u_id))
+            u_id = mg_form.mg_id.data
+            if mg_form.form_id.data == 'manage':
+                # display user page
+                return redirect(url_for('users.user', u_id=u_id))
+            elif mg_form.form_id.data == 'cal':
+                # display user's calendar
+                return redirect(url_for('cal.cal', u_id=u_id))
 
         # remove form
         elif rem_form.validate_on_submit():
@@ -209,7 +210,7 @@ def courses():
         return redirect(url_for('cal.cal'))
 
 
-@admin.route('/student-management')
+@admin.route('/student-management', methods=['GET', 'POST'])
 @login_required
 def students():
     if current_user.utype == "Admin":
@@ -242,11 +243,9 @@ def students():
 
         # manage form
         if mg_form.validate_on_submit():
-            s_id = mg_form.mg_id.data
-            student = Student.query.filter(Student.id == s_id).first()
-            '''make user.student!'''
+            u_id = mg_form.mg_id.data
             return redirect(
-                url_for('user.student', u_id=student.user_id)
+                url_for('users.user', u_id=u_id)
             )
 
         return render_template(

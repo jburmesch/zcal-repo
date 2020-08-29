@@ -161,7 +161,7 @@ def user(u_id):
                     # Find the user's teacher entry
                     teacher = Teacher.query.filter(
                         Teacher.user_id == user.id
-                    ).one()
+                    ).first()
 
                     # make sure that a teacher entry is found
                     if teacher is None:
