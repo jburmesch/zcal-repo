@@ -25,6 +25,19 @@ def manage():
         t = Teacher.query.filter_by(id=t_form.teachers.data).first()
         t.zoom_id = t_form.zm_id.data
         db.session.commit()
+    if rem_form.validate_on_submit():
+        z_id = rem_form.rem_id.data
+        t = Teacher.query.filter(Teacher.zoom_id == z_id).first()
+        if t:
+            t.zoom_id = None
+            db.session.commit()
+            return redirect(url_for('zoom.manage'))
+        else:
+            zoom = Zoom.query.filter_by(id=z_id).first()
+            db.session.delete(zoom)
+            db.session.commit()
+            return redirect(url_for('zoom.manage'))
+
     return render_template(
         'zoom.html',
         t_form=t_form,
