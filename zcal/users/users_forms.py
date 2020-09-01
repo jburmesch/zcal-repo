@@ -82,3 +82,7 @@ class AdminForm(FlaskForm):
                 c = Course.query.filter(Course.code == code.data).one()
                 if c is None:
                     raise ValidationError('Course Code Not Found')
+
+
+class CleanupForm(FlaskForm):
+    cleanup = SubmitField()

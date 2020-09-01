@@ -21,17 +21,21 @@ def manage():
     t_form = ZoomlessTeachers()
     t_form.teachers.choices = [(t.id, t.user.full_name()) for t in zl_teachers]
     zooms = Zoom.query.all()
+    # Add Zoom to teacher
     if t_form.validate_on_submit():
         t = Teacher.query.filter_by(id=t_form.teachers.data).first()
         t.zoom_id = t_form.zm_id.data
         db.session.commit()
+    # Remove Zoom
     if rem_form.validate_on_submit():
         z_id = rem_form.rem_id.data
+        # Remove from teacher, if attached
         t = Teacher.query.filter(Teacher.zoom_id == z_id).first()
         if t:
             t.zoom_id = None
             db.session.commit()
             return redirect(url_for('zoom.manage'))
+        # Otherwise, remove from system
         else:
             zoom = Zoom.query.filter_by(id=z_id).first()
             db.session.delete(zoom)

@@ -3,7 +3,7 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule, Meeting
+from zcal.models import Student, Teacher, Timeslot, Schedule, Meeting, User
 from zcal import db
 from zcal.zoom.zoom import schedule_zoom
 from datetime import date
@@ -65,6 +65,7 @@ def cal(u_id=0):
 @calbp.route('/calendar/student/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def stu_cal(u_id):
+    user = User.query.filter(User.id == u_id).one()
     mod = request.args.get("mod")
     # ADD VALIDATION TO THIS!
     if request.method == 'POST':
@@ -91,6 +92,7 @@ def stu_cal(u_id):
         date.today().month,
         mod
     )
+    Schedule.cleanup_meetings()
     schedules = Schedule.query.filter(
         Schedule.date >= date(date.today().year, month, 1),
         Schedule.date < date(date.today().year, month + 1, 1),
@@ -157,7 +159,8 @@ def stu_cal(u_id):
         title='Calendar',
         schedules=schedules,
         a_dict=a_dict,
-        sched_json=sched_json
+        sched_json=sched_json,
+        user=user
     )
 
 
@@ -165,6 +168,7 @@ def stu_cal(u_id):
 @calbp.route('/calendar/teacher/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def t_cal(u_id):
+    user = User.query.filter(User.id == u_id).one()
     ts_form = TeacherSchedule()
     zoom_form = ZoomForm()
     mod = request.args.get("mod")
@@ -281,7 +285,8 @@ def t_cal(u_id):
         a_dict=a_dict,
         m_dict=m_dict,
         zoom_form=zoom_form,
-        title='Calendar'
+        title='Calendar',
+        user=user
     )
 
 

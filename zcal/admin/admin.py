@@ -190,10 +190,14 @@ def courses():
             c_id = mg_form.mg_id.data
             c = Course.query.filter(Course.id == c_id).first()
             students = Student.query.filter(Student.course_id == c_id).all()
+            mg_form = ManageForm()
+            rem_form = RemoveForm()
             return render_template(
                 'students.html',
-                title=f'{c.name}: Student Management',
+                title=f'{c.name} Students',
+                rem_form=rem_form,
                 students=students,
+                mg_form=mg_form,
                 course=c
             )
 

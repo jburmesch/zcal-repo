@@ -192,6 +192,13 @@
                         </table>
                     </form>
                 {% endif %}
+        {% if meetings or schedules %}
+            <p>
+            <form method="POST" action="" id="cleanup_form">
+                {{ cleanup_form.hidden_tag()}}
+                {{ cleanup_form.cleanup(value = "Remove Past Meetings") }}
+            </form>
+        {% endif %}
         {% if meetings %}
             <h2>
                 Scheduled Meetings:
@@ -258,7 +265,41 @@
             </table>
         {% endif %}
 
-        {% if user.utype == 'Teacher' or user.utype == 'Admin' %}
-
+        {% if schedules %}
+            <h2>
+                Available Time Slots:
+            </h2>
+            <table class="table">
+                <tr>
+                    <th>
+                        Meeting Date
+                    </th>
+                    <th>
+                        Start
+                    </th>
+                    <th>
+                        End
+                    </th>
+                    <th>
+                        Options
+                    </th>
+                </tr>
+                {% for schedule in schedules %}
+                    <tr>
+                        <td>
+                            {{ schedule.date }}
+                        </td>
+                        <td>
+                            {{ schedule.start.isoformat(timespec='minutes') }}
+                        </td>
+                        <td>
+                            {{ schedule.end.isoformat(timespec='minutes') }}
+                        </td>
+                        <td>
+                            Coming Soon
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
         {% endif %}
     {% endblock %}

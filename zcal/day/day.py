@@ -49,9 +49,13 @@ def t_meetings(date, u_id):
         r_sched = Schedule.query.filter(
             Schedule.id == rem_form.rem_id.data
         ).first()
-        db.session.delete(r_sched)
-        db.session.commit()
-        flash('Timeslot removed!', 'success')
+        if r_sched:
+            db.session.delete(r_sched)
+            db.session.commit()
+            flash('Timeslot removed!', 'success')
+        else:
+            flash('Timeslot not found!', 'error')
+        return(redirect(url_for('day.t_meetings', date=date, u_id=u_id)))
 
     # redirect to meeting management page
     elif mg_form.validate_on_submit():

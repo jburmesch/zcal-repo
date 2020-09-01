@@ -35,6 +35,7 @@ def user(u_id):
         user = User.query.filter(User.id == u_id).one()
         # Create Vars
         meetings = None
+        schedules = None
         form = None
         course = None
 
@@ -44,6 +45,7 @@ def user(u_id):
         password_form = forms.PasswordForm()
         admin_form = forms.AdminForm()
         mg_form = ManageForm()
+        cleanup_form = forms.CleanupForm()
 
         # Check which form was submitted:
         if check_form(name_form):
@@ -70,9 +72,11 @@ def user(u_id):
                 ).filter(
                     Meeting.student_id == student.id
                 ).all()
+            if meetings == []:
+                meetings = None
 
         # Teacher/Admin:
-        elif user.utype == 'Teacher' or user.utype == 'Adimn':
+        elif user.utype == 'Teacher' or user.utype == 'Admin':
             teacher = Teacher.query.filter(Teacher.user_id == u_id).one()
             schedules = Schedule.query.filter(
                 Schedule.teacher_id == teacher.id
@@ -85,7 +89,9 @@ def user(u_id):
                     # list and add to meetings
                     meetings.append(schedule)
                     schedules.remove(schedule)
-            # Set meetings back to none if none are found
+            # Set schedules and meetings back to none if none are found
+            if schedules == []:
+                schedules = None
             if meetings == []:
                 meetings = None
 
@@ -236,6 +242,11 @@ def user(u_id):
                 flash('Course Changed.', 'success')
                 return redirect(url_for('users.user', u_id=u_id))
 
+        # Cleanup past meetings
+        elif cleanup_form.validate_on_submit():
+            Schedule.cleanup_meetings(user)
+            return redirect(url_for('users.user', u_id=u_id))
+
         # Generate Template
         return render_template(
             'user.html',
@@ -248,7 +259,9 @@ def user(u_id):
             admin_form=admin_form,
             mg_form=mg_form,
             form=form,
-            course=course
+            course=course,
+            schedules=schedules,
+            cleanup_form=cleanup_form
         )
 
     # not correct user or admin

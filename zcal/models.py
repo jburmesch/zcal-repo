@@ -157,6 +157,33 @@ class Schedule(db.Model):
                 + f"Duration: {self.duration} minutes |"\
                 + "Student: None"
 
+    @staticmethod
+    def cleanup_meetings(user):
+        if user.utype == 'Student':
+            scheds = Schedule.query.join(
+                Meeting
+            ).join(
+                Student
+            ).filter(
+                Schedule.date < datetime.now().date()
+            ).filter(
+                Student.user_id == user.id
+            ).all()
+        else:
+            scheds = Schedule.query.join(
+                Teacher
+            ).filter(
+                Schedule.date < datetime.now().date()
+            ).filter(
+                Teacher.user_id == user.id
+            ).all()
+        for sch in scheds:
+            if sch.meeting:
+                db.session.delete(sch.meeting)
+                db.session.commit()
+            db.session.delete(sch)
+            db.session.commit()
+
 
 class Timeslot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
