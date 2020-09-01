@@ -92,7 +92,6 @@ def stu_cal(u_id):
         date.today().month,
         mod
     )
-    Schedule.cleanup_meetings()
     schedules = Schedule.query.filter(
         Schedule.date >= date(date.today().year, month, 1),
         Schedule.date < date(date.today().year, month + 1, 1),

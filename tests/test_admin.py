@@ -78,16 +78,30 @@ class AuthTest(TestCase):
             h.reg_10_teachers(self)
             teachers = Teacher.query.all()
             count = 0
+            # check that all teachers redirect correctly for 'calendar'
+            for teacher in teachers:
+                count += 1
+                response = c.post(
+                    url_for('admin.teachers'), data=dict(
+                        form_id='cal',
+                        mg_id=teacher.user_id
+                    )
+                )
+                self.assertRedirects(response, url_for(
+                    'cal.cal',
+                    u_id=teacher.user_id
+                ))
             # check that all teachers redirect correctly for 'manage'
             for teacher in teachers:
                 count += 1
                 response = c.post(
                     url_for('admin.teachers'), data=dict(
-                        mg_id=teacher.id
+                        form_id='manage',
+                        mg_id=teacher.user_id
                     )
                 )
                 self.assertRedirects(response, url_for(
-                    'cal.cal',
+                    'users.user',
                     u_id=teacher.user_id
                 ))
             # check that 11 doesn't redirect
