@@ -116,7 +116,7 @@ class AuthTest(TestCase):
             m = len(teachers) - 1
             order = []
             for n in range(m):
-                i = random.randint(1, m )
+                i = random.randint(1, m)
                 order.append(i)
                 response = h.remove_teacher(c, teachers[i].id)
                 teachers = Teacher.query.all()
