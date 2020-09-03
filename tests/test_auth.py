@@ -3,7 +3,7 @@ from zcal import create_app as create, db
 from tests.helpers import (
     register, register_admin, register_student, login,
     login_admin, login_student, logout, create_courses,
-    register_teacher, login_teacher
+    make_teacher, login_teacher
 )
 
 
@@ -160,7 +160,7 @@ class AuthTest(TestCase):
             response.data
         )
 
-        register_teacher()
+        make_teacher()
         response = login_teacher(c)
         self.assertIn(
             b'Mon',

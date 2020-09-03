@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+    {% block body %}
+        <h2>
+            Account Information:
+        </h2>
+        <table class="table">
+            <tr>
+                <form method="POST" action="" id="first_form">
+                    <th>
+                        First Name:
+                    </th>
+                    <td>
+                        {{ name_form.hidden_tag() }}
+                        {{ name_form.name(placeholder=user.first) }}
+                        {% if form == 'First' and name_form.name.errors %}
+                            <ul class=errors>
+                                {% for error in name_form.name.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {{ name_form.name_type(value="First", type="hidden")}}
+                    </td>
+                    <td>
+                        {{ name_form.submit(value="Change") }}
+                    </td>
+                </form>
+            </tr>
+            <tr>
+                <form method="POST" action="" id="last_form">
+                    <th>
+                        Last Name:
+                    </th>
+                    <td>
+                        {{ name_form.hidden_tag() }}
+                        {{ name_form.name(placeholder=user.last) }}
+                        {% if form == 'Last' and name_form.name.errors %}
+                            <ul class=errors>
+                                {% for error in name_form.name.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {{ name_form.name_type(value="Last", type="hidden")}}
+                    </td>
+                    <td>
+                        {{ name_form.submit(value="Change") }}
+                    </td>
+                </form>
+            </tr>
+            <tr>
+                <form method="POST" action="" id="email_form">
+                    <th>
+                        Email Address:
+                    </th>
+                    <td>
+                        {{ email_form.hidden_tag() }}
+                        {{ email_form.email(placeholder=user.email) }}
+                        {% if form == 'Email' and email_form.email.errors %}
+                            <ul class=errors>
+                                {% for error in email_form.email.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    <p>
+                        {{ email_form.confirm_email(placeholder="Confirm Email") }}
+                        {% if form == 'Email' and email_form.confirm_email.errors %}
+                            <ul class=errors>
+                                {% for error in email_form.confirm_email.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ email_form.submit(value="Change") }}
+                    </td>
+                </form>
+            </tr>
+            <tr>
+                <form method="POST" action="" id="password_form">
+                    <th>
+                        Password:
+                    </th>
+                    <td>
+                        {{ password_form.hidden_tag() }}
+                        {{ password_form.user_field(value=user.id, type="hidden") }}
+                        {{ password_form.password(placeholder="Current Password") }}
+                        {% if form == 'Password' and password_form.password.errors %}
+                            <ul class=errors>
+                                {% for error in password_form.password.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    <hr>
+                        {{ password_form.new_password(placeholder="New Password") }}
+                        {% if form == 'Password' and password_form.new_password.errors %}
+                            <ul class=errors>
+                                {% for error in password_form.new_password.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    <p>
+                        {{ password_form.confirm_password(placeholder="Confirm Password") }}
+                        {% if form == 'Password' and password_form.confirm_password.errors %}
+                            <ul class=errors>
+                                {% for error in password_form.confirm_password.errors %}
+                                    <li>
+                                        {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ password_form.submit(value="Change") }}
+                    </td>
+                </form>
+            </tr>
+        </table>
+                {% if current_user.utype == 'Admin' %}
+                    <h2>Admin Options:</h2>
+                    <form method="POST" action="" id="admin_form">
+                        <table class='table'>
+                            <tr>
+                                <th>
+                                    Course:
+                                </th>
+                                <td>
+                                    {{ admin_form.hidden_tag() }}
+                                    {% if user.student %}
+                                        {{ admin_form.code(placeholder=course.code) }}
+                                        {% if admin_form.code.errors %}
+                                            <ul class=errors>
+                                                {% for error in admin_form.code.errors %}
+                                                    <li>
+                                                        {{ error }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% else %}
+                                        {{ admin_form.code() }}
+                                        {% if form == 'Admin' and admin_form.code.errors %}
+                                            <ul class=errors>
+                                                {% for error in admin_form.code.errors %}
+                                                    <li>
+                                                        {{ error }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    User Type:
+                                </th>
+                                <td>
+                                    Current User Type: {{user.utype}}<p>
+                                    {{ admin_form.utype() }}
+                                    {% if form == 'Admin' and admin_form.utype.errors %}
+                                        <ul class=errors>
+                                            {% for error in admin_form.utype.errors %}
+                                                <li>
+                                                    {{ error }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ admin_form.submit()}}
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                {% endif %}
+        {% if meetings or schedules %}
+            <p>
+            <form method="POST" action="" id="cleanup_form">
+                {{ cleanup_form.hidden_tag()}}
+                {{ cleanup_form.cleanup(value = "Remove Past Meetings") }}
+            </form>
+        {% endif %}
+        {% if meetings %}
+            <h2>
+                Scheduled Meetings:
+            </h2>
+            <table class="table">
+                <tr>
+                    <th>
+                        Meeting Date
+                    </th>
+                    <th>
+                        Start
+                    </th>
+                    <th>
+                        End
+                    </th>
+                    {% if user.utype == 'Teacher' or user.utype == 'Admin' %}
+                        <th>
+                            Student
+                        </th>
+                    {% else %}
+                        <th>
+                            Teacher
+                        </th>
+                    {% endif %}
+                    <th>
+                        Options
+                    </th>
+                </tr>
+                {% for meeting in meetings %}
+                    <tr>
+                        <td>
+                            {{ meeting.date }}
+                        </td>
+                        <td>
+                            {{ meeting.start.isoformat(timespec='minutes') }}
+                        </td>
+                        <td>
+                            {{ meeting.end.isoformat(timespec='minutes') }}
+                        </td>
+                        {% if user.utype == 'Teacher' or user.utype == 'Admin' %}
+                            <td>
+                                {{ meeting.meeting.student.user.full_name()}}
+                            </td>
+                        {% else %}
+                            <td>
+                                {{ meeting.teacher.user.full_name() }}
+                            </td>
+                        {% endif %}
+                        <td>
+                            {{ mg_form.hidden_tag() }}
+                            {{ mg_form.manage() }}
+                            {% if form == 'Manage' and mg_form.utype.errors %}
+                                <ul class=errors>
+                                    {% for error in mg_form.utype.errors %}
+                                        <li>
+                                            {{ error }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if schedules %}
+            <h2>
+                Available Time Slots:
+            </h2>
+            <table class="table">
+                <tr>
+                    <th>
+                        Meeting Date
+                    </th>
+                    <th>
+                        Start
+                    </th>
+                    <th>
+                        End
+                    </th>
+                    <th>
+                        Options
+                    </th>
+                </tr>
+                {% for schedule in schedules %}
+                    <tr>
+                        <td>
+                            {{ schedule.date }}
+                        </td>
+                        <td>
+                            {{ schedule.start.isoformat(timespec='minutes') }}
+                        </td>
+                        <td>
+                            {{ schedule.end.isoformat(timespec='minutes') }}
+                        </td>
+                        <td>
+                            Coming Soon
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    {% endblock %}

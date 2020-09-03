@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 from tests.helpers import (
     register_admin, register_student, login_admin, login_student, logout,
-    create_courses, register_teacher, login_teacher
+    create_courses, make_teacher, login_teacher
 )
 from flask import url_for
 from flask_login import current_user
@@ -58,7 +58,7 @@ class AuthTest(TestCase):
 
         # test teacher
         with c:
-            register_teacher()
+            make_teacher()
             login_teacher(c)
 
             response = c.get(url_for('cal.main'))
@@ -125,7 +125,7 @@ class AuthTest(TestCase):
         # test teacher
         with c:
 
-            register_teacher()
+            make_teacher()
             login_teacher(c)
 
             # check redirect

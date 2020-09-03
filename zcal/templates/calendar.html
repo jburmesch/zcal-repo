@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
+    <h1>
+        {{user.full_name()}}
+    </h1>
     {% if current_user.utype == 'Admin' %}
         {{ admin_menu(ts_form, timeslots, u_id, zoom) }}
+    {% elif current_user.utype == 'Teacher' and zoom == None %}
+        {{ teacher_menu(zoom_form)}}
     {% endif %}
     <table class="table table-bordered table-dark calmonth">
         <div class="caltitle">

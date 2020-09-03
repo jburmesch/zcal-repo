@@ -20,7 +20,20 @@
                     {% if course.id == 1 %}
                         <td></td>
                     {% else %}
-                    <td>Coming Soon</td>
+                        <td>
+                            <span>
+                                <form style="display: inline" id="mg_form" method="POST" action="">
+                                    {{ mg_form.hidden_tag() }}
+                                    {{ mg_form.mg_id(value=course.id, type="hidden")}}
+                                    {{ mg_form.manage(class="btn btn-dark") }}
+                                </form>
+                                <form style="display: inline"  id="rem_form{{ course.id }}" method="POST" action="">
+                                    {{ rem_form.hidden_tag() }}
+                                    {{ rem_form.rem_id(value=course.id, type="hidden") }}
+                                    {{ rem_form.remove(class="btn btn-dark") }}
+                                </form>
+                            </span>
+                        </td>
                     {% endif %}
         		</tr>
             {% endfor %}

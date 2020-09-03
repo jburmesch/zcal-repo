@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% block body %}
     <div class="container">
-        <h1>Manage Students</h1>
+        {% if course %}
+            <h1>{{ course.name }}: Students</h1>
+        {% else %}
+            <h1>All Students</h1>
+        {% endif %}
         <hr>
     	<table class="table">
             <tr>
@@ -19,7 +23,13 @@
             		<td>{{student.user.last}}</td>
                     <td>{{student.user.email}}</td>
                     <td>{{student.course.name}}</td>
-            		<td>Coming Soon</td>
+            		<td>
+                        <form style="display: inline" id="mg_form" method="POST" action="">
+                            {{ mg_form.hidden_tag() }}
+                            {{ mg_form.mg_id(value=student.user.id, type="hidden")}}
+                            {{ mg_form.manage(class="btn btn-dark") }}
+                        </form>
+                    </td>
         		</tr>
             {% endfor %}
         </table>

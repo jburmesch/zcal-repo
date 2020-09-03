@@ -25,8 +25,15 @@
                         <span>
                             <form style="display: inline" id="mg_form" method="POST" action="">
                                 {{ mg_form.hidden_tag() }}
-                                {{ mg_form.mg_id(value=teacher.id, type="hidden")}}
+                                {{ mg_form.form_id(value="manage", type="hidden")}}
+                                {{ mg_form.mg_id(value=teacher.user.id, type="hidden")}}
                                 {{ mg_form.manage(class="btn btn-dark") }}
+                            </form>
+                            <form style="display: inline" id="cal_form" method="POST" action="">
+                                {{ mg_form.hidden_tag() }}
+                                {{ mg_form.form_id(value="cal", type="hidden")}}
+                                {{ mg_form.mg_id(value=teacher.user.id, type="hidden")}}
+                                {{ mg_form.manage(class="btn btn-dark", value="Calendar") }}
                             </form>
                             <form style="display: inline"  id="rem_form{{ teacher.id }}" method="POST" action="">
                                 {{ rem_form.hidden_tag() }}

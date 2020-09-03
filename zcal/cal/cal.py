@@ -3,11 +3,12 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from zcal.cal.cal_forms import TeacherSchedule
-from zcal.models import Student, Teacher, Timeslot, Schedule, Meeting
+from zcal.models import Student, Teacher, Timeslot, Schedule, Meeting, User
 from zcal import db
 from zcal.zoom.zoom import schedule_zoom
 from datetime import date
 from math import floor
+from zcal.zoom.zoom_forms import ZoomForm
 import calendar
 import json
 
@@ -53,7 +54,7 @@ def cal(u_id=0):
         # original admin doesn't have a meaningful calendar, but
         # if they look themself up, we'll show them one anyway I guess.
         else:
-            flash('User either does not exist or is admin only.',
+            flash('User either does not exist or is admin.',
                   "warning")
             return redirect(
                 url_for('cal.t_cal', u_id=current_user.id, mod=mod)
@@ -64,6 +65,7 @@ def cal(u_id=0):
 @calbp.route('/calendar/student/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def stu_cal(u_id):
+    user = User.query.filter(User.id == u_id).one()
     mod = request.args.get("mod")
     # ADD VALIDATION TO THIS!
     if request.method == 'POST':
@@ -156,7 +158,8 @@ def stu_cal(u_id):
         title='Calendar',
         schedules=schedules,
         a_dict=a_dict,
-        sched_json=sched_json
+        sched_json=sched_json,
+        user=user
     )
 
 
@@ -164,7 +167,9 @@ def stu_cal(u_id):
 @calbp.route('/calendar/teacher/u<int:u_id>', methods=['GET', 'POST'])
 @login_required
 def t_cal(u_id):
+    user = User.query.filter(User.id == u_id).one()
     ts_form = TeacherSchedule()
+    zoom_form = ZoomForm()
     mod = request.args.get("mod")
     # figure out which month should be displayed based on the current date
     # and the month modifier.
@@ -192,7 +197,7 @@ def t_cal(u_id):
     # get teacher's zoom account email
     '''MAKE SURE IT EXISTS'''
     t = Teacher.query.filter_by(user_id=u_id).first()
-    if t:
+    if t.zoom:
         zoom = t.zoom
     else:
         zoom = None
@@ -278,7 +283,9 @@ def t_cal(u_id):
         u_id=u_id,
         a_dict=a_dict,
         m_dict=m_dict,
-        title='Calendar'
+        zoom_form=zoom_form,
+        title='Calendar',
+        user=user
     )
 
 

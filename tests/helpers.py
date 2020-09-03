@@ -85,6 +85,13 @@ def login_student(client):
     )
 
 
+def register_course(client, name, code):
+    return client.post(url_for('admin.add_course'), data=dict(
+        name=name,
+        code=code
+    ))
+
+
 def make_course():
     c = Course(
         name='Test Course',
@@ -94,8 +101,9 @@ def make_course():
     return c
 
 
-def make_student():
-    c_id = make_course().id
+def make_student(c_id=None):
+    if not c_id:
+        c_id = make_course().id
     hashed_password = bcrypt.generate_password_hash(
         'testpass'
     ).decode('utf-8')
@@ -199,3 +207,19 @@ def make_zoom():
     )
     db_commit([z])
     return z
+
+
+def remove_teacher(client, rem_id):
+    return client.post(
+        url_for('admin.teachers'), data=dict(
+            rem_id=rem_id
+        ), follow_redirects=True
+    )
+
+
+def remove_course(client, rem_id):
+    return client.post(
+        url_for('admin.courses'), data=dict(
+            rem_id=rem_id
+        ), follow_redirects=True
+    )

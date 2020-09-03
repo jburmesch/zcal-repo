@@ -79,4 +79,5 @@ class RemoveForm(FlaskForm):
 
 class ManageForm(FlaskForm):
     mg_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
+    form_id = StringField()
     manage = SubmitField('Manage')
