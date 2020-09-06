@@ -73,6 +73,7 @@ class TimeslotForm(FlaskForm):
 
 
 class RemoveForm(FlaskForm):
+    rem_type = StringField()
     rem_id = IntegerField(validators=[InputRequired(), NumberRange(min=1)])
     remove = SubmitField('Remove')
 

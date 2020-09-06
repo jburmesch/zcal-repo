@@ -34,7 +34,7 @@
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('zoom.manage') }}">Manage Zooms</a></li>
                         {% else %}
                             <li class="nav-item"><a class="nav-link" href="#">Placeholder 3</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Account</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.user', u_id=current_user.id) }}">Account</a></li>
                         {% endif %}
                     </ul>
                     <ul class="navbar-nav ml-auto mt-2">

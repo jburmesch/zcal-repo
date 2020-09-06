@@ -248,17 +248,35 @@
                             </td>
                         {% endif %}
                         <td>
-                            {{ mg_form.hidden_tag() }}
-                            {{ mg_form.manage() }}
-                            {% if form == 'Manage' and mg_form.utype.errors %}
-                                <ul class=errors>
-                                    {% for error in mg_form.utype.errors %}
-                                        <li>
-                                            {{ error }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
+                            <form method="POST" action="" id="manage_form{{ meeting.id }}">
+                                {{ mg_form.hidden_tag() }}
+                                {{ mg_form.mg_id(value=meeting.id, type="hidden") }}
+                                {{ mg_form.manage() }}
+                                {% if form == 'Manage' and mg_form.manage.errors %}
+                                    <ul class=errors>
+                                        {% for error in mg_form.manage.errors %}
+                                            <li>
+                                                {{ error }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </form>
+                            <form method="POST" action="" id="remove_form{{ meeting.id }}">
+                                {{ rem_form.hidden_tag() }}
+                                {{ rem_form.rem_type(value="meeting", type="hidden") }}
+                                {{ rem_form.rem_id(value=meeting.id, type="hidden")}}
+                                {{ rem_form.remove(value='Cancel') }}
+                                {% if form == 'Remove' and rem_form.remove.errors %}
+                                    <ul class=errors>
+                                        {% for error in rem_form.remove.errors %}
+                                            <li>
+                                                {{ error }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
@@ -296,7 +314,21 @@
                             {{ schedule.end.isoformat(timespec='minutes') }}
                         </td>
                         <td>
-                            Coming Soon
+                            <form method="POST" action="" id="remove_form{{ schedule.id }}">
+                                {{ rem_form.hidden_tag() }}
+                                {{ rem_form.rem_type(value="schedule", type="hidden") }}
+                                {{ rem_form.rem_id(value=schedule.id, type="hidden")}}
+                                {{ rem_form.remove() }}
+                                {% if form == 'Remove' and rem_form.remove.errors %}
+                                    <ul class=errors>
+                                        {% for error in rem_form.remove.errors %}
+                                            <li>
+                                                {{ error }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

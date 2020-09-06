@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from zcal import db, bcrypt
 from zcal.models import User, Student, Meeting, Teacher, Schedule, Course
 import zcal.users.users_forms as forms
-from zcal.admin.admin_forms import ManageForm
+from zcal.admin.admin_forms import ManageForm, RemoveForm
 
 users = Blueprint('users', __name__)
 
@@ -46,6 +46,7 @@ def user(u_id):
         admin_form = forms.AdminForm()
         mg_form = ManageForm()
         cleanup_form = forms.CleanupForm()
+        rem_form = RemoveForm()
 
         # Check which form was submitted:
         if check_form(name_form):
@@ -58,6 +59,8 @@ def user(u_id):
             form = 'Admin'
         elif check_form(mg_form):
             form = 'Manage'
+        elif check_form(rem_form):
+            form = 'Remove'
 
         # Student:
         if user.utype == 'Student':
@@ -241,7 +244,28 @@ def user(u_id):
                 db.session.commit()
                 flash('Course Changed.', 'success')
                 return redirect(url_for('users.user', u_id=u_id))
-
+        elif mg_form.validate_on_submit():
+            '''Add this when meeting management is made'''
+            pass
+        elif rem_form.validate_on_submit():
+            r_id = rem_form.rem_id.data
+            schedule = Schedule.query.filter(
+                Schedule.id == r_id
+            ).one()
+            if schedule.meeting_id:
+                meeting = Meeting.query.filter(
+                    Meeting.id == schedule.meeting_id
+                ).first()
+                if meeting:
+                    db.session.delete(meeting)
+                schedule.meeting_id = None
+                db.session.commit()
+                return redirect(url_for('users.user', u_id=u_id))
+            else:
+                # delete schedule
+                db.session.delete(schedule)
+                db.session.commit()
+                return redirect(url_for('users.user', u_id=u_id))
         # Cleanup past meetings
         elif cleanup_form.validate_on_submit():
             Schedule.cleanup_meetings(user)
@@ -261,7 +285,8 @@ def user(u_id):
             form=form,
             course=course,
             schedules=schedules,
-            cleanup_form=cleanup_form
+            cleanup_form=cleanup_form,
+            rem_form=rem_form
         )
 
     # not correct user or admin
