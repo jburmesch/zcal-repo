@@ -20,10 +20,11 @@
                     <td>{{meeting.schedule.teacher.user.full_name()}}</td>
                     <td>{{meeting.student.user.full_name()}}</td>
                     <td>
-                        <form id="mg_form" method="POST" action="">
-                            {{ mg_form.hidden_tag() }}
-                            {{ mg_form.mg_id(value=meeting.id, type="hidden")}}
-                            {{ mg_form.manage(class="btn btn-dark") }}
+                        <form id="rem_form" method="POST" action="">
+                            {{ rem_form.hidden_tag() }}
+                            {{ rem_form.rem_type(value = "Meeting", type="hidden") }}
+                            {{ rem_form.rem_id(value=meeting.id, type="hidden")}}
+                            {{ rem_form.remove(class="btn btn-dark", value="Cancel Meeting") }}
                         </form>
                     </td>
         		</tr>
@@ -47,6 +48,7 @@
                         <td>
                             <form id="rem_form" method="POST" action="">
                                 {{ rem_form.hidden_tag() }}
+                                {{ rem_form.rem_type(value = "Schedule", type="hidden")}}
                                 {{ rem_form.rem_id(value=schedule.id, type="hidden")}}
                                 {{ rem_form.remove(class="btn btn-dark") }}
                             </form>

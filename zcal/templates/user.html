@@ -254,7 +254,7 @@
                                 {{ mg_form.manage() }}
                                 {% if form == 'Manage' and mg_form.manage.errors %}
                                     <ul class=errors>
-                                        {% for error in mg_form.manage.errors %}
+                                        {% for error in mg_form.utype.errors %}
                                             <li>
                                                 {{ error }}
                                             </li>

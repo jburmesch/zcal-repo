@@ -28,7 +28,7 @@ def t_meetings(date, u_id):
         )
     ).filter(
         Teacher.user_id == u_id
-    ).all()
+    ).order_by(Schedule.start).all()
 
     meetings = Meeting.query.join(
         Schedule
@@ -42,25 +42,33 @@ def t_meetings(date, u_id):
             month=int(date_parts[1]),
             day=int(date_parts[2])
         )
-    ).all()
+    ).order_by(Schedule.start).all()
 
     # remove timeslot when remove form is submitted.
     if rem_form.validate_on_submit():
-        r_sched = Schedule.query.filter(
-            Schedule.id == rem_form.rem_id.data
-        ).first()
-        if r_sched:
-            db.session.delete(r_sched)
-            db.session.commit()
-            flash('Timeslot removed!', 'success')
+        if rem_form.rem_type.data == 'Meeting':
+            mtg = Meeting.query.filter(
+                Meeting.id == rem_form.rem_id.data
+            ).first()
+            sch = Schedule.query.filter(
+                Schedule.meeting_id == rem_form.rem_id.data
+            ).first()
+            if mtg:
+                sch.meeting_id = None
+                db.session.delete(mtg)
+                db.session.commit()
+            return redirect(url_for('day.t_meetings', date=date, u_id=u_id))
         else:
-            flash('Timeslot not found!', 'error')
-        return(redirect(url_for('day.t_meetings', date=date, u_id=u_id)))
-
-    # redirect to meeting management page
-    elif mg_form.validate_on_submit():
-        m_id = mg_form.mg_id.data
-        return redirect(url_for('day.manage_meeting', mtg_id=m_id))
+            r_sched = Schedule.query.filter(
+                Schedule.id == rem_form.rem_id.data
+            ).first()
+            if r_sched:
+                db.session.delete(r_sched)
+                db.session.commit()
+                flash('Timeslot removed!', 'success')
+            else:
+                flash('Timeslot not found!', 'error')
+            return(redirect(url_for('day.t_meetings', date=date, u_id=u_id)))
 
     return render_template(
         'day.html',
@@ -81,11 +89,20 @@ def s_meetings(date, u_id):
 
     # create forms
     rem_form = RemoveForm()
-    mg_form = ManageForm()
 
-    if mg_form.validate_on_submit():
-        m_id = mg_form.mg_id.data
-        return redirect(url_for('day.manage_meeting', mtg_id=m_id))
+    if rem_form.validate_on_submit():
+        if rem_form.rem_type.data == 'Meeting':
+            mtg = Meeting.query.filter(
+                Meeting.id == rem_form.rem_id.data
+            ).first()
+            sch = Schedule.query.filter(
+                Schedule.meeting_id == rem_form.rem_id.data
+            ).first()
+            if mtg:
+                sch.meeting_id = None
+                db.session.delete(mtg)
+                db.session.commit()
+            return redirect(url_for('day.s_meetings', date=date, u_id=u_id))
 
     # get all meetings for the current user that match the date.
     meetings = Meeting.query.join(
@@ -107,17 +124,5 @@ def s_meetings(date, u_id):
         date=date,
         meetings=meetings,
         teacher=False,
-        rem_form=rem_form,
-        mg_form=mg_form
-    )
-
-
-@day.route('/student/meeting/mtg<int:mtg_id>', methods=['GET', 'POST'])
-@login_required
-def manage_meeting(mtg_id):
-    meeting = Meeting.query.filter(Meeting.id == mtg_id).first()
-    return render_template(
-        'manage_meeting.html',
-        title="Manage Meeting",
-        meeting=meeting
+        rem_form=rem_form
     )

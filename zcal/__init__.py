@@ -44,6 +44,7 @@ def create_app(test_config=None):
         from zcal.zoom.zoom import zoom
         from zcal.day.day import day
         from zcal.users.users import users
+        from zcal.meeting.meeting import meeting
 
         app.register_blueprint(auth)
         app.register_blueprint(calbp)
@@ -51,6 +52,7 @@ def create_app(test_config=None):
         app.register_blueprint(zoom)
         app.register_blueprint(day)
         app.register_blueprint(users)
+        app.register_blueprint(meeting)
 
     return app
 

@@ -245,8 +245,10 @@ def user(u_id):
                 flash('Course Changed.', 'success')
                 return redirect(url_for('users.user', u_id=u_id))
         elif mg_form.validate_on_submit():
-            '''Add this when meeting management is made'''
-            pass
+            s_id = mg_form.mg_id.data
+            schedule = Schedule.query.filter(Schedule.id == s_id).first()
+            m_id = schedule.meeting_id
+            return redirect(url_for('meeting.mtg', m_id=m_id))
         elif rem_form.validate_on_submit():
             r_id = rem_form.rem_id.data
             schedule = Schedule.query.filter(
