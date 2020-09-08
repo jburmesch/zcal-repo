@@ -83,7 +83,7 @@ def user(u_id):
             teacher = Teacher.query.filter(Teacher.user_id == u_id).one()
             schedules = Schedule.query.filter(
                 Schedule.teacher_id == teacher.id
-            ).all()
+            ).order_by(Schedule.date, Schedule.start).all()
             meetings = []
             # look through schedules for meetings
             for schedule in schedules:

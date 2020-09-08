@@ -1,10 +1,20 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, PasswordField, SelectField
 from wtforms.fields.html5 import TimeField, IntegerField
 from wtforms.validators import (
-    InputRequired, Length, Email, ValidationError, NumberRange
+    InputRequired, Length, Email, ValidationError, NumberRange, EqualTo
 )
 from zcal.models import User, Course
+
+
+def get_courses():
+    the_list = []
+    courses = Course.query.all()
+    for course in courses:
+        if course.name != 'ADMIN':
+            tup = (course.name, course.name)
+            the_list.append(tup)
+    return the_list
 
 
 class TeacherForm(FlaskForm):
@@ -20,7 +30,27 @@ class TeacherForm(FlaskForm):
         'Email Address',
         validators=[InputRequired(), Email(), Length(max=120)]
     )
-    submit = SubmitField('Register')
+    password = PasswordField(
+        'Password',
+        validators=[InputRequired(), Length(min=8)]
+    )
+    confirm_password = PasswordField(
+        'Confirm Password',
+        validators=[InputRequired(), EqualTo('password')]
+    )
+    course = SelectField(
+        'Course',
+        choices=get_courses()
+    )
+    user_type = SelectField(
+        'User Type',
+        choices=[
+            ('Student', 'Student'),
+            ('Teacher', 'Teacher'),
+            ('Admin', 'Admin')
+        ], validators=[InputRequired()]
+    )
+    submit = SubmitField('Create')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()

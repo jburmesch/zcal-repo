@@ -9,21 +9,20 @@ from zcal.models import (
     User, Teacher, Course, Student, Timeslot, Schedule, Meeting
 )
 from datetime import datetime, timedelta
-import secrets
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 
-@admin.route('/add-teacher', methods=['GET', 'POST'])
+@admin.route('/add-user', methods=['GET', 'POST'])
 @login_required
-def add_teacher():
+def add_user():
     # Ensure that user is Admin
     if current_user.utype == "Admin":
         form = TeacherForm()
         # see if form was submitted
         if form.validate_on_submit():
-            # Create password for the new teacher
-            password = secrets.token_urlsafe(6)
+            # Get password from form
+            password = form.password.data
             # hash it.
             hashed_password = bcrypt.generate_password_hash(
                 password
@@ -33,28 +32,37 @@ def add_teacher():
             user = User(
                 first=form.first.data,
                 last=form.last.data,
-                utype="Teacher",
+                utype=form.user_type.data,
                 email=form.email.data,
                 password=hashed_password
             )
             db.session.add(user)
             db.session.commit()
-
-            # create teacher
-            teacher = Teacher(
-                user_id=user.id,
-            )
-            db.session.add(teacher)
-            db.session.commit()
+            if user.utype == 'Student':
+                c_id = Course.query.filter(
+                    Course.name == form.course.data
+                ).first().id
+                '''Make sure you add validation to ensure course exists'''
+                student = Student(
+                    user_id=user.id,
+                    course_id=c_id
+                )
+                db.session.add(student)
+                db.session.commit()
+            if user.utype != "Student":
+                # Create Teacher
+                teacher = Teacher(
+                    user_id=user.id
+                )
+                db.session.add(teacher)
+                db.session.commit()
 
             # display success message
-            '''Display of temp password is TEMPORARY!
-            Eventually want to send an email to teacher.'''
-            flash(f'Account Created. TEMP PASS: { password }', 'success')
-            return redirect(url_for('admin.add_teacher'))
+            flash('Account Created.', 'success')
+            return redirect(url_for('admin.add_user'))
         return render_template(
-            'add_teacher.html',
-            title='Add Teacher',
+            'add_user.html',
+            title='Add User',
             form=form
         )
     # If not Admin:

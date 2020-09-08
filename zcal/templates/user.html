@@ -248,20 +248,6 @@
                             </td>
                         {% endif %}
                         <td>
-                            <form method="POST" action="" id="manage_form{{ meeting.id }}">
-                                {{ mg_form.hidden_tag() }}
-                                {{ mg_form.mg_id(value=meeting.id, type="hidden") }}
-                                {{ mg_form.manage() }}
-                                {% if form == 'Manage' and mg_form.manage.errors %}
-                                    <ul class=errors>
-                                        {% for error in mg_form.utype.errors %}
-                                            <li>
-                                                {{ error }}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                            </form>
                             <form method="POST" action="" id="remove_form{{ meeting.id }}">
                                 {{ rem_form.hidden_tag() }}
                                 {{ rem_form.rem_type(value="meeting", type="hidden") }}
