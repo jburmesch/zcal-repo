@@ -2,7 +2,7 @@ from flask import (render_template, redirect, url_for,
                    flash, Blueprint)
 from zcal import db, bcrypt
 from zcal.admin.admin_forms import (
-    TeacherForm, CourseForm, TimeslotForm, RemoveForm, ManageForm
+    UserForm, CourseForm, TimeslotForm, RemoveForm, ManageForm, get_courses
 )
 from flask_login import login_required, current_user
 from zcal.models import (
@@ -13,12 +13,17 @@ from datetime import datetime, timedelta
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 
+'''Switching this to add_user is going to
+have totally broken the unittesting...'''
+
+
 @admin.route('/add-user', methods=['GET', 'POST'])
 @login_required
 def add_user():
     # Ensure that user is Admin
     if current_user.utype == "Admin":
-        form = TeacherForm()
+        form = UserForm()
+        form.course.choices = get_courses()
         # see if form was submitted
         if form.validate_on_submit():
             # Get password from form

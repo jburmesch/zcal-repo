@@ -7,7 +7,7 @@ import random
 from datetime import datetime
 
 
-class AuthTest(TestCase):
+class AddUserTest(TestCase):
 
     def create_app(self):
         app = create(True)
@@ -23,7 +23,7 @@ class AuthTest(TestCase):
         db.drop_all()
 
     '''Tests'''
-    def test_add_teacher(self):
+    def test_add_user(self):
         c = self.client
         with c:
             h.create_courses()
@@ -31,35 +31,65 @@ class AuthTest(TestCase):
             h.login_admin(c)
 
             # make sure page is accessible
-            response = c.get(url_for('admin.add_teacher'))
+            response = c.get(url_for('admin.add_user'))
             self.assert_200(response)
 
             # check that teacher creation works
             response = c.post(
-                url_for('admin.add_teacher'), data=dict(
+                url_for('admin.add_user'), data=dict(
                     first='Test',
-                    last='Teacher',
-                    email='test@teacher.com'
+                    last='Student',
+                    email='test@student.com',
+                    password='testpass',
+                    confirm_password='testpass',
+                    user_type='Student',
+                    course='TEST'
                 ), follow_redirects=True
             )
             self.assertIn(b'Account Created.', response.data)
             h.logout(c)
 
+    def test_bad_email(self):
+        h.create_courses()
+        c = self.client
         with c:
             h.register_admin(c)
             h.login_admin(c)
 
             # check that bad email doesn't work
             response = c.post(
-                url_for('admin.add_teacher'), data=dict(
+                url_for('admin.add_user'), data=dict(
                     first='Test',
-                    last='Teacher',
-                    email='x'
+                    last='student',
+                    email='x',
+                    password='testpass',
+                    confirm_password='testpass',
+                    user_type='Student',
+                    course='TEST'
                 ), follow_redirects=True
             )
             self.assertIn(b'Invalid email address.', response.data)
             h.logout(c)
 
+
+class ManageTeachersTest(TestCase):
+
+    def create_app(self):
+        app = create(True)
+        return app
+
+    def setUp(self):
+
+        db.create_all()
+
+    def tearDown(self):
+
+        db.session.remove()
+        db.drop_all()
+
+    def test_reg_10_teachers(self):
+        c = self.client
+        h.create_courses()
         with c:
             h.register_admin(c)
             h.login_admin(c)
@@ -152,6 +182,22 @@ class AuthTest(TestCase):
                     + b' Reschedule before removing!',
                     response.data
                 )
+
+
+class CourseTest(TestCase):
+
+    def create_app(self):
+        app = create(True)
+        return app
+
+    def setUp(self):
+
+        db.create_all()
+
+    def tearDown(self):
+
+        db.session.remove()
+        db.drop_all()
 
     def test_add_course(self):
         c = self.client

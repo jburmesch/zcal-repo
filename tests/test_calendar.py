@@ -8,7 +8,7 @@ from flask import url_for
 from flask_login import current_user
 
 
-class AuthTest(TestCase):
+class CalTest(TestCase):
 
     def create_app(self):
         app = create(True)

@@ -17,7 +17,7 @@ def get_courses():
     return the_list
 
 
-class TeacherForm(FlaskForm):
+class UserForm(FlaskForm):
     first = StringField(
         'First Name',
         validators=[InputRequired(), Length(max=120)]

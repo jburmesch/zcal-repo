@@ -6,7 +6,7 @@ from zcal.models import (
 )
 
 
-class AuthTest(TestCase):
+class DBTest(TestCase):
 
     def create_app(self):
         app = create(True)

@@ -159,10 +159,14 @@ def login_teacher(client):
 def reg_10_teachers(test):
     for x in range(10):
         response = test.client.post(
-            url_for('admin.add_teacher'), data=dict(
+            url_for('admin.add_user'), data=dict(
                 first='Test',
                 last='Teacher',
-                email=f't{x}@t.com'
+                email=f't{x}@t.com',
+                password='testpass',
+                confirm_password='testpass',
+                user_type='Teacher',
+                course='TEST'
             ), follow_redirects=True
         )
         test.assertIn(b'Account Created.', response.data)

@@ -23,11 +23,13 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
+        db.init_app(app)
     else:
         # load the test config if testing
         app.config.from_pyfile('../testing/testconfig.py', silent=True)
+        db.init_app(app)
+        init_db(app)
 
-    db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
@@ -58,21 +60,22 @@ def create_app(test_config=None):
 
 
 # BE CAREFUL WITH THIS
-def init_db():
-    from zcal.models import Course
-    db.drop_all()
-    db.create_all()
-    course = create_course()
+def init_db(app):
+    # from zcal.models import Course
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        # course = create_course()
 
-    db.session.add(course)
-    db.session.commit()
+        # db.session.add(course)
+        # db.session.commit()
 
-    print('\n')
-    print(
-        'Database has been reinitialized.'
-        + 'The next user to register will be admin!'
-    )
-    print(Course.query.all())
+        # print('\n')
+        # print(
+        #     'Database has been reinitialized.'
+        #     + 'The next user to register will be admin!'
+        # )
+        # print(Course.query.all())
 
 
 def create_course():
