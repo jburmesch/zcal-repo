@@ -2,7 +2,7 @@ from flask_testing import TestCase
 from zcal import create_app as create, db
 import tests.helpers as h
 from flask import url_for
-from zcal.models import Teacher, Course
+from zcal.models import Teacher, Course, User
 import random
 from datetime import datetime
 
@@ -34,7 +34,7 @@ class AddUserTest(TestCase):
             response = c.get(url_for('admin.add_user'))
             self.assert_200(response)
 
-            # check that teacher creation works
+            # check that student creation works
             response = c.post(
                 url_for('admin.add_user'), data=dict(
                     first='Test',
@@ -47,7 +47,37 @@ class AddUserTest(TestCase):
                 ), follow_redirects=True
             )
             self.assertIn(b'Account Created.', response.data)
+
+            # check that teacher creation works
+            response = c.post(
+                url_for('admin.add_user'), data=dict(
+                    first='Test',
+                    last='Teacher',
+                    email='test@teacher.com',
+                    password='testpass',
+                    confirm_password='testpass',
+                    user_type='Teacher',
+                    course='TEST'
+                ), follow_redirects=True
+            )
+
+            # check that admin creation works
+            response = c.post(
+                url_for('admin.add_user'), data=dict(
+                    first='Test',
+                    last='Admin',
+                    email='test@admin2.com',
+                    password='testpass',
+                    confirm_password='testpass',
+                    user_type='Admin',
+                    course='TEST'
+                ), follow_redirects=True
+            )
+            self.assertIn(b'Account Created.', response.data)
             h.logout(c)
+            test_users = User.query.filter(User.first == 'Test').all()
+            # Check that all users that are supposed to exist do.
+            self.assertEqual(len(test_users), 4)
 
     def test_bad_email(self):
         h.create_courses()
