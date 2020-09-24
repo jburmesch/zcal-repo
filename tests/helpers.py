@@ -156,16 +156,16 @@ def login_teacher(client):
     )
 
 
-def reg_10_teachers(test):
+def reg_10_users(test, utype):
     for x in range(10):
         response = test.client.post(
             url_for('admin.add_user'), data=dict(
                 first='Test',
-                last='Teacher',
-                email=f't{x}@t.com',
+                last='User',
+                email=f'u{x}@' + utype + '.com',
                 password='testpass',
                 confirm_password='testpass',
-                user_type='Teacher',
+                user_type=utype,
                 course='TEST'
             ), follow_redirects=True
         )

@@ -117,15 +117,19 @@ class ManageTeachersTest(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_reg_10_teachers(self):
+    def test_reg_10_users(self):
         c = self.client
         h.create_courses()
         with c:
             h.register_admin(c)
             h.login_admin(c)
 
-            # log in 10 teachers
-            h.reg_10_teachers(self)
+            # register 10 of each user type
+            h.reg_10_users(self, "Teacher")
+            h.reg_10_users(self, "Student")
+            h.reg_10_users(self, "Admin")
+            users = User.query.all()
+            self.assertEqual(len(users), 31)
             h.logout(c)
 
     def test_manage_teachers(self):
@@ -135,7 +139,7 @@ class ManageTeachersTest(TestCase):
         with c:
             h.register_admin(c)
             h.login_admin(c)
-            h.reg_10_teachers(self)
+            h.reg_10_users(self, 'Teacher')
             teachers = Teacher.query.all()
             count = 0
             # check that all teachers redirect correctly for 'calendar'
