@@ -155,7 +155,8 @@ class ManageTeachersTest(TestCase):
                     'cal.cal',
                     u_id=teacher.user_id
                 ))
-            # check that all teachers redirect correctly for 'manage'
+            # check that all teachers redirect correctly
+            # for 'manage'
             for teacher in teachers:
                 count += 1
                 response = c.post(
@@ -309,3 +310,17 @@ class CourseTest(TestCase):
                 b'This course can not be removed while it'
                 + b' has students attached to it.', response.data
             )
+
+    def test_manage_students(self):
+        c = self.client
+        h.create_courses()
+
+        with c:
+            h.register_admin(c)
+            h.login_admin(c)
+            h.make_student('TEST')
+            response = c.post(
+                url_for('admin.students'),
+                data=dict(mg_id=2)
+            )
+            self.assertRedirects(response, url_for('users.user', u_id=2))

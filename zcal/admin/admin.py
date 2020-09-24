@@ -232,31 +232,7 @@ def courses():
 def students():
     if current_user.utype == "Admin":
         students = Student.query.all()
-        rem_form = RemoveForm()
         mg_form = ManageForm()
-
-        # remove form
-        if rem_form.validate_on_submit():
-            s_id = rem_form.rem_id.data
-            student = Student.query.filter(Student.id == s_id).first()
-            meetings = Meeting.query.filter(Meeting.student.id == s_id).all()
-
-            # error if student has meetings scheduled.
-            if meetings:
-                flash(
-                    'Student has meetings scheduled. Cancel before removing.',
-                    'warning'
-                )
-                return redirect(
-                    url_for('admin.students')
-                )
-
-            # delete if no meetings.
-            else:
-                db.session.delete(student)
-                db.session.commit()
-                flash('Student Removed.', 'success')
-                return redirect(url_for('admin.students'))
 
         # manage form
         if mg_form.validate_on_submit():
@@ -269,7 +245,6 @@ def students():
             'students.html',
             title='Manage Teachers',
             students=students,
-            rem_form=rem_form,
             mg_form=mg_form
         )
     # not admin:
