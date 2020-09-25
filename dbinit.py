@@ -199,9 +199,9 @@ def create_zooms():
 
 def create_meetings():
     meetings = [
-        Meeting(student_id=1),
-        Meeting(student_id=2),
-        Meeting(student_id=3)
+        Meeting(student_id=1, m_code=11111, m_pass=11111),
+        Meeting(student_id=2, m_code=11111, m_pass=11111),
+        Meeting(student_id=3, m_code=11111, m_pass=11111)
     ]
     return meetings
 

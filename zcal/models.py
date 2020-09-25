@@ -106,6 +106,8 @@ class Meeting(db.Model):
                              default=datetime.utcnow)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'),
                            nullable=False)
+    m_code = db.Column(db.String(20))
+    m_pass = db.Column(db.String(20))
     student = db.relationship('Student', backref=db.backref('meetings',
                               uselist=False), lazy=True)
 

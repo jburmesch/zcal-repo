@@ -180,6 +180,10 @@ def schedule_zoom(schedule):
         json=data,
         headers=auth_headers(access)
     ).json()
+    m = schedule.meeting
+    m.m_code = r['id']
+    m.m_pass = r['password']
+    db.session.commit()
     if r['uuid']:
         flash('Zoom meeting created!', 'success')
     else:
@@ -187,3 +191,21 @@ def schedule_zoom(schedule):
             'Zoom meeting creation failed!, please contact administrator!',
             'danger'
         )
+
+
+def delete_zoom(meeting):
+    code = meeting.m_code
+    if code is None:
+        return None
+    z = meeting.schedule.teacher.zoom
+    access = refresh(z)
+    data = {'occurance_id': int(code), 'schedule_for_reminder': False}
+    r = requests.delete(
+        'https://api.zoom.us/v2/meetings' + '/' + code,
+        json=data,
+        headers=auth_headers(access)
+    )
+    if r.ok:
+        flash('Zoom meeting successfully deleted.', 'success')
+    else:
+        flash('Zoom meeting deletion failed!', 'danger')

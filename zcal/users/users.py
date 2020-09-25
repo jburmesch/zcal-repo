@@ -4,6 +4,7 @@ from zcal import db, bcrypt
 from zcal.models import User, Student, Meeting, Teacher, Schedule, Course
 import zcal.users.users_forms as forms
 from zcal.admin.admin_forms import ManageForm, RemoveForm
+from zcal.zoom.zoom import delete_zoom
 
 users = Blueprint('users', __name__)
 
@@ -259,6 +260,7 @@ def user(u_id):
                     Meeting.id == schedule.meeting_id
                 ).first()
                 if meeting:
+                    delete_zoom(meeting)
                     db.session.delete(meeting)
                 schedule.meeting_id = None
                 db.session.commit()

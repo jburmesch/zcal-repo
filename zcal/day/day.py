@@ -3,6 +3,7 @@ from flask_login import login_required
 from zcal import db
 from zcal.admin.admin_forms import RemoveForm, ManageForm
 from zcal.models import Meeting, Student, Schedule, Teacher
+from zcal.zoom.zoom import delete_zoom
 import datetime
 
 
@@ -99,6 +100,7 @@ def s_meetings(date, u_id):
                 Schedule.meeting_id == rem_form.rem_id.data
             ).first()
             if mtg:
+                delete_zoom(mtg)
                 sch.meeting_id = None
                 db.session.delete(mtg)
                 db.session.commit()
