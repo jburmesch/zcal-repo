@@ -1,11 +1,13 @@
 import os
 from flask import Flask
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
+mail = Mail()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
@@ -14,7 +16,6 @@ login_manager.login_message_category = 'info'
 def create_app(test_config=None):
     # create app
     app = Flask(__name__, instance_relative_config=True)
-
     # Secret generation:
     # import secrets
     # secrets.token_hex(16)
@@ -30,6 +31,7 @@ def create_app(test_config=None):
         db.init_app(app)
         init_db(app)
 
+    mail.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
 

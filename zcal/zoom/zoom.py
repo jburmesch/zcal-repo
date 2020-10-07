@@ -8,6 +8,8 @@ from zcal import db
 from flask_login import login_required
 import requests
 from base64 import urlsafe_b64encode as encode64
+from zcal import mail
+from flask_mail import Message
 
 zoom = Blueprint('zoom', __name__, url_prefix='/zoom')
 
@@ -185,12 +187,27 @@ def schedule_zoom(schedule):
     m.m_pass = r['password']
     db.session.commit()
     if r['uuid']:
+        send_email(m)
         flash('Zoom meeting created!', 'success')
     else:
         flash(
             'Zoom meeting creation failed!, please contact administrator!',
             'danger'
         )
+
+
+def send_email(meeting):
+    student = meeting.student
+    teacher = meeting.schedule.teacher
+    msg = Message(
+        "Zoom Meeting Scheduled!",
+        body="Congratulations! Your Zoom meeting has been scheduled."
+        + f"\nMeeting Number: {meeting.m_code} Password: {meeting.m_pass}"
+        + f"\nTeacher: {teacher.user.full_name()} \nStudent: "
+        + f"{student.user.full_name()} \nCourse: {student.course.name}",
+        recipients=['jburmesch.msp@gmail.com', 'daioten@gmail.com']
+    )
+    mail.send(msg)
 
 
 def delete_zoom(meeting):
