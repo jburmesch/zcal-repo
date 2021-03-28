@@ -77,7 +77,7 @@ def stu_cal(u_id):
             id=request.form.get("time_list")
         ).first()
         mtg = Meeting(
-            student_id=Student.query.filter_by(user_id=u_id).first().id,
+            student_id=Student.query.filter_by(user_id=u_id).first().id
         )
         db.session.add(mtg)
         db.session.commit()

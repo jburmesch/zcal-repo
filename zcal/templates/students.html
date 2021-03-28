@@ -24,7 +24,7 @@
                     <td>{{student.user.email}}</td>
                     <td>{{student.course.name}}</td>
             		<td>
-                        <form style="display: inline" id="mg_form" method="POST" action="">
+                        <form style="display: inline" id="mg_form" method="POST" action="{{ url_for( 'admin.students' ) }}">
                             {{ mg_form.hidden_tag() }}
                             {{ mg_form.mg_id(value=student.user.id, type="hidden")}}
                             {{ mg_form.manage(class="btn btn-dark") }}
