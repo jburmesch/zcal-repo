@@ -1,0 +1,126 @@
+{% macro calendar_day(d, yr, mon_num, a_dict)%}
+    {% if d[0] == 0 %}
+        <td class = "calday"></td>
+    {% else %}
+        <td class = "calday">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="p-0 ">
+                    {{ d[0] }}
+                </div>
+                <div></div>
+            </div>
+            <hr>
+                {% if cal_type == 'student' %}
+                    {% if a_dict[d[0]] %}
+                        <div>
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="show_scheduler({{d[0]}})">要約 ({{ a_dict[d[0]] }})</button>
+                        </div>
+                    {% endif %}
+                    {% if m_dict[d[0]] %}
+                        {% for mtg in m_dict[d[0]] %}
+                            <button class="btn btn-secondary btn-sm sub-btn" onclick="location.href='{{ url_for('day.s_meetings', date=yr ~ '-' ~ mon_num ~ '-' ~ d[0], u_id=u_id) }}';" id='open{{ d[0] }}'>{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['teacher'] }}</button>
+                        {% endfor %}
+                    {% endif %}
+                {% else %}
+                    {% if a_dict[d[0]] %}
+                        <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'onclick="location.href='{{ url_for('day.t_meetings', date=yr ~ '-' ~ mon_num ~ '-' ~ d[0], u_id=u_id) }}';">{{ a_dict[d[0]] }} Open</button>
+                    {% endif %}
+                    {% if m_dict[d[0]] %}
+                        {% for mtg in m_dict[d[0]] %}
+                            <button class="btn btn-secondary btn-sm sub-btn" id='open{{d[0]}}'onclick="location.href='{{ url_for('day.t_meetings', date=yr ~ '-' ~ mon_num ~ '-' ~ d[0], u_id=u_id) }}';">{{ mtg['start'].isoformat(timespec='minutes')  }} {{ mtg['student'] }}</button>
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+        </td>
+    {% endif %}
+{% endmacro %}
+
+
+<!-- ######################################################################## -->
+{% macro render_field(field) %}
+  {{ field.label(class="form-control-label") }}
+  {{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class="invalid-feedback">
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+
+<!-- ######################################################################## -->
+{% macro admin_menu(ts_form, timeslots, u_id, zoom) %}
+    <table class="table">
+        <tr>
+            {% if zoom %}
+            <td>
+                <legend>Add Availability</legend>
+            </td>
+            {% endif %}
+            <td>
+                <legend>Zoom Account</legend>
+            </td>
+        </tr>
+        <tr>
+            {% if zoom %}
+            <td>
+                <table>
+                    <td>
+                        <form method="POST" action="" id="slot_form">
+                        <div class="form-group">
+                                {{ts_form.hidden_tag()}}
+                                {{ render_field(ts_form.date, class="form-control") }}
+                                {{ ts_form.slots(type="hidden", id="return") }}
+                            </form>
+                            <button type=button class="btn btn-dark" onclick="get_slots()">Submit</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class = "form-check">
+                            {% for ts in timeslots %}
+                                <div>
+                                <input class="form-check-input" type="checkbox" name="ts_{{ ts['id'] }}" value="{{ ts['id'] }}" checked>
+                                <label class="form-check-label" for="ts_{{ ts['id'] }}">Start: {{ ts['start'].isoformat(timespec='minutes') }} - End: {{ ts['end'].isoformat(timespec='minutes') }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </table>
+            </td>
+            {% endif %}
+            <td>
+                {% if zoom %}
+                    <h4>{{ zoom.account }}</h4>
+                {% else %}
+                    <h4>Please go to "Manage Zooms" to set up a zoom account for this teacher.</h4>
+                {% endif %}
+
+            </td>
+        </tr>
+    </table>
+{% endmacro %}
+
+
+<!-- ######################################################################## -->
+{% macro teacher_menu(zoom_form) %}
+    <table class="table">
+        <tr>
+            <td>
+                <legend>Add Zoom Account</legend>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="POST" action={{ url_for( 'zoom.zoom_auth' ) }} , id="slot_form">
+                    <div class="form-group">
+                        {{zoom_form.hidden_tag()}}
+                        {{zoom_form.authorize()}}
+                    </div>
+                </form>
+            </td>
+        </tr>
+    </table>
+{% endmacro %}

@@ -9,10 +9,7 @@ from zcal.models import User, Course
 
 def get_courses():
     the_list = []
-    try:
-        courses = Course.query.all()
-    except:
-        courses = []
+    courses = Course.query.all()
     for course in courses:
         if course.name != 'ADMIN':
             tup = (course.name, course.name)

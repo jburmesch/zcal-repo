@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h1>Manage Teachers</h1>
+        <hr>
+    	<table class="table">
+            <tr>
+            	<th>Teacher ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Classification</th>
+                <th>Email</th>
+                <th>Zoom Account</th>
+                <th>Management Options</th>
+            </tr>
+            {% for teacher in teachers %}
+        		<tr>
+            		<td>{{teacher.id}}</td>
+            		<td>{{teacher.user.first}}</td>
+            		<td>{{teacher.user.last}}</td>
+            		<td>{{teacher.user.utype}}</td>
+            		<td>{{teacher.user.email}}</td>
+                    <td>{{teacher.zoom.account}}</td>
+            		<td>
+                        <span>
+                            <form style="display: inline" id="mg_form" method="POST" action="">
+                                {{ mg_form.hidden_tag() }}
+                                {{ mg_form.form_id(value="manage", type="hidden")}}
+                                {{ mg_form.mg_id(value=teacher.user.id, type="hidden")}}
+                                {{ mg_form.manage(class="btn btn-dark") }}
+                            </form>
+                            <form style="display: inline" id="cal_form" method="POST" action="">
+                                {{ mg_form.hidden_tag() }}
+                                {{ mg_form.form_id(value="cal", type="hidden")}}
+                                {{ mg_form.mg_id(value=teacher.user.id, type="hidden")}}
+                                {{ mg_form.manage(class="btn btn-dark", value="Calendar") }}
+                            </form>
+                            <form style="display: inline"  id="rem_form{{ teacher.id }}" method="POST" action="">
+                                {{ rem_form.hidden_tag() }}
+                                {{ rem_form.rem_id(value=teacher.id, type="hidden")}}
+                            </form>
+                            <button class="btn btn-dark" id="rem_btn" onclick="confirm_remove({{  teacher.id }})">Remove</button>
+                        </span>
+                    </td>
+        		</tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script>
+function confirm_remove(rID)
+{
+    var check = confirm("Are you sure that you want to permanently remove this teacher from the database?  (This can not be undone.)")
+    if (check === true)
+    {
+        document.getElementById("rem_form" +  rID).submit();
+    }
+    else
+    {
+        alert("Teacher not removed.")
+        return
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+body
+{
+    background-color: #ebe9e6;
+    align-content: center;
+}
+
+.calmonth
+{
+    margin-top: 1em;
+}
+
+.caltitle
+{
+    text-align: center;
+    font-size-adjust: inherit;
+}
+
+.calnav
+{
+    display:inline-block;
+}
+
+h1
+{
+    display:inline-block;
+}
+
+nav .navbar-brand
+{
+    /* size for brand */
+    font-size: xx-large;
+}
+
+.calday
+{
+    height: 5em;
+    width: 10%;
+}
+
+.main{
+    width: 90%;
+}
+
+main .form-control
+{
+    /* center form controls */
+    display: inline-block;
+
+    /* override Bootstrap's 100% width for form controls */
+    width: auto;
+}
+
+.login
+{
+    max-width: 20em;
+    margin-top: 5em;
+}
+
+.sub-btn
+{
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.in-frm
+{
+    display: inline;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+

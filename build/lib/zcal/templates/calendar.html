@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>
+        {{user.full_name()}}
+    </h1>
+    {% if current_user.utype == 'Admin' %}
+        {{ admin_menu(ts_form, timeslots, u_id, zoom) }}
+    {% elif current_user.utype == 'Teacher' and zoom == None %}
+        {{ teacher_menu(zoom_form)}}
+    {% endif %}
+    <table class="table table-bordered table-dark calmonth">
+        <div class="caltitle">
+            <h1>{{ mon }} {{ yr }}</h1>
+        </div>
+        <form action="/calendar" method ="get" id="navform">
+            <div class="form group calnav">
+                <input type="hidden" name="mod" value="{{ mod if mod else 0 }}" id="mod_in">
+                <input type="hidden" name="u_id" value={{ u_id }} id="uid_in">
+                <button type="button" class="btn btn-dark" onclick="minus()">Prev.</button>
+                <button type="button" class="btn btn-dark" onclick="plus()">Next</button>
+            </div>
+        </form>
+        <tr class="calhead">
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+        </tr>
+        {% for d in caldays %}
+            {% if d[1] == 0 %}
+            <tr class="calrow">
+                {{ calendar_day(d, yr, mon_num, a_dict) }}
+            {% elif d[1] == 6 %}
+                {{ calendar_day(d, yr, mon_num, a_dict) }}
+            </tr>
+            {% else %}
+                {{ calendar_day(d, yr, mon_num, a_dict) }}
+            {% endif %}
+        {% endfor %}
+    </table>
+    {% if sched_json %}
+    <div class="modal fade" id="scheduler" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Schedule Meeting</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="res_form" method="POST" action="{{ url_for('cal.stu_cal', u_id=u_id, mod=mod) }}">
+                    <fieldset>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label id="date_in" class="form-control-label">Meeting Date: </label>
+                                <input type="hidden" id="modDay">
+                            </div>
+                            <div class="form-group">
+                                <label for="teachers" class="form-control-label">Select Teacher:</label>
+                                <select name="teacher_list" onChange="update_times()" id="teachers">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="times" class="form-control-label">Select Meeting Time:</label>
+                                <select name="time_list" id="times">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="form-group">
+                                <input type="submit" value="Schedule Meeting" class="btn btn-dark">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+    {% if sched_json %}
+        var avail = JSON.parse('{{ sched_json | safe }}')
+    {% endif %}
+    function get_slots()
+    {
+        form = document.getElementById("slot_form");
+        slots = document.querySelectorAll('input[type="checkbox"]:checked');
+        r_val = document.querySelector("#return");
+        r_val.value = ""
+        for (var slot of slots)
+        {
+            if (r_val.value)
+            {
+                r_val.value = r_val.value + " " + slot.value;
+            }
+            else
+            {
+                r_val.value = slot.value;
+            }
+        }
+        form.submit()
+    }
+
+    function minus()
+    {
+        m = document.querySelector('#mod_in').value;
+        m = parseInt(m);
+        m--;
+        document.querySelector('#mod_in').value = m;
+        document.querySelector('#navform').submit();
+    }
+
+
+    function plus()
+    {
+        m = document.querySelector('#mod_in').value;
+        m = parseInt(m);
+        m++;
+        document.querySelector('#mod_in').value = m;
+        document.querySelector('#navform').submit();
+    }
+
+{% if sched_json %}
+    function show_scheduler(day)
+    {
+        $('#scheduler').modal();
+        let tlist = document.querySelector('#teachers');
+        let slist = document.querySelector('#times');
+        let mDay = document.querySelector('#modDay');
+        let currentAvail = avail["d" + day];
+        let teachers = Object.keys(currentAvail);
+
+        mDay.value = day
+        tnames = [];
+        rem_options(tlist);
+        rem_options(slist);
+
+        for (i = 0; i < teachers.length; i++)
+        {
+            let tId = parseInt(teachers[i]);
+            let option = document.createElement("option");
+            option.text = currentAvail[tId][0].teacher;
+            option.value = tId;
+            tlist.add(option);
+        }
+
+        dateInput = document.getElementById('date_in');
+        dateInput.innerHTML = "Meeting Date: " + currentAvail[teachers[0]][0].date;
+        update_times()
+    }
+
+
+    function update_times()
+    {
+        let tlist = document.querySelector('#teachers');
+        let slist = document.querySelector('#times');
+        let mDay = document.querySelector('#modDay');
+        let currentAvail = avail["d" + mDay.value];
+        let scheds = currentAvail[tlist.value];
+
+        rem_options(slist);
+
+        for (i = 0; i < scheds.length; i++)
+        {
+            let option = document.createElement("option");
+            option.text = scheds[i].start + " - " + scheds[i].end;
+            option.value = scheds[i].id;
+            slist.add(option);
+        }
+    }
+
+
+    function rem_options(selObj)
+    {
+        for (child in selObj.children)
+        {
+            selObj.remove(child)
+        }
+    }
+{% endif %}
+</script>
+{% endblock %}

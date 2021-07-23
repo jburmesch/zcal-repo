@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <h1>Manage Timeslots</h1>
+        <hr>
+        <div class=tsdiv>
+            <form id="add_form" method="POST" action="">
+                {{ add_form.hidden_tag() }}
+                <legend>Add Timeslot</legend>
+                <div class="form-group">
+                    {{ add_form.start.label(class="form-control-label") }}
+
+                    {% if add_form.start.errors %}
+                        {{ add_form.start(class="form-control is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in add_form.start.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ add_form.start(class="form-control")}}
+                    {% endif %}
+
+                </div>
+                <div class="form-group">
+                    {{ add_form.duration.label(class="form-control-label") }}
+
+                    {% if add_form.duration.errors %}
+                        {{ add_form.duration(class="form-control is-invalid", placeholder="Minutes")}}
+                        <div class="invalid-feedback">
+                            {% for error in add_form.duration.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ add_form.duration(class="form-control", placeholder="Minutes")}}
+                    {% endif %}
+
+                </div>
+                <div class="form-group">
+                    {{ add_form.add(class="btn btn-dark")}}
+                </div>
+            </form>
+        </div>
+        <hr>
+        <legend>Current Timeslots</legend>
+    	<table class="table">
+            <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
+                <th>Management Options</th>
+            </tr>
+            {% for slot in slots %}
+                <tr>
+                    <td>{{slot.start.isoformat(timespec='minutes')}}</td>
+                    <td>{{slot.end.isoformat(timespec='minutes')}}</td>
+                    <td>{{slot.duration}} Minutes</td>
+                    <td>
+                        <form id="rem_form" method="POST" action="">
+                            {{ rem_form.hidden_tag() }}
+                            {{ rem_form.rem_id(value=slot.id, type="hidden")}}
+                            {{ rem_form.remove(class="btn btn-dark") }}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
