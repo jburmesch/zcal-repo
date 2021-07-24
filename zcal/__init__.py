@@ -61,29 +61,8 @@ def create_app(test_config=None):
     return app
 
 
-# BE CAREFUL WITH THIS
+# BE CAREFUL WITH THIS (Should just be used for testing - IT DROPS ALL DB TABLES)
 def init_db(app):
-    # from zcal.models import Course
     with app.app_context():
         db.drop_all()
         db.create_all()
-        # course = create_course()
-
-        # db.session.add(course)
-        # db.session.commit()
-
-        # print('\n')
-        # print(
-        #     'Database has been reinitialized.'
-        #     + 'The next user to register will be admin!'
-        # )
-        # print(Course.query.all())
-
-
-def create_course():
-    from zcal.models import Course
-    course = Course(
-        name='ADMIN',
-        code='ADMIN'
-    )
-    return course
