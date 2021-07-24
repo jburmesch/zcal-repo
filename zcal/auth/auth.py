@@ -56,6 +56,7 @@ def register():
                   + 'email for account validation.', 'success')
             return redirect(url_for('auth.login'))
     # display register page
+    # print(form.errors)
     return render_template('register.html', form=form, title='Register')
 
 

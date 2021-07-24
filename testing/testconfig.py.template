@@ -1,6 +1,8 @@
 SECRET_KEY = ''
 SQLALCHEMY_DATABASE_URI = 'sqlite:///../testing/test.db'
 FLASK_ENV = 'development'
+TESTING = True
+WTF_CSRF_ENABLED = False
 OAUTH_ID = ''
 OAUTH_SECRET = ''
 SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -61,7 +61,7 @@ def create_app(test_config=None):
     return app
 
 
-# BE CAREFUL WITH THIS (Should just be used for testing - IT DROPS ALL DB TABLES)
+# BE CAREFUL WITH THIS (Should just be used for testing - DROPS ALL DB TABLES)
 def init_db(app):
     with app.app_context():
         db.drop_all()
