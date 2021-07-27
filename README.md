@@ -2,6 +2,7 @@
 #### Video Demo:  <URL HERE>
 #### Description:
 
+## My CS50 Final Project
 A calendar app for scheduling meetings between teachers and students.
 
 # Background
