@@ -6,11 +6,9 @@ A calendar app for scheduling meetings between teachers and students.
 
 # Background
 
-I work for an English education company in Japan, and with the events of this year, we suddenly
-discovered that we needed to branch out into online learning.  Our primary platform for this was Zoom.
+I used to for an English education company in Japan, and with the events of 2020, we suddenly discovered that we needed to branch out into online learning.  Our primary platform for this was Zoom.
 
-I decided to create a system where students could reserve a meeting with a teacher at a time of their choosing
-via a calendar interface.  To be completely honest, I got a little carried away...
+I decided to create a system where students could reserve a lesson or counseling session with a teacher at a time of their choosingbvia a calendar interface.  To be completely honest, I got a little carried away...
 
 # Capablities
 
@@ -63,10 +61,6 @@ At some point the project became so huge that I realized it was a huge pain to t
 
 ### zcal folder
 
-#### __init__.py
-
-This is of course where the app, the configuration, database and various other add-ins are initialized and blueprints are registered.
-
 #### admin, auth, cal, day, meeting, users, zoom
 
 Each of these folders contains the code and wtforms forms corresponding to the names thereof.
@@ -87,8 +81,6 @@ By far, the biggest challenge of this project was figuring out how to access zoo
 
 # Conclusion
 
-There's still a ton that COULD be done to improve this project  (especially on the front end), but It's not actually
-going to be used, and I think I'm ready to move on.
-
+There's still a ton that COULD be done to improve this project  (especially on the front end), but It's not actually going to be used, and I think I'm ready to move on.
 
 ## CS50 has been great!  I can't wait to continue my programming adventure!
