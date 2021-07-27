@@ -8,14 +8,14 @@
                 <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
-                        {{ form.email(class="form-control is-invalid")}}
+                        {{ form.email(class="form-control is-invalid", autocomplete="off")}}
                         <div class="invalid-feedback">
                             {% for error in form.email.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.email(class="form-control")}}
+                        {{ form.email(class="form-control", autocomplete="off")}}
                     {% endif %}
                 </div>
                 <div class="form-group">
