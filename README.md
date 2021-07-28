@@ -30,7 +30,7 @@ Create time slots for meetings
 Assign or remove time slots from teachers' schedules
 Schedule meetings between teachers and students (by accessing a student's calendar) - This actually schedules a meeting on the teacher's associated zoom account via the zoom api, and sends the meeting information to the teacher and the student via email.
 Delete meetings - This actually deletes the meeting via the zoom api.
-Log in, log out, and all that fun stuff.
+Log in, log out, and all that fun stuff. 
 
 ## Students and teachers can:
 
