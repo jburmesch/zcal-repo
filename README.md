@@ -9,7 +9,7 @@ A calendar app for scheduling meetings between teachers and students.
 
 I used to for an English education company in Japan, and with the events of 2020, we suddenly discovered that we needed to branch out into online learning.  Our primary platform for this was Zoom.
 
-I decided to create a system where students could reserve a lesson or counseling session with a teacher at a time of their choosingbvia a calendar interface.  To be completely honest, I got a little carried away...
+I decided to create a system where students could reserve a lesson or counseling session with a teacher at a time of their choosing via a calendar interface.  To be completely honest, I got a little carried away...
 
 # Capablities
 
