@@ -59,28 +59,3 @@ This is a small program that I wrote (before I discovered what unit testing is),
 
 At some point the project became so huge that I realized it was a huge pain to test everything every time I changed something.  This lead me to learn how to implement unit testing.  Unfortunately, the project at that point was also so huge that going through and writing tests for everything turned out to be unrealistic given the fact that it wasn't actually going to be used.  That's why tests are only written for a few areas of the app.
 
-### zcal folder
-
-#### admin, auth, cal, day, meeting, users, zoom
-
-Each of these folders contains the code and wtforms forms corresponding to the names thereof.
-
-# Decisions
-
-Two decisions that had a really big impact on thisproject were deciding to use both wtforms and sqlalchemy.  In the process of figuring out how to implement the project, I wound up watching tutorials about both of these tools, and decided to give them a try.  In hindsight, I think I learned a lot about how to learn new tools, but especially in the case of sqlalchemy, I could have probably used the practice writing my own queries.. Oh well, I suppose I can always go back and redo the SQL labs to review.
-
-# Challenges
-
-## Calendar
-
-The first big challenge that I had was figuring out how to create a calendar on screen.  I now have a much greater appreciaion for just how well-designed google calendar is.  It was very difficult to get the grid to be big enough to work in multiple device sizes, and still doesn't do so as well as I'd like. 
-
-## Zoom API
-
-By far, the biggest challenge of this project was figuring out how to access zoom via the API.  After figuring out how to do it initially using another system... I don't remember off the top of my head, I later realized that I would need to do it using Oauth2 instead.  This took a lot of time and an incredible amount of trial and error, but I'm really happy that I did it, since if I were to take on another project that interacts with google, facebook, etc. I'd feel a lot more comfortable using Oauth to access their APIs.
-
-# Conclusion
-
-There's still a ton that COULD be done to improve this project  (especially on the front end), but It's not actually going to be used, and I think I'm ready to move on.
-
-## CS50 has been great!  I can't wait to continue my programming adventure!
