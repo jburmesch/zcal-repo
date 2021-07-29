@@ -1,5 +1,4 @@
 # ZCAL
-#### Video Demo:  <URL HERE>
 #### Description:
 
 ## My CS50 Final Project
